@@ -211,10 +211,10 @@
 <script type="module">
 import { db, collection, getDocs } from './js/firebase-config.js';
 
-function toggleNav(open){
+window.toggleNav = function(open){
   document.getElementById('drawer').classList.toggle('open',open);
   document.getElementById('scrim').classList.toggle('open',open);
-}
+};
 
 /* ---------- Category tree (will map to admin-managed Categories later) ---------- */
 const categoryTree = [
