@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ARGENTUM Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0b0d;--bg-alt:#15171a;--card:#17191c;
+    --silver:#b8bcc4;--silver-bright:#f2f4f7;--silver-deep:#6b6f76;
+    --text:#f2f3f5;--text-dim:#9195a0;--line:rgba(184,188,196,0.22);
+    --radius:4px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Instrument Sans',sans-serif;-webkit-font-smoothing:antialiased;}
+  .display{font-family:'Fraunces',serif;}
+  input,select,button,textarea{font-family:inherit;}
+
+  /* ---------- PASSWORD GATE ---------- */
+  #gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+  .gate-box{width:100%;max-width:320px;text-align:center;}
+  .gate-box h1{font-family:'Fraunces',serif;font-size:22px;letter-spacing:0.1em;color:var(--silver);margin-bottom:22px;}
+  .gate-box input{width:100%;padding:13px 16px;background:var(--card);border:1px solid var(--line);color:var(--text);border-radius:var(--radius);font-size:14px;margin-bottom:12px;}
+  .gate-box button{width:100%;padding:13px;background:linear-gradient(120deg,var(--silver),var(--silver-bright));color:var(--bg);border:none;border-radius:var(--radius);font-weight:600;font-size:13.5px;cursor:pointer;}
+  .gate-err{color:#e08a8a;font-size:12.5px;margin-top:10px;display:none;}
+
+  /* ---------- DASHBOARD LAYOUT ---------- */
+  #dash{display:none;min-height:100vh;}
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--line);background:var(--bg-alt);position:sticky;top:0;z-index:10;}
+  .topbar .logo{font-family:'Fraunces',serif;font-size:17px;letter-spacing:0.14em;color:var(--silver);}
+  .topbar a.view-site{font-size:12px;color:var(--text-dim);border:1px solid var(--line);padding:7px 12px;border-radius:16px;}
+
+  .tabs{display:flex;gap:8px;padding:16px 20px 0;overflow-x:auto;}
+  .tab{padding:9px 16px;font-size:12.5px;border:1px solid var(--line);border-radius:16px;color:var(--text-dim);white-space:nowrap;cursor:pointer;}
+  .tab.active{background:var(--silver-bright);color:var(--bg);border-color:var(--silver-bright);font-weight:600;}
+
+  .panel{display:none;padding:20px;}
+  .panel.active{display:block;}
+
+  .card-form{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:24px;}
+  .card-form h3{font-family:'Fraunces',serif;font-size:15px;margin-bottom:14px;color:var(--silver);}
+  .field{margin-bottom:12px;}
+  .field label{display:block;font-size:11.5px;color:var(--text-dim);margin-bottom:6px;}
+  .field input, .field select, .field textarea{width:100%;padding:10px 12px;background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:var(--radius);font-size:13.5px;}
+  .field textarea{resize:vertical;min-height:60px;}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .save-btn{padding:11px 22px;background:linear-gradient(120deg,var(--silver),var(--silver-bright));color:var(--bg);border:none;border-radius:var(--radius);font-weight:600;font-size:13px;cursor:pointer;}
+  .save-btn:disabled{opacity:0.5;}
+  .status-msg{font-size:12px;margin-top:8px;color:var(--text-dim);}
+
+  .list{display:flex;flex-direction:column;gap:10px;}
+  .item{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px;}
+  .item img{width:48px;height:48px;object-fit:cover;border-radius:4px;background:var(--bg-alt);}
+  .item .info{flex:1;min-width:0;}
+  .item .info h4{font-size:13.5px;margin-bottom:3px;}
+  .item .info p{font-size:11.5px;color:var(--text-dim);}
+  .item .del{color:#e08a8a;font-size:12px;border:1px solid rgba(224,138,138,0.3);padding:6px 10px;border-radius:14px;cursor:pointer;background:none;flex-shrink:0;}
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <div class="gate-box">
+    <h1 class="display">ARGENTUM ADMIN</h1>
+    <input type="password" id="passInput" placeholder="Passcode">
+    <button onclick="tryLogin()">Enter</button>
+    <p class="gate-err" id="gateErr">Wrong passcode — try again.</p>
+  </div>
+</div>
+
+<div id="dash">
+  <div class="topbar">
+    <span class="logo">ARGENTUM · Admin</span>
+    <a class="view-site" href="index.html" target="_blank">View site →</a>
+  </div>
+  <div class="tabs">
+    <div class="tab active" data-panel="slidesPanel">Slides</div>
+    <div class="tab" data-panel="productsPanel">Products</div>
+    <div class="tab" data-panel="ordersPanel">Orders</div>
+  </div>
+
+  <!-- ---------- SLIDES ---------- -->
+  <div class="panel active" id="slidesPanel">
+    <div class="card-form">
+      <h3>Add hero banner</h3>
+      <div class="field"><label>Title</label><input id="sTitle" placeholder="e.g. New fragrance drop"></div>
+      <div class="field"><label>Subtext</label><textarea id="sText" placeholder="One or two lines under the title"></textarea></div>
+      <div class="row2">
+        <div class="field"><label>Button label</label><input id="sCta" placeholder="Shop Now" value="Shop Now"></div>
+        <div class="field"><label>Button link (#section or URL)</label><input id="sHref" placeholder="#glasses"></div>
+      </div>
+      <div class="field"><label>Order (lower shows first)</label><input id="sOrder" type="number" value="0"></div>
+      <div class="field"><label>Banner image (optional — falls back to an icon)</label><input id="sImage" type="file" accept="image/*"></div>
+      <button class="save-btn" id="sSaveBtn" onclick="addSlide()">Save banner</button>
+      <p class="status-msg" id="sStatus"></p>
+    </div>
+    <div class="list" id="slidesList"></div>
+  </div>
+
+  <!-- ---------- PRODUCTS ---------- -->
+  <div class="panel" id="productsPanel">
+    <div class="card-form">
+      <h3>Add product</h3>
+      <div class="field"><label>Name</label><input id="pName" placeholder="e.g. Gothic Cross Rimless"></div>
+      <div class="row2">
+        <div class="field"><label>Price (BDT)</label><input id="pPrice" type="number"></div>
+        <div class="field"><label>Was price (optional)</label><input id="pWas" type="number"></div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Category</label>
+          <select id="pCategory">
+            <option>Glasses</option><option>Accessories</option><option>Fragrances</option>
+            <option>Clothes</option><option>Mens</option><option>Girls</option><option>Unisex</option>
+          </select>
+        </div>
+        <div class="field"><label>Subcategory</label><input id="pSub" placeholder="e.g. Rimless"></div>
+      </div>
+      <div class="field"><label><input type="checkbox" id="pFeatured" style="width:auto;margin-right:6px;">Show in New Arrivals</label></div>
+      <div class="field"><label>Product image</label><input id="pImage" type="file" accept="image/*"></div>
+      <button class="save-btn" id="pSaveBtn" onclick="addProduct()">Save product</button>
+      <p class="status-msg" id="pStatus"></p>
+    </div>
+    <div class="list" id="productsList"></div>
+  </div>
+
+  <!-- ---------- ORDERS ---------- -->
+  <div class="panel" id="ordersPanel">
+    <div class="card-form">
+      <h3>Orders</h3>
+      <p style="font-size:12.5px;color:var(--text-dim);">Orders currently come in via the WhatsApp "Order Now" button on each product — check your WhatsApp for incoming messages. A logged order history here can be added next.</p>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { db, collection, getDocs, addDoc, deleteDoc, doc, serverTimestamp } from './js/firebase-config.js';
+import { uploadToImgbb } from './js/imgbb.js';
+
+// ---------- Passcode gate (swap for real Firebase Auth before going live) ----------
+const ADMIN_PASSCODE = "argentum2026";
+window.tryLogin = function(){
+  const val = document.getElementById('passInput').value;
+  if(val === ADMIN_PASSCODE){
+    sessionStorage.setItem('argentum_admin','1');
+    showDash();
+  } else {
+    document.getElementById('gateErr').style.display = 'block';
+  }
+};
+function showDash(){
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('dash').style.display = 'block';
+  loadSlidesList();
+  loadProductsList();
+}
+if(sessionStorage.getItem('argentum_admin') === '1') showDash();
+
+// ---------- Tabs ----------
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById(t.dataset.panel).classList.add('active');
+  });
+});
+
+// ---------- Slides ----------
+window.addSlide = async function(){
+  const btn = document.getElementById('sSaveBtn');
+  const status = document.getElementById('sStatus');
+  const title = document.getElementById('sTitle').value.trim();
+  if(!title){ status.textContent = 'Title is required.'; return; }
+  btn.disabled = true; status.textContent = 'Saving...';
+  try{
+    let imageUrl = null;
+    const file = document.getElementById('sImage').files[0];
+    if(file){ status.textContent = 'Uploading image...'; imageUrl = await uploadToImgbb(file); }
+    await addDoc(collection(db,'slides'), {
+      title,
+      text: document.getElementById('sText').value.trim(),
+      cta: document.getElementById('sCta').value.trim() || 'Shop Now',
+      href: document.getElementById('sHref').value.trim() || '#',
+      order: Number(document.getElementById('sOrder').value) || 0,
+      imageUrl,
+      createdAt: serverTimestamp()
+    });
+    status.textContent = 'Saved.';
+    ['sTitle','sText','sCta','sHref','sOrder'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('sImage').value='';
+    loadSlidesList();
+  }catch(e){
+    console.error(e); status.textContent = 'Failed: ' + e.message;
+  }
+  btn.disabled = false;
+};
+async function loadSlidesList(){
+  const list = document.getElementById('slidesList');
+  list.innerHTML = 'Loading...';
+  const snap = await getDocs(collection(db,'slides'));
+  if(snap.empty){ list.innerHTML = '<p style="color:var(--text-dim);font-size:12.5px;">No banners yet — the site shows default demo banners until you add one.</p>'; return; }
+  list.innerHTML = '';
+  snap.docs.forEach(d=>{
+    const s = d.data();
+    const el = document.createElement('div');
+    el.className = 'item';
+    el.innerHTML = `
+      ${s.imageUrl ? `<img src="${s.imageUrl}">` : '<div style="width:48px;height:48px;background:var(--bg-alt);border-radius:4px;"></div>'}
+      <div class="info"><h4>${s.title}</h4><p>order: ${s.order||0} · ${s.cta||''}</p></div>
+      <button class="del" data-id="${d.id}">Delete</button>`;
+    el.querySelector('.del').addEventListener('click', async ()=>{
+      await deleteDoc(doc(db,'slides',d.id));
+      loadSlidesList();
+    });
+    list.appendChild(el);
+  });
+}
+
+// ---------- Products ----------
+window.addProduct = async function(){
+  const btn = document.getElementById('pSaveBtn');
+  const status = document.getElementById('pStatus');
+  const name = document.getElementById('pName').value.trim();
+  const price = Number(document.getElementById('pPrice').value);
+  if(!name || !price){ status.textContent = 'Name and price are required.'; return; }
+  btn.disabled = true; status.textContent = 'Saving...';
+  try{
+    let imageUrl = null;
+    const file = document.getElementById('pImage').files[0];
+    if(file){ status.textContent = 'Uploading image...'; imageUrl = await uploadToImgbb(file); }
+    await addDoc(collection(db,'products'), {
+      name, price,
+      was: Number(document.getElementById('pWas').value) || null,
+      category: document.getElementById('pCategory').value,
+      subcategory: document.getElementById('pSub').value.trim(),
+      featured: document.getElementById('pFeatured').checked,
+      imageUrl,
+      createdAt: serverTimestamp()
+    });
+    status.textContent = 'Saved.';
+    ['pName','pPrice','pWas','pSub'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('pFeatured').checked = false;
+    document.getElementById('pImage').value='';
+    loadProductsList();
+  }catch(e){
+    console.error(e); status.textContent = 'Failed: ' + e.message;
+  }
+  btn.disabled = false;
+};
+async function loadProductsList(){
+  const list = document.getElementById('productsList');
+  list.innerHTML = 'Loading...';
+  const snap = await getDocs(collection(db,'products'));
+  if(snap.empty){ list.innerHTML = '<p style="color:var(--text-dim);font-size:12.5px;">No products yet — the site shows default demo products until you add some.</p>'; return; }
+  list.innerHTML = '';
+  snap.docs.forEach(d=>{
+    const p = d.data();
+    const el = document.createElement('div');
+    el.className = 'item';
+    el.innerHTML = `
+      ${p.imageUrl ? `<img src="${p.imageUrl}">` : '<div style="width:48px;height:48px;background:var(--bg-alt);border-radius:4px;"></div>'}
+      <div class="info"><h4>${p.name}${p.featured?' ★':''}</h4><p>${p.category} · BDT ${p.price}</p></div>
+      <button class="del" data-id="${d.id}">Delete</button>`;
+    el.querySelector('.del').addEventListener('click', async ()=>{
+      await deleteDoc(doc(db,'products',d.id));
+      loadProductsList();
+    });
+    list.appendChild(el);
+  });
+}
+</script>
+</body>
+</html>
