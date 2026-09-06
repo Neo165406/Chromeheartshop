@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ARGENTUM Admin</title>
+<title>fashion1sta Admin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -63,7 +63,7 @@
 
 <div id="gate">
   <div class="gate-box">
-    <h1 class="display">ARGENTUM ADMIN</h1>
+    <h1 class="display">fashion1sta ADMIN</h1>
     <input type="password" id="passInput" placeholder="Passcode">
     <button onclick="tryLogin()">Enter</button>
     <p class="gate-err" id="gateErr">Wrong passcode — try again.</p>
@@ -72,20 +72,46 @@
 
 <div id="dash">
   <div class="topbar">
-    <span class="logo">ARGENTUM · Admin</span>
+    <span class="logo">fashion1sta · Admin</span>
     <a class="view-site" href="index.html" target="_blank">View site →</a>
   </div>
   <div class="tabs">
-    <div class="tab active" data-panel="slidesPanel">Slides</div>
+    <div class="tab active" data-panel="dashPanel">Dashboard</div>
+    <div class="tab" data-panel="slidesPanel">Slides</div>
     <div class="tab" data-panel="productsPanel">Products</div>
     <div class="tab" data-panel="ordersPanel">Orders</div>
   </div>
 
+  <!-- ---------- DASHBOARD ---------- -->
+  <div class="panel active" id="dashPanel">
+    <div class="card-form">
+      <h3>Overview</h3>
+      <div id="dashStats" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div style="background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:14px;">
+          <div style="font-size:22px;font-weight:700;color:var(--silver-bright);" id="statProducts">–</div>
+          <div style="font-size:11.5px;color:var(--text-dim);">Products</div>
+        </div>
+        <div style="background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:14px;">
+          <div style="font-size:22px;font-weight:700;color:var(--silver-bright);" id="statSlides">–</div>
+          <div style="font-size:11.5px;color:var(--text-dim);">Hero banners</div>
+        </div>
+        <div style="background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:14px;">
+          <div style="font-size:22px;font-weight:700;color:var(--silver-bright);" id="statFeatured">–</div>
+          <div style="font-size:11.5px;color:var(--text-dim);">In New In</div>
+        </div>
+        <div style="background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:14px;">
+          <div style="font-size:22px;font-weight:700;color:var(--silver-bright);" id="statSold">–</div>
+          <div style="font-size:11.5px;color:var(--text-dim);">Total units sold</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ---------- SLIDES ---------- -->
-  <div class="panel active" id="slidesPanel">
+  <div class="panel" id="slidesPanel">
     <div class="card-form">
       <h3>Add hero banner</h3>
-      <div class="field"><label>Title</label><input id="sTitle" placeholder="e.g. New fragrance drop"></div>
+      <div class="field"><label>Title</label><input id="sTitle" placeholder="e.g. Fresh weekly drops"></div>
       <div class="field"><label>Subtext</label><textarea id="sText" placeholder="One or two lines under the title"></textarea></div>
       <div class="row2">
         <div class="field"><label>Button label</label><input id="sCta" placeholder="Shop Now" value="Shop Now"></div>
@@ -106,19 +132,30 @@
       <div class="field"><label>Name</label><input id="pName" placeholder="e.g. Gothic Cross Rimless"></div>
       <div class="row2">
         <div class="field"><label>Price (BDT)</label><input id="pPrice" type="number"></div>
-        <div class="field"><label>Was price (optional)</label><input id="pWas" type="number"></div>
+        <div class="field"><label>Was price (optional — shows a discount badge)</label><input id="pWas" type="number"></div>
       </div>
       <div class="row2">
         <div class="field">
           <label>Category</label>
           <select id="pCategory">
-            <option>Glasses</option><option>Accessories</option><option>Fragrances</option>
-            <option>Clothes</option><option>Mens</option><option>Girls</option><option>Unisex</option>
+            <option>Glasses</option><option>Accessories</option>
           </select>
         </div>
-        <div class="field"><label>Subcategory</label><input id="pSub" placeholder="e.g. Rimless"></div>
+        <div class="field">
+          <label>Subcategory</label>
+          <input id="pSub" list="subOptions" placeholder="e.g. Rings">
+          <datalist id="subOptions">
+            <option value="Bandana"><option value="Belts"><option value="Bracelets">
+            <option value="Chain-Necklaces"><option value="Earrings"><option value="Fake Piercings">
+            <option value="Keychains"><option value="Ring Watch"><option value="Rings">
+            <option value="Sunglasses"><option value="Tattoo"><option value="Teeth-Grillz">
+            <option value="Wallet"><option value="Wallet Chains"><option value="Watches">
+            <option value="Rimless"><option value="Aviators"><option value="Round">
+          </datalist>
+        </div>
       </div>
-      <div class="field"><label><input type="checkbox" id="pFeatured" style="width:auto;margin-right:6px;">Show in New Arrivals</label></div>
+      <div class="field"><label>Sold count (shows "X sold" on the card — optional)</label><input id="pSold" type="number" placeholder="e.g. 240"></div>
+      <div class="field"><label><input type="checkbox" id="pFeatured" style="width:auto;margin-right:6px;">Show in "New In"</label></div>
       <div class="field"><label>Product image</label><input id="pImage" type="file" accept="image/*"></div>
       <button class="save-btn" id="pSaveBtn" onclick="addProduct()">Save product</button>
       <p class="status-msg" id="pStatus"></p>
@@ -155,6 +192,7 @@ function showDash(){
   document.getElementById('dash').style.display = 'block';
   loadSlidesList();
   loadProductsList();
+  loadDashboardStats();
 }
 if(sessionStorage.getItem('argentum_admin') === '1') showDash();
 
@@ -192,6 +230,7 @@ window.addSlide = async function(){
     ['sTitle','sText','sCta','sHref','sOrder'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('sImage').value='';
     loadSlidesList();
+    loadDashboardStats();
   }catch(e){
     console.error(e); status.textContent = 'Failed: ' + e.message;
   }
@@ -214,6 +253,7 @@ async function loadSlidesList(){
     el.querySelector('.del').addEventListener('click', async ()=>{
       await deleteDoc(doc(db,'slides',d.id));
       loadSlidesList();
+      loadDashboardStats();
     });
     list.appendChild(el);
   });
@@ -236,15 +276,17 @@ window.addProduct = async function(){
       was: Number(document.getElementById('pWas').value) || null,
       category: document.getElementById('pCategory').value,
       subcategory: document.getElementById('pSub').value.trim(),
+      sold: Number(document.getElementById('pSold').value) || 0,
       featured: document.getElementById('pFeatured').checked,
       imageUrl,
       createdAt: serverTimestamp()
     });
     status.textContent = 'Saved.';
-    ['pName','pPrice','pWas','pSub'].forEach(id=>document.getElementById(id).value='');
+    ['pName','pPrice','pWas','pSub','pSold'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('pFeatured').checked = false;
     document.getElementById('pImage').value='';
     loadProductsList();
+    loadDashboardStats();
   }catch(e){
     console.error(e); status.textContent = 'Failed: ' + e.message;
   }
@@ -267,9 +309,27 @@ async function loadProductsList(){
     el.querySelector('.del').addEventListener('click', async ()=>{
       await deleteDoc(doc(db,'products',d.id));
       loadProductsList();
+      loadDashboardStats();
     });
     list.appendChild(el);
   });
+}
+
+// ---------- Dashboard ----------
+async function loadDashboardStats(){
+  try{
+    const [productsSnap, slidesSnap] = await Promise.all([
+      getDocs(collection(db,'products')),
+      getDocs(collection(db,'slides'))
+    ]);
+    const products = productsSnap.docs.map(d=>d.data());
+    document.getElementById('statProducts').textContent = products.length;
+    document.getElementById('statSlides').textContent = slidesSnap.size;
+    document.getElementById('statFeatured').textContent = products.filter(p=>p.featured).length;
+    document.getElementById('statSold').textContent = products.reduce((sum,p)=>sum+(p.sold||0),0);
+  }catch(e){
+    console.error('Dashboard stats failed:', e);
+  }
 }
 </script>
 </body>
