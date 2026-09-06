@@ -150,8 +150,10 @@ const seedAll = [
 
 async function loadAllProducts(){
   try{
-    const snap = await getDocs(collection(db,'products'));
-    if(snap.empty) return seedAll;
+    const fetchPromise = getDocs(collection(db,'products'));
+    const timeout = new Promise(resolve => setTimeout(()=>resolve(null), 6000));
+    const snap = await Promise.race([fetchPromise, timeout]);
+    if(!snap || snap.empty) return seedAll;
     return snap.docs.map(d=>({id:d.id, ...d.data()}));
   }catch(e){
     console.error('Products load failed, using seed data:', e);
@@ -245,7 +247,11 @@ async function init(){
   updateCartBadge();
   renderCartDrawer();
 }
-init();
+init().catch(e=>{
+  console.error('Product page failed to load:', e);
+  document.getElementById('productRoot').innerHTML =
+    `<p class="not-found">Something went wrong loading this product. <a href="shop.html" style="color:var(--silver-bright);">Back to shop →</a></p>`;
+});
 </script>
 </body>
 </html>
