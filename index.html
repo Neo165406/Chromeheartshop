@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>fashion1sta — Neon Silver Accessories | Dhaka</title>
-<meta name="description" content="fashion1sta — Dhaka's neon silver streetwear house. Eyewear and accessories. Cash on delivery across Bangladesh.">
+<title>Shop — fashion1sta</title>
 <meta name="theme-color" content="#0a0b0d">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,7 +23,6 @@
   img,svg{display:block;max-width:100%;}
   button{font-family:inherit;}
 
-  /* ---------- ANNOUNCE / NAV ---------- */
   .announce{background:var(--bg-alt);text-align:center;padding:8px 12px;font-size:11.5px;letter-spacing:0.06em;color:var(--silver);border-bottom:1px solid var(--line);}
   .announce b{color:var(--silver-bright);}
   header{position:sticky;top:0;z-index:40;display:flex;align-items:center;justify-content:space-between;padding:16px 22px;background:rgba(10,11,13,0.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
@@ -51,7 +49,6 @@
   .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--silver-bright);color:var(--bg);padding:10px 20px;border-radius:20px;font-size:12.5px;font-weight:600;opacity:0;pointer-events:none;transition:opacity 0.3s ease, transform 0.3s ease;z-index:60;white-space:nowrap;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
-  /* ---------- MENU DRAWER ---------- */
   .scrim{position:fixed;inset:0;background:rgba(0,0,0,0.6);opacity:0;pointer-events:none;transition:opacity 0.35s ease;z-index:45;}
   .scrim.open{opacity:1;pointer-events:auto;}
   nav.drawer{position:fixed;inset:0 0 0 auto;width:min(88vw,380px);height:100vh;background:var(--bg-alt);border-left:1px solid var(--line);transform:translateX(100%);transition:transform 0.35s ease;z-index:50;overflow-y:auto;padding:26px 22px 40px;}
@@ -59,17 +56,14 @@
   .drawer-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;}
   .drawer-top h2{font-family:'Fraunces',serif;font-size:15px;letter-spacing:0.22em;color:var(--silver);}
   .drawer-close{width:30px;height:30px;border:1px solid var(--line);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--silver);cursor:pointer;font-size:15px;}
-
   .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;}
   .tile{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 6px;display:flex;flex-direction:column;align-items:center;gap:8px;}
   .tile svg{width:20px;height:20px;}
   .tile span{font-size:11.5px;font-weight:600;}
-
   .search-bar{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:11px 16px;margin-bottom:26px;}
   .search-bar svg{width:16px;height:16px;flex-shrink:0;opacity:0.7;}
   .search-bar input{background:none;border:none;outline:none;color:var(--text);font-size:13.5px;width:100%;}
   .search-bar input::placeholder{color:var(--text-dim);}
-
   .cat-label{font-size:11px;letter-spacing:0.14em;color:var(--text-dim);text-transform:uppercase;margin-bottom:12px;}
   .cat-tree{display:flex;flex-direction:column;}
   .cat-row{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--line);cursor:pointer;}
@@ -82,34 +76,19 @@
   .subs a{display:block;padding:10px 0 10px 14px;font-size:13.5px;color:var(--text-dim);border-bottom:1px solid var(--line);}
   .subs a:last-child{border-bottom:none;}
 
-  /* ---------- HERO SLIDER ---------- */
-  .hero-slider{position:relative;overflow:hidden;}
-  .slides{display:flex;transition:transform 0.5s ease;}
-  .slide{flex:0 0 100%;position:relative;padding:64px 26px 56px;text-align:center;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-  .slide .sglow{position:absolute;left:50%;top:40%;width:260px;height:260px;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(242,244,247,0.16) 0%,rgba(184,188,196,0.06) 45%,transparent 72%);filter:blur(6px);z-index:0;}
-  .slide-icon{position:relative;z-index:1;width:56px;height:56px;margin-bottom:18px;}
-  .slide h1{position:relative;z-index:1;font-size:clamp(24px,6.2vw,36px);font-weight:500;letter-spacing:0.01em;margin-bottom:12px;}
-  .slide p{position:relative;z-index:1;max-width:34ch;margin:0 auto 24px;color:var(--text-dim);font-size:14px;}
-  .btn{position:relative;z-index:1;display:inline-flex;align-items:center;gap:8px;padding:13px 28px;border:1px solid var(--silver);color:var(--bg);background:linear-gradient(120deg,var(--silver),var(--silver-bright));font-size:13.5px;font-weight:600;letter-spacing:0.03em;border-radius:var(--radius);transition:transform 0.2s ease, box-shadow 0.2s ease;}
-  .btn:active{transform:scale(0.97);}
-  .btn:hover{box-shadow:0 0 22px rgba(242,244,247,0.3);}
-  .dots{display:flex;justify-content:center;gap:7px;padding:14px 0 22px;}
-  .dot{width:6px;height:6px;border-radius:50%;background:var(--line);cursor:pointer;transition:background 0.2s ease, width 0.2s ease;}
-  .dot.active{background:var(--silver-bright);width:18px;border-radius:3px;}
+  /* ---------- PAGE HEAD ---------- */
+  .page-head{padding:32px 22px 18px;text-align:center;}
+  .page-head h1{font-family:'Fraunces',serif;font-weight:500;font-size:clamp(24px,6vw,32px);margin-bottom:6px;}
+  .page-head p{font-size:13px;color:var(--text-dim);}
 
-  /* ---------- CATEGORY STRIP ---------- */
-  .cats{display:flex;gap:10px;overflow-x:auto;padding:0 22px 32px;scrollbar-width:none;}
+  .cats{display:flex;gap:10px;overflow-x:auto;padding:0 22px 28px;scrollbar-width:none;}
   .cats::-webkit-scrollbar{display:none;}
-  .cat{flex:0 0 auto;padding:9px 16px;font-size:12.5px;border:1px solid var(--line);border-radius:20px;color:var(--text-dim);white-space:nowrap;}
+  .cat{flex:0 0 auto;padding:9px 16px;font-size:12.5px;border:1px solid var(--line);border-radius:20px;color:var(--text-dim);white-space:nowrap;background:none;cursor:pointer;}
   .cat.active{color:var(--bg);background:var(--silver-bright);border-color:var(--silver-bright);font-weight:600;}
-  .cat.soon{opacity:0.45;}
-  .cat .tag{font-size:9.5px;margin-left:4px;}
 
-  /* ---------- SECTIONS ---------- */
   section.collection{padding:6px 22px 48px;}
   .section-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:20px;border-bottom:1px solid var(--line);padding-bottom:13px;}
-  .section-head h2{font-family:'Fraunces',serif;font-weight:500;font-size:21px;}
-  .section-head a.viewall{font-size:11.5px;color:var(--silver-bright);}
+  .section-head h2{font-family:'Fraunces',serif;font-weight:500;font-size:19px;}
   .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:13px;}
   @media(min-width:640px){.grid{grid-template-columns:repeat(4,1fr);}}
   .card{background:transparent;border:none;border-radius:var(--radius);padding:6px 4px 10px;transition:transform 0.2s ease, filter 0.2s ease;}
@@ -129,28 +108,16 @@
   .buy-now-btn{background:var(--silver-bright);color:var(--bg);border-color:var(--silver-bright);}
   .order:hover{background:var(--silver-bright);color:var(--bg);}
 
-  .notice{margin:0 22px 48px;padding:16px 18px;border:1px dashed var(--line);border-radius:var(--radius);font-size:12.5px;color:var(--text-dim);text-align:center;}
-  .notice b{color:var(--silver-bright);}
+  .empty-state{padding:60px 22px;text-align:center;color:var(--text-dim);font-size:13px;}
 
-  /* ---------- SCROLL REVEAL ---------- */
   .reveal{opacity:0;transition:opacity 0.7s ease, transform 0.7s cubic-bezier(0.2,0.7,0.2,1);}
   .reveal.from-left{transform:translateX(-46px);}
   .reveal.from-right{transform:translateX(46px);}
   .reveal.in-view{opacity:1;transform:translateX(0);}
-  @media (prefers-reduced-motion: reduce){
-    .reveal{opacity:1;transform:none;transition:none;}
-  }
+  @media (prefers-reduced-motion: reduce){ .reveal{opacity:1;transform:none;transition:none;} }
 
   footer{padding:40px 24px 44px;border-top:1px solid var(--line);text-align:center;}
   footer .flogo{font-family:'Fraunces',serif;font-size:18px;letter-spacing:0.14em;color:var(--silver);margin-bottom:12px;}
-  footer .tagline{font-size:12.5px;color:var(--text-dim);max-width:32ch;margin:0 auto 20px;}
-  .socials{display:flex;justify-content:center;gap:16px;margin-bottom:26px;}
-  .socials a{width:30px;height:30px;border:1px solid var(--line);border-radius:50%;display:flex;align-items:center;justify-content:center;}
-  .socials svg{width:14px;height:14px;}
-  .flinks{display:flex;flex-direction:column;gap:14px;margin-bottom:26px;}
-  .flinks a{font-size:13px;color:var(--text-dim);}
-  .fcontact p{font-size:12px;color:var(--text-dim);margin-bottom:4px;}
-  .fcontact a{color:var(--silver-bright);}
   .copyright{margin-top:20px;font-size:10.5px;letter-spacing:0.08em;color:var(--silver-deep);}
 </style>
 </head>
@@ -159,8 +126,8 @@
 <div class="announce">WELCOME TO fashion1sta · <b>5000+ HAPPY CUSTOMERS</b> · 10% OFF CODE "SILVER10"</div>
 
 <header>
-  <svg class="navicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
-  <span class="logo">fashion1sta</span>
+  <a href="index.html"><svg class="navicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 6l-6 6 6 6"/></svg></a>
+  <a href="index.html" class="logo">fashion1sta</a>
   <div style="display:flex;align-items:center;gap:10px;">
     <button class="cart-btn" onclick="toggleCart(true)" aria-label="Cart">
       <svg class="navicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="21" r="1.3"/><circle cx="18" cy="21" r="1.3"/><path d="M2 3h3l2.6 12.4a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L22 7H6"/></svg>
@@ -171,87 +138,56 @@
 </header>
 
 <div class="scrim" id="scrim" onclick="toggleNav(false);toggleCart(false);"></div>
-<nav class="drawer" id="drawer">
-  <div class="drawer-top">
-    <h2>MENU</h2>
-    <div class="drawer-close" onclick="toggleNav(false)">✕</div>
-  </div>
 
+<nav class="drawer" id="drawer">
+  <div class="drawer-top"><h2>MENU</h2><div class="drawer-close" onclick="toggleNav(false)">✕</div></div>
   <div class="tiles">
     <a class="tile" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="var(--silver)" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span>Login</span></a>
     <a class="tile" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="var(--silver)" stroke-width="1.6"><path d="M12 20s-8-5-8-11a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 6-8 11-8 11z"/></svg><span>Saved</span></a>
     <a class="tile" href="#" onclick="toggleCart(true);return false;"><svg viewBox="0 0 24 24" fill="none" stroke="var(--silver)" stroke-width="1.6"><circle cx="9" cy="21" r="1.3"/><circle cx="18" cy="21" r="1.3"/><path d="M2 3h3l2.6 12.4a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L22 7H6"/></svg><span>Cart</span></a>
   </div>
-
   <div class="search-bar">
     <svg viewBox="0 0 24 24" fill="none" stroke="var(--silver)" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
     <input type="text" placeholder="Search products">
   </div>
-
   <div class="cat-label">Categories</div>
   <div class="cat-tree" id="catTree"></div>
 </nav>
 
 <nav class="drawer" id="cartDrawer">
-  <div class="drawer-top">
-    <h2>YOUR CART</h2>
-    <div class="drawer-close" onclick="toggleCart(false)">✕</div>
-  </div>
+  <div class="drawer-top"><h2>YOUR CART</h2><div class="drawer-close" onclick="toggleCart(false)">✕</div></div>
   <div id="cartItems"></div>
   <div class="cart-footer">
     <div class="cart-total-row"><span>Total</span><span id="cartTotal">BDT 0</span></div>
-    <button class="btn" id="cartCheckoutBtn" style="width:100%;justify-content:center;" onclick="checkoutCart()">Checkout via WhatsApp</button>
+    <button class="btn" id="cartCheckoutBtn" style="width:100%;justify-content:center;display:flex;align-items:center;gap:8px;padding:13px 28px;border:1px solid var(--silver);color:var(--bg);background:linear-gradient(120deg,var(--silver),var(--silver-bright));font-size:13.5px;font-weight:600;border-radius:var(--radius);" onclick="checkoutCart()">Checkout via WhatsApp</button>
   </div>
 </nav>
 
-
-<div class="hero-slider">
-  <div class="slides" id="slides"></div>
-  <div class="dots" id="dots"></div>
+<div class="page-head">
+  <h1 class="display" id="pageTitle">Shop All</h1>
+  <p id="pageSub">Every fashion1sta piece in one place</p>
 </div>
 
-<div class="cats">
-  <a class="cat active" href="shop.html?category=New">New In</a>
-  <a class="cat active" href="shop.html?category=Glasses">Glasses</a>
-  <a class="cat" href="shop.html?category=Accessories">Accessories</a>
-</div>
+<div class="cats" id="catFilters"></div>
 
 <section class="collection">
-  <div class="section-head"><h2 class="display reveal from-left">New Arrivals</h2><a class="viewall" href="shop.html">View all →</a></div>
-  <div class="grid" id="arrivalsGrid"></div>
+  <div class="grid" id="shopGrid"></div>
+  <p class="empty-state" id="emptyState" style="display:none;">No products in this category yet — check back soon.</p>
 </section>
 
-<section class="collection" id="glasses">
-  <div class="section-head"><h2 class="display reveal from-right">Glasses</h2><a class="viewall" href="shop.html?category=Glasses">View all →</a></div>
-  <div class="grid" id="glassesGrid"></div>
+<section class="collection">
+  <div class="section-head"><h2 class="display reveal from-left">You Might Also Like</h2></div>
+  <div class="grid" id="similarGrid"></div>
 </section>
-
-<div class="notice">
-  This demo shows the <b>menu</b> and <b>multi-banner hero</b> structure. In the full Firebase build, hero slides come from a <b>Slides</b> collection and products/categories from a <b>Products</b> collection — both editable from the admin dashboard, same pattern as Velmora.
-</div>
 
 <footer>
   <div class="flogo">fashion1sta</div>
-  <p class="tagline">Gothic-luxury accessories and eyewear for the after-dark wardrobe. Follow us on Instagram.</p>
-  <div class="socials">
-    <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="var(--silver)" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.8" fill="var(--silver)"/></svg></a>
-    <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="var(--silver)" stroke-width="1.6"><path d="M14 9h3V6h-3c-2 0-3 1-3 3v2H8v3h3v6h3v-6h3l1-3h-4V9c0-.6.4-1 1-1z"/></svg></a>
-    <a href="#" aria-label="TikTok"><svg viewBox="0 0 24 24" fill="none" stroke="var(--silver)" stroke-width="1.6"><path d="M15 4v10.5a3.5 3.5 0 1 1-3.5-3.5"/><path d="M15 4c0 2.5 2 4.5 4.5 4.5"/></svg></a>
-  </div>
-  <div class="flinks">
-    <a href="#">Shop All</a><a href="#">Shipping</a><a href="#">Return &amp; Exchange Policy</a>
-    <a href="#">Contact</a><a href="#">Terms &amp; Conditions</a><a href="#">Privacy Policy</a><a href="#">Track Order</a>
-  </div>
-  <div class="fcontact">
-    <p>Email: <a href="mailto:hello@fashion1stabd.com">hello@fashion1stabd.com</a></p>
-    <p>Phone: <a href="https://wa.me/8801XXXXXXXXX">+880 1XX-XXXXXXX</a></p>
-  </div>
   <div class="copyright">© 2026 fashion1sta. ALL RIGHTS RESERVED.</div>
 </footer>
 
 <script type="module">
 import { db, collection, getDocs } from './js/firebase-config.js';
-import { addToCart, renderCartDrawer, updateCartBadge, checkoutWhatsApp, showToast, wireAddToCart } from './js/cart.js';
+import { renderCartDrawer, updateCartBadge, checkoutWhatsApp, wireAddToCart } from './js/cart.js';
 
 window.toggleNav = function(open){
   document.getElementById('drawer').classList.toggle('open',open);
@@ -265,172 +201,139 @@ window.toggleCart = function(open){
 };
 window.checkoutCart = checkoutWhatsApp;
 
-/* ---------- Category tree (will map to admin-managed Categories later) ---------- */
 const categoryTree = [
   {name:"New In", subs:[]},
   {name:"Glasses", subs:["Rimless","Aviators","Round"]},
   {name:"Accessories", subs:["Bandana","Belts","Bracelets","Chain-Necklaces","Earrings","Fake Piercings","Keychains","Ring Watch","Rings","Sunglasses","Tattoo","Teeth-Grillz","Wallet","Wallet Chains","Watches"]}
 ];
 const catTree = document.getElementById('catTree');
-categoryTree.forEach((cat,i)=>{
+categoryTree.forEach(cat=>{
   const row = document.createElement('div');
   row.className = 'cat-row';
-  row.style.cursor = 'pointer';
   row.innerHTML = `<span class="name">${cat.name}</span>${cat.subs.length ? '<span class="chev"></span>' : ''}`;
   catTree.appendChild(row);
   const subs = document.createElement('div');
   subs.className = 'subs';
   subs.innerHTML = cat.subs.map(s=>`<a href="shop.html?category=${encodeURIComponent(cat.name)}">${s}</a>`).join('');
   catTree.appendChild(subs);
-  if(cat.subs.length){
-    row.addEventListener('click',()=>row.classList.toggle('open'));
-  } else {
-    row.addEventListener('click',()=>{ window.location.href = `shop.html?category=${encodeURIComponent(cat.name)}`; });
-  }
+  row.addEventListener('click', ()=>window.location.href = `shop.html?category=${encodeURIComponent(cat.name)}`);
 });
 
-/* ---------- Hero slider — loads from Firestore "slides" collection, falls back to seed data ---------- */
-const heroSlidesSeed = [
-  {title:"Neon silver, made for the dark", text:"Dhaka's gothic-luxury streetwear house — eyewear and accessories.", cta:"Shop Glasses", href:"#glasses", icon:"cross"},
-  {title:"Fresh weekly drops", text:"New accessories added every week — cash on delivery nationwide.", cta:"Shop Accessories", href:"shop.html?category=Accessories", icon:"chain"},
-  {title:"Cash on delivery, everywhere", text:"Order from anywhere in Bangladesh, pay when it arrives at your door.", cta:"Explore All", href:"#glasses", icon:"chain"}
-];
-async function loadSlides(){
-  try{
-    const snap = await getDocs(collection(db,'slides'));
-    if(snap.empty) return heroSlidesSeed;
-    return snap.docs.map(d=>d.data()).sort((a,b)=>(a.order||0)-(b.order||0));
-  }catch(e){
-    console.error('Slides load failed, using seed data:', e);
-    return heroSlidesSeed;
-  }
-}
-function slideIcon(type){
-  const grad = `<defs><linearGradient id="sg" x1="0" y1="0" x2="60" y2="60"><stop offset="0%" stop-color="#6b6f76"/><stop offset="50%" stop-color="#f2f4f7"/><stop offset="100%" stop-color="#b8bcc4"/></linearGradient></defs>`;
-  if(type==="cross") return `<svg viewBox="0 0 60 60" fill="none">${grad}<path d="M30 4 L30 56 M10 22 L50 22" stroke="url(#sg)" stroke-width="4" stroke-linecap="round"/></svg>`;
-  if(type==="bottle") return `<svg viewBox="0 0 60 80" fill="none">${grad}<rect x="14" y="24" width="32" height="48" rx="3" stroke="url(#sg)" stroke-width="2.5"/><rect x="22" y="8" width="16" height="16" rx="2" stroke="url(#sg)" stroke-width="2.5"/></svg>`;
-  return `<svg viewBox="0 0 90 50" fill="none">${grad}<ellipse cx="22" cy="25" rx="14" ry="9" stroke="url(#sg)" stroke-width="2.5"/><ellipse cx="46" cy="25" rx="14" ry="9" stroke="url(#sg)" stroke-width="2.5"/><ellipse cx="70" cy="25" rx="14" ry="9" stroke="url(#sg)" stroke-width="2.5"/></svg>`;
-}
-const slidesEl = document.getElementById('slides');
-const dotsEl = document.getElementById('dots');
-let heroSlides = [];
-let current = 0;
-function goTo(i){
-  current = i;
-  slidesEl.style.transform = `translateX(-${i*100}%)`;
-  document.querySelectorAll('.dot').forEach((d,j)=>d.classList.toggle('active', j===i));
-}
-async function initHero(){
-  heroSlides = await loadSlides();
-  heroSlides.forEach((s,i)=>{
-    const bg = s.imageUrl ? `style="background-image:url('${s.imageUrl}');background-size:cover;background-position:center;"` : '';
-    slidesEl.innerHTML += `
-      <div class="slide" ${bg}>
-        <div class="sglow"></div>
-        <div class="slide-icon">${s.imageUrl ? '' : slideIcon(s.icon||'cross')}</div>
-        <h1 class="display">${s.title}</h1>
-        <p>${s.text}</p>
-        <a href="${s.href||'#'}" class="btn">${s.cta||'Shop Now'}</a>
-      </div>`;
-    dotsEl.innerHTML += `<span class="dot${i===0?' active':''}" data-i="${i}"></span>`;
-  });
-  document.querySelectorAll('.dot').forEach(d=>d.addEventListener('click',()=>goTo(+d.dataset.i)));
-  if(heroSlides.length>1) setInterval(()=>goTo((current+1)%heroSlides.length), 5000);
-}
-
-/* ---------- Product grids ---------- */
-function glassesSVG(){return `<svg viewBox="0 0 100 46" fill="none"><circle cx="26" cy="23" r="19" stroke="url(#cardg)" stroke-width="2.5"/><circle cx="74" cy="23" r="19" stroke="url(#cardg)" stroke-width="2.5"/><line x1="45" y1="23" x2="55" y2="23" stroke="url(#cardg)" stroke-width="2.5"/><line x1="7" y1="16" x2="0" y2="11" stroke="url(#cardg)" stroke-width="2.5" stroke-linecap="round"/><line x1="93" y1="16" x2="100" y2="11" stroke="url(#cardg)" stroke-width="2.5" stroke-linecap="round"/><defs><linearGradient id="cardg" x1="0" y1="0" x2="100" y2="46"><stop offset="0%" stop-color="#6b6f76"/><stop offset="55%" stop-color="#f2f4f7"/><stop offset="100%" stop-color="#b8bcc4"/></linearGradient></defs></svg>`;}
-function crossSVG(){return `<svg viewBox="0 0 60 60" fill="none"><path d="M30 6 L30 54 M12 24 L48 24" stroke="url(#cardg3)" stroke-width="4" stroke-linecap="round"/><defs><linearGradient id="cardg3" x1="0" y1="0" x2="60" y2="60"><stop offset="0%" stop-color="#6b6f76"/><stop offset="55%" stop-color="#f2f4f7"/><stop offset="100%" stop-color="#b8bcc4"/></linearGradient></defs></svg>`;}
-function chainSVG(){return `<svg viewBox="0 0 90 50" fill="none"><ellipse cx="22" cy="25" rx="14" ry="9" stroke="url(#cardg4)" stroke-width="2.2"/><ellipse cx="46" cy="25" rx="14" ry="9" stroke="url(#cardg4)" stroke-width="2.2"/><ellipse cx="70" cy="25" rx="14" ry="9" stroke="url(#cardg4)" stroke-width="2.2"/><defs><linearGradient id="cardg4" x1="0" y1="0" x2="90" y2="50"><stop offset="0%" stop-color="#6b6f76"/><stop offset="55%" stop-color="#f2f4f7"/><stop offset="100%" stop-color="#b8bcc4"/></linearGradient></defs></svg>`;}
-
-const seedProducts = {
-  arrivals: [
-    {name:"Tennis Chain Bracelet", price:599, was:800, iconType:"chain", sold:1240},
-    {name:"Vampire Fang Grillz", price:799, was:1200, iconType:"cross", sold:860},
-    {name:"Dragon Flame Belt", price:990, was:1500, iconType:"chain", sold:430},
-    {name:"Gothic Cross Pendant", price:650, was:900, iconType:"cross", sold:990}
-  ],
-  Glasses: [
-    {name:"Gothic Cross Rimless", price:990, was:1300, iconType:"glasses", sold:2100},
-    {name:"Vintage Sun Frame", price:850, was:1100, iconType:"glasses", sold:1560},
-    {name:"Neon Aviator Link", price:750, was:1000, iconType:"glasses", sold:980},
-    {name:"Iced Bridge Round", price:1099, was:1500, iconType:"glasses", sold:640}
-  ]
-};
+function glassesSVG(){return `<svg viewBox="0 0 100 46" fill="none"><circle cx="26" cy="23" r="19" stroke="url(#sg1)" stroke-width="2.5"/><circle cx="74" cy="23" r="19" stroke="url(#sg1)" stroke-width="2.5"/><line x1="45" y1="23" x2="55" y2="23" stroke="url(#sg1)" stroke-width="2.5"/><line x1="7" y1="16" x2="0" y2="11" stroke="url(#sg1)" stroke-width="2.5" stroke-linecap="round"/><line x1="93" y1="16" x2="100" y2="11" stroke="url(#sg1)" stroke-width="2.5" stroke-linecap="round"/><defs><linearGradient id="sg1" x1="0" y1="0" x2="100" y2="46"><stop offset="0%" stop-color="#6b6f76"/><stop offset="55%" stop-color="#f2f4f7"/><stop offset="100%" stop-color="#b8bcc4"/></linearGradient></defs></svg>`;}
+function crossSVG(){return `<svg viewBox="0 0 60 60" fill="none"><path d="M30 6 L30 54 M12 24 L48 24" stroke="url(#sg3)" stroke-width="4" stroke-linecap="round"/><defs><linearGradient id="sg3" x1="0" y1="0" x2="60" y2="60"><stop offset="0%" stop-color="#6b6f76"/><stop offset="55%" stop-color="#f2f4f7"/><stop offset="100%" stop-color="#b8bcc4"/></linearGradient></defs></svg>`;}
+function chainSVG(){return `<svg viewBox="0 0 90 50" fill="none"><ellipse cx="22" cy="25" rx="14" ry="9" stroke="url(#sg4)" stroke-width="2.2"/><ellipse cx="46" cy="25" rx="14" ry="9" stroke="url(#sg4)" stroke-width="2.2"/><ellipse cx="70" cy="25" rx="14" ry="9" stroke="url(#sg4)" stroke-width="2.2"/><defs><linearGradient id="sg4" x1="0" y1="0" x2="90" y2="50"><stop offset="0%" stop-color="#6b6f76"/><stop offset="55%" stop-color="#f2f4f7"/><stop offset="100%" stop-color="#b8bcc4"/></linearGradient></defs></svg>`;}
 function iconFor(type){
   if(type==="glasses") return glassesSVG();
   if(type==="chain") return chainSVG();
   return crossSVG();
 }
-async function loadProducts(){
+
+const seedAll = [
+  {id:"tennis-chain-bracelet", name:"Tennis Chain Bracelet", price:599, was:800, category:"Accessories", iconType:"chain", sold:1240},
+  {id:"vampire-fang-grillz", name:"Vampire Fang Grillz", price:799, was:1200, category:"Accessories", iconType:"cross", sold:860},
+  {id:"dragon-flame-belt", name:"Dragon Flame Belt", price:990, was:1500, category:"Accessories", iconType:"chain", sold:430},
+  {id:"gothic-cross-pendant", name:"Gothic Cross Pendant", price:650, was:900, category:"Accessories", iconType:"cross", sold:990},
+  {id:"gothic-cross-rimless", name:"Gothic Cross Rimless", price:990, was:1300, category:"Glasses", iconType:"glasses", sold:2100},
+  {id:"vintage-sun-frame", name:"Vintage Sun Frame", price:850, was:1100, category:"Glasses", iconType:"glasses", sold:1560},
+  {id:"neon-aviator-link", name:"Neon Aviator Link", price:750, was:1000, category:"Glasses", iconType:"glasses", sold:980},
+  {id:"iced-bridge-round", name:"Iced Bridge Round", price:1099, was:1500, category:"Glasses", iconType:"glasses", sold:640}
+];
+
+async function loadAllProducts(){
   try{
     const snap = await getDocs(collection(db,'products'));
-    if(snap.empty) return null; // signal caller to use seed data
+    if(snap.empty) return seedAll;
     return snap.docs.map(d=>({id:d.id, ...d.data()}));
   }catch(e){
     console.error('Products load failed, using seed data:', e);
-    return null;
+    return seedAll;
   }
 }
-function renderCards(id, items){
-  const grid = document.getElementById(id);
-  items.forEach((p,i)=>{
-    const pid = p.id || p.name.toLowerCase().replace(/[^a-z0-9]+/g,'-');
-    const media = p.imageUrl
-      ? `<img src="${p.imageUrl}" alt="${p.name}" style="width:100%;height:100%;object-fit:contain;">`
-      : iconFor(p.iconType);
-    const dir = i % 2 === 0 ? 'from-left' : 'from-right';
-    const delay = (i % 4) * 0.08;
-    const discount = p.was ? Math.round((1 - p.price/p.was) * 100) : 0;
-    const soldText = p.sold ? `${p.sold >= 1000 ? (p.sold/1000).toFixed(1).replace('.0','')+'k' : p.sold} sold` : '';
-    grid.innerHTML += `
-      <div class="card reveal ${dir}" style="transition-delay:${delay}s">
-        <a href="product.html?id=${encodeURIComponent(pid)}" class="card-link">
-          <div class="frame">
-            ${discount>0 ? `<span class="discount-badge">-${discount}%</span>` : ''}
-            ${media}
-          </div>
-          <h3>${p.name}</h3>
-        </a>
-        <div class="price"><span class="now">BDT ${p.price}</span>${p.was?`<span class="was">BDT ${p.was}</span>`:''}</div>
-        ${soldText ? `<p class="sold-text">${soldText}</p>` : ''}
-        <div class="card-actions">
-          <button class="order add-cart-btn" data-id="${pid}" data-name="${p.name}" data-price="${p.price}" data-image="${p.imageUrl||''}">Add to Cart</button>
-          <button class="order buy-now-btn" data-name="${p.name}" data-price="${p.price}">Buy Now</button>
+
+function cardHTML(p, i){
+  const media = p.imageUrl
+    ? `<img src="${p.imageUrl}" alt="${p.name}" style="width:100%;height:100%;object-fit:contain;">`
+    : iconFor(p.iconType);
+  const dir = i % 2 === 0 ? 'from-left' : 'from-right';
+  const delay = (i % 4) * 0.08;
+  const discount = p.was ? Math.round((1 - p.price/p.was) * 100) : 0;
+  const soldText = p.sold ? `${p.sold >= 1000 ? (p.sold/1000).toFixed(1).replace('.0','')+'k' : p.sold} sold` : '';
+  return `
+    <div class="card reveal ${dir}" style="transition-delay:${delay}s">
+      <a href="product.html?id=${encodeURIComponent(p.id)}" class="card-link">
+        <div class="frame">
+          ${discount>0 ? `<span class="discount-badge">-${discount}%</span>` : ''}
+          ${media}
         </div>
-      </div>`;
-  });
+        <h3>${p.name}</h3>
+      </a>
+      <div class="price"><span class="now">BDT ${p.price}</span>${p.was?`<span class="was">BDT ${p.was}</span>`:''}</div>
+      ${soldText ? `<p class="sold-text">${soldText}</p>` : ''}
+      <div class="card-actions">
+        <button class="order add-cart-btn" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-image="${p.imageUrl||''}">Add to Cart</button>
+        <button class="order buy-now-btn" data-name="${p.name}" data-price="${p.price}">Buy Now</button>
+      </div>
+    </div>`;
 }
-async function initProducts(){
-  const all = await loadProducts();
-  if(all === null){
-    renderCards('arrivalsGrid', seedProducts.arrivals);
-    renderCards('glassesGrid', seedProducts.Glasses);
-    return;
-  }
-  const featured = all.filter(p=>p.featured).slice(0,4);
-  renderCards('arrivalsGrid', featured.length ? featured : seedProducts.arrivals);
-  renderCards('glassesGrid', all.filter(p=>p.category==="Glasses").slice(0,4));
-}
-/* ---------- Scroll reveal — watches .reveal elements, slides them into place ---------- */
+
 function initScrollReveal(){
   const observer = new IntersectionObserver((entries)=>{
     entries.forEach(entry=>{
-      if(entry.isIntersecting){
-        entry.target.classList.add('in-view');
-        observer.unobserve(entry.target);
-      }
+      if(entry.isIntersecting){ entry.target.classList.add('in-view'); observer.unobserve(entry.target); }
     });
   }, {threshold:0.15, rootMargin:'0px 0px -40px 0px'});
   document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
 }
-Promise.all([initHero(), initProducts()]).then(()=>{
-  initScrollReveal();
-  ['arrivalsGrid','glassesGrid'].forEach(wireAddToCart);
-});
-updateCartBadge();
-renderCartDrawer();
-</script>
 
+async function init(){
+  const params = new URLSearchParams(window.location.search);
+  const activeCategory = params.get('category');
+  const categories = ["New In","Glasses","Accessories"];
+
+  const filterBar = document.getElementById('catFilters');
+  filterBar.innerHTML = `<button class="cat ${!activeCategory?'active':''}" data-cat="">All</button>` +
+    categories.map(c=>`<button class="cat ${activeCategory===c?'active':''}" data-cat="${c}">${c}</button>`).join('');
+  filterBar.querySelectorAll('.cat').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const c = btn.dataset.cat;
+      window.location.href = c ? `shop.html?category=${encodeURIComponent(c)}` : 'shop.html';
+    });
+  });
+
+  document.getElementById('pageTitle').textContent = activeCategory || 'Shop All';
+  document.getElementById('pageSub').textContent = activeCategory
+    ? `Everything in ${activeCategory}`
+    : 'Every fashion1sta piece in one place';
+
+  const all = await loadAllProducts();
+  let filtered;
+  if(activeCategory === 'New In'){
+    filtered = all.filter(p=>p.featured).length ? all.filter(p=>p.featured) : all.slice(0,8);
+  } else if(activeCategory){
+    filtered = all.filter(p=>p.category===activeCategory);
+  } else {
+    filtered = all;
+  }
+
+  const grid = document.getElementById('shopGrid');
+  const empty = document.getElementById('emptyState');
+  if(filtered.length === 0){
+    empty.style.display = 'block';
+  } else {
+    grid.innerHTML = filtered.map((p,i)=>cardHTML(p,i)).join('');
+  }
+
+  // "You might also like" — a handful of products outside the current filter
+  const pool = activeCategory ? all.filter(p=>p.category!==activeCategory) : all;
+  const similar = pool.sort(()=>Math.random()-0.5).slice(0,4);
+  document.getElementById('similarGrid').innerHTML = similar.map((p,i)=>cardHTML(p,i)).join('');
+
+  ['shopGrid','similarGrid'].forEach(wireAddToCart);
+  initScrollReveal();
+  updateCartBadge();
+  renderCartDrawer();
+}
+init();
+</script>
 </body>
 </html>
