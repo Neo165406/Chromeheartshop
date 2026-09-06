@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>fashion1sta — Neon Silver Accessories | Dhaka</title>
-<meta name="description" content="fashion1sta — Dhaka's neon silver streetwear house. Eyewear, accessories, apparel. Cash on delivery across Bangladesh.">
+<meta name="description" content="fashion1sta — Dhaka's neon silver streetwear house. Eyewear and accessories. Cash on delivery across Bangladesh.">
 <meta name="theme-color" content="#0a0b0d">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -214,7 +214,6 @@
   <a class="cat active" href="shop.html?category=New">New In</a>
   <a class="cat active" href="shop.html?category=Glasses">Glasses</a>
   <a class="cat" href="shop.html?category=Accessories">Accessories</a>
-  <a class="cat soon" href="shop.html?category=Clothes">Clothes <span class="tag">SOON</span></a>
 </div>
 
 <section class="collection">
@@ -270,8 +269,7 @@ window.checkoutCart = checkoutWhatsApp;
 const categoryTree = [
   {name:"New In", subs:[]},
   {name:"Glasses", subs:["Rimless","Aviators","Round"]},
-  {name:"Accessories", subs:["Bandana","Belts","Bracelets","Chain-Necklaces","Earrings","Fake Piercings","Keychains","Ring Watch","Rings","Sunglasses","Tattoo","Teeth-Grillz","Wallet","Wallet Chains","Watches"]},
-  {name:"Clothes", subs:["Tees","Hoodies","Jerseys"]}
+  {name:"Accessories", subs:["Bandana","Belts","Bracelets","Chain-Necklaces","Earrings","Fake Piercings","Keychains","Ring Watch","Rings","Sunglasses","Tattoo","Teeth-Grillz","Wallet","Wallet Chains","Watches"]}
 ];
 const catTree = document.getElementById('catTree');
 categoryTree.forEach((cat,i)=>{
@@ -293,7 +291,8 @@ categoryTree.forEach((cat,i)=>{
 
 /* ---------- Hero slider — loads from Firestore "slides" collection, falls back to seed data ---------- */
 const heroSlidesSeed = [
-  {title:"Neon silver, made for the dark", text:"Dhaka's gothic-luxury streetwear house — eyewear, accessories and apparel.", cta:"Shop Glasses", href:"#glasses", icon:"cross"},
+  {title:"Neon silver, made for the dark", text:"Dhaka's gothic-luxury streetwear house — eyewear and accessories.", cta:"Shop Glasses", href:"#glasses", icon:"cross"},
+  {title:"Fresh weekly drops", text:"New accessories added every week — cash on delivery nationwide.", cta:"Shop Accessories", href:"shop.html?category=Accessories", icon:"chain"},
   {title:"Cash on delivery, everywhere", text:"Order from anywhere in Bangladesh, pay when it arrives at your door.", cta:"Explore All", href:"#glasses", icon:"chain"}
 ];
 async function loadSlides(){
@@ -309,6 +308,7 @@ async function loadSlides(){
 function slideIcon(type){
   const grad = `<defs><linearGradient id="sg" x1="0" y1="0" x2="60" y2="60"><stop offset="0%" stop-color="#6b6f76"/><stop offset="50%" stop-color="#f2f4f7"/><stop offset="100%" stop-color="#b8bcc4"/></linearGradient></defs>`;
   if(type==="cross") return `<svg viewBox="0 0 60 60" fill="none">${grad}<path d="M30 4 L30 56 M10 22 L50 22" stroke="url(#sg)" stroke-width="4" stroke-linecap="round"/></svg>`;
+  if(type==="bottle") return `<svg viewBox="0 0 60 80" fill="none">${grad}<rect x="14" y="24" width="32" height="48" rx="3" stroke="url(#sg)" stroke-width="2.5"/><rect x="22" y="8" width="16" height="16" rx="2" stroke="url(#sg)" stroke-width="2.5"/></svg>`;
   return `<svg viewBox="0 0 90 50" fill="none">${grad}<ellipse cx="22" cy="25" rx="14" ry="9" stroke="url(#sg)" stroke-width="2.5"/><ellipse cx="46" cy="25" rx="14" ry="9" stroke="url(#sg)" stroke-width="2.5"/><ellipse cx="70" cy="25" rx="14" ry="9" stroke="url(#sg)" stroke-width="2.5"/></svg>`;
 }
 const slidesEl = document.getElementById('slides');
