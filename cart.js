@@ -1,4 +1,4 @@
-// js/cart.js
+ // js/cart.js
 // Shared cart logic for ARGENTUM — localStorage-backed so it persists
 // across index.html and shop.html without a backend. Import the pieces
 // you need; renderCartDrawer()/updateCartBadge() expect the drawer
