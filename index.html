@@ -114,17 +114,20 @@
   @media(min-width:640px){.grid{grid-template-columns:repeat(4,1fr);}}
   .card{background:transparent;border:none;border-radius:var(--radius);padding:6px 4px 10px;transition:transform 0.2s ease, filter 0.2s ease;}
   .card:hover{transform:translateY(-3px);filter:drop-shadow(0 0 14px rgba(242,244,247,0.18));}
-  .frame{aspect-ratio:1/0.72;display:flex;align-items:center;justify-content:center;margin-bottom:13px;background:transparent;}
+  .frame{position:relative;aspect-ratio:1/0.72;display:flex;align-items:center;justify-content:center;margin-bottom:13px;background:transparent;}
   .frame img{width:100%;height:100%;object-fit:contain;}
   .frame svg{width:70%;}
   .card h3{font-family:'Fraunces',serif;font-weight:500;font-size:13.5px;margin-bottom:6px;line-height:1.3;}
   .price{font-size:13px;margin-bottom:11px;}
   .price .now{color:var(--silver-bright);font-weight:600;}
   .price .was{color:var(--text-dim);text-decoration:line-through;margin-left:6px;font-size:11.5px;}
+  .card-link{display:block;}
+  .discount-badge{position:absolute;top:4px;left:2px;background:var(--silver-bright);color:var(--bg);font-size:10px;font-weight:700;padding:3px 7px;border-radius:3px;z-index:2;}
+  .sold-text{font-size:10.5px;color:var(--text-dim);margin-bottom:8px;margin-top:-6px;}
   .card-actions{display:flex;gap:6px;}
-  .order{flex:1;min-width:0;text-align:center;padding:9px 0;font-size:11.5px;font-weight:600;border:1px solid var(--silver-deep);color:var(--silver-bright);border-radius:var(--radius);background:none;cursor:pointer;transition:background 0.2s ease,color 0.2s ease;}
-  .wa-quick{width:34px;height:34px;flex-shrink:0;border:1px solid var(--silver-deep);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;color:var(--silver-bright);}
-  .order:hover, .wa-quick:hover{background:var(--silver-bright);color:var(--bg);}
+  .order{flex:1;min-width:0;text-align:center;padding:9px 0;font-size:11px;font-weight:600;border:1px solid var(--silver-deep);color:var(--silver-bright);border-radius:var(--radius);background:none;cursor:pointer;transition:background 0.2s ease,color 0.2s ease;}
+  .buy-now-btn{background:var(--silver-bright);color:var(--bg);border-color:var(--silver-bright);}
+  .order:hover{background:var(--silver-bright);color:var(--bg);}
 
   .notice{margin:0 22px 48px;padding:16px 18px;border:1px dashed var(--line);border-radius:var(--radius);font-size:12.5px;color:var(--text-dim);text-align:center;}
   .notice b{color:var(--silver-bright);}
@@ -208,13 +211,11 @@
 </div>
 
 <div class="cats">
-  <span class="cat active">Glasses</span>
-  <span class="cat">Accessories</span>
-  <span class="cat active">Fragrances</span>
-  <span class="cat soon">Clothes <span class="tag">SOON</span></span>
-  <span class="cat soon">Mens <span class="tag">SOON</span></span>
-  <span class="cat soon">Girls <span class="tag">SOON</span></span>
-  <span class="cat soon">Unisex <span class="tag">SOON</span></span>
+  <a class="cat active" href="shop.html?category=New">New In</a>
+  <a class="cat active" href="shop.html?category=Glasses">Glasses</a>
+  <a class="cat" href="shop.html?category=Accessories">Accessories</a>
+  <a class="cat active" href="shop.html?category=Fragrances">Fragrances</a>
+  <a class="cat soon" href="shop.html?category=Clothes">Clothes <span class="tag">SOON</span></a>
 </div>
 
 <section class="collection">
@@ -273,27 +274,27 @@ window.checkoutCart = checkoutWhatsApp;
 
 /* ---------- Category tree (will map to admin-managed Categories later) ---------- */
 const categoryTree = [
+  {name:"New In", subs:[]},
   {name:"Glasses", subs:["Rimless","Aviators","Round"]},
-  {name:"Accessories", subs:["Chains & Necklaces","Rings","Bracelets","Earrings","Belts","Grillz","Fake Piercings","Keychains"]},
+  {name:"Accessories", subs:["Bandana","Belts","Bracelets","Chain-Necklaces","Earrings","Fake Piercings","Keychains","Ring Watch","Rings","Sunglasses","Tattoo","Teeth-Grillz","Wallet","Wallet Chains","Watches"]},
   {name:"Fragrances", subs:["For Him","For Her","Unisex"]},
-  {name:"Clothes", subs:["Tees","Hoodies","Jerseys"]},
-  {name:"Mens", subs:[]},
-  {name:"Girls", subs:[]},
-  {name:"Unisex", subs:[]}
+  {name:"Clothes", subs:["Tees","Hoodies","Jerseys"]}
 ];
 const catTree = document.getElementById('catTree');
 categoryTree.forEach((cat,i)=>{
   const row = document.createElement('div');
   row.className = 'cat-row';
+  row.style.cursor = 'pointer';
   row.innerHTML = `<span class="name">${cat.name}</span>${cat.subs.length ? '<span class="chev"></span>' : ''}`;
   catTree.appendChild(row);
   const subs = document.createElement('div');
   subs.className = 'subs';
-  subs.innerHTML = cat.subs.map(s=>`<a href="#">${s}</a>`).join('');
+  subs.innerHTML = cat.subs.map(s=>`<a href="shop.html?category=${encodeURIComponent(cat.name)}">${s}</a>`).join('');
   catTree.appendChild(subs);
   if(cat.subs.length){
-    row.style.cursor='pointer';
     row.addEventListener('click',()=>row.classList.toggle('open'));
+  } else {
+    row.addEventListener('click',()=>{ window.location.href = `shop.html?category=${encodeURIComponent(cat.name)}`; });
   }
 });
 
@@ -354,22 +355,22 @@ function chainSVG(){return `<svg viewBox="0 0 90 50" fill="none"><ellipse cx="22
 
 const seedProducts = {
   arrivals: [
-    {name:"Tennis Chain Bracelet", price:599, was:800, iconType:"chain"},
-    {name:"Vampire Fang Grillz", price:799, was:1200, iconType:"cross"},
-    {name:"Dragon Flame Belt", price:990, was:1500, iconType:"chain"},
-    {name:"Gothic Cross Pendant", price:650, was:900, iconType:"cross"}
+    {name:"Tennis Chain Bracelet", price:599, was:800, iconType:"chain", sold:1240},
+    {name:"Vampire Fang Grillz", price:799, was:1200, iconType:"cross", sold:860},
+    {name:"Dragon Flame Belt", price:990, was:1500, iconType:"chain", sold:430},
+    {name:"Gothic Cross Pendant", price:650, was:900, iconType:"cross", sold:990}
   ],
   Glasses: [
-    {name:"Gothic Cross Rimless", price:990, was:1300, iconType:"glasses"},
-    {name:"Vintage Sun Frame", price:850, was:1100, iconType:"glasses"},
-    {name:"Neon Aviator Link", price:750, was:1000, iconType:"glasses"},
-    {name:"Iced Bridge Round", price:1099, was:1500, iconType:"glasses"}
+    {name:"Gothic Cross Rimless", price:990, was:1300, iconType:"glasses", sold:2100},
+    {name:"Vintage Sun Frame", price:850, was:1100, iconType:"glasses", sold:1560},
+    {name:"Neon Aviator Link", price:750, was:1000, iconType:"glasses", sold:980},
+    {name:"Iced Bridge Round", price:1099, was:1500, iconType:"glasses", sold:640}
   ],
   Fragrances: [
-    {name:"Blue Ocean EDP", price:1999, was:2500, iconType:"bottle"},
-    {name:"Wild Timber EDP", price:1999, was:3000, iconType:"bottle"},
-    {name:"Spice Ember EDP", price:2500, was:3000, iconType:"bottle"},
-    {name:"Silver Bloom EDP", price:1999, was:2500, iconType:"bottle"}
+    {name:"Blue Ocean EDP", price:1999, was:2500, iconType:"bottle", sold:3200},
+    {name:"Wild Timber EDP", price:1999, was:3000, iconType:"bottle", sold:2750},
+    {name:"Spice Ember EDP", price:2500, was:3000, iconType:"bottle", sold:1420},
+    {name:"Silver Bloom EDP", price:1999, was:2500, iconType:"bottle", sold:1890}
   ]
 };
 function iconFor(type){
@@ -392,22 +393,27 @@ function renderCards(id, items){
   const grid = document.getElementById(id);
   items.forEach((p,i)=>{
     const pid = p.id || p.name.toLowerCase().replace(/[^a-z0-9]+/g,'-');
-    const waText = encodeURIComponent(`I'd like to order: ${p.name} (BDT ${p.price})`);
     const media = p.imageUrl
       ? `<img src="${p.imageUrl}" alt="${p.name}" style="width:100%;height:100%;object-fit:contain;">`
       : iconFor(p.iconType);
     const dir = i % 2 === 0 ? 'from-left' : 'from-right';
     const delay = (i % 4) * 0.08;
+    const discount = p.was ? Math.round((1 - p.price/p.was) * 100) : 0;
+    const soldText = p.sold ? `${p.sold >= 1000 ? (p.sold/1000).toFixed(1).replace('.0','')+'k' : p.sold} sold` : '';
     grid.innerHTML += `
       <div class="card reveal ${dir}" style="transition-delay:${delay}s">
-        <div class="frame">${media}</div>
-        <h3>${p.name}</h3>
+        <a href="product.html?id=${encodeURIComponent(pid)}" class="card-link">
+          <div class="frame">
+            ${discount>0 ? `<span class="discount-badge">-${discount}%</span>` : ''}
+            ${media}
+          </div>
+          <h3>${p.name}</h3>
+        </a>
         <div class="price"><span class="now">BDT ${p.price}</span>${p.was?`<span class="was">BDT ${p.was}</span>`:''}</div>
+        ${soldText ? `<p class="sold-text">${soldText}</p>` : ''}
         <div class="card-actions">
           <button class="order add-cart-btn" data-id="${pid}" data-name="${p.name}" data-price="${p.price}" data-image="${p.imageUrl||''}">Add to Cart</button>
-          <a class="wa-quick" href="https://wa.me/8801XXXXXXXXX?text=${waText}" target="_blank" aria-label="Order via WhatsApp">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M20 12a8 8 0 1 1-3.7-6.7L20 4l-1 4.3A8 8 0 0 1 20 12z"/><path d="M9 10.5c.3 1.8 2.2 3.7 4 4"/></svg>
-          </a>
+          <button class="order buy-now-btn" data-name="${p.name}" data-price="${p.price}">Buy Now</button>
         </div>
       </div>`;
   });
