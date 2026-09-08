@@ -273,7 +273,7 @@ function cardHTML(p, i){
       ${soldText ? `<p class="sold-text">${soldText}</p>` : ''}
       <div class="card-actions">
         <button class="order add-cart-btn" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-image="${p.imageUrl||''}">Add to Cart</button>
-        <button class="order buy-now-btn" data-name="${p.name}" data-price="${p.price}">Buy Now</button>
+        <button class="order buy-now-btn" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-image="${p.imageUrl||''}">Buy Now</button>
       </div>
     </div>`;
 }
