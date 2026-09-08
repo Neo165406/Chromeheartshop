@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Checkout — fashion1sta</title>
+<meta name="theme-color" content="#0a0b0d">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0b0d;--bg-alt:#15171a;--card:#17191c;
+    --silver:#b8bcc4;--silver-bright:#f2f4f7;--silver-deep:#6b6f76;
+    --text:#f2f3f5;--text-dim:#9195a0;--line:rgba(184,188,196,0.22);
+    --radius:2px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Instrument Sans',sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased;}
+  .display{font-family:'Fraunces',serif;}
+  a{color:inherit;text-decoration:none;}
+  button{font-family:inherit;}
+
+  header{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:16px 22px;background:rgba(10,11,13,0.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+  .navicon{width:20px;height:20px;}
+  .logo{font-family:'Fraunces',serif;font-size:19px;letter-spacing:0.14em;font-weight:600;background:linear-gradient(120deg,var(--silver-deep),var(--silver-bright) 45%,var(--silver));-webkit-background-clip:text;background-clip:text;color:transparent;}
+
+  .page-title{padding:28px 22px 6px;font-family:'Fraunces',serif;font-size:24px;font-weight:500;}
+
+  .section{padding:18px 22px;}
+  .section-label{font-size:11px;letter-spacing:0.14em;color:var(--text-dim);text-transform:uppercase;margin-bottom:14px;}
+
+  .summary-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);}
+  .si-media{width:44px;height:44px;flex-shrink:0;background:var(--card);border-radius:4px;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+  .si-media img{width:100%;height:100%;object-fit:cover;}
+  .si-info{flex:1;min-width:0;}
+  .si-info h4{font-size:13px;font-weight:600;margin-bottom:2px;}
+  .si-info p{font-size:11.5px;color:var(--text-dim);}
+  .si-total{font-size:13px;font-weight:600;color:var(--silver-bright);white-space:nowrap;}
+
+  .total-row{display:flex;justify-content:space-between;padding-top:16px;font-size:16px;font-weight:600;}
+  .total-row span:last-child{color:var(--silver-bright);}
+
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:12px;color:var(--text-dim);margin-bottom:6px;}
+  .field input, .field textarea{
+    width:100%;padding:12px 14px;background:var(--card);border:1px solid var(--line);
+    color:var(--text);border-radius:var(--radius);font-size:14px;font-family:inherit;
+  }
+  .field textarea{resize:vertical;min-height:70px;}
+  .field input:focus, .field textarea:focus{outline:none;border-color:var(--silver);}
+  .field .err{color:#e08a8a;font-size:11.5px;margin-top:5px;display:none;}
+  .field.invalid input, .field.invalid textarea{border-color:#e08a8a;}
+  .field.invalid .err{display:block;}
+
+  .pay-note{
+    display:flex;align-items:flex-start;gap:10px;padding:14px 16px;
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    font-size:12.5px;color:var(--text-dim);margin-bottom:22px;
+  }
+  .pay-note svg{width:16px;height:16px;flex-shrink:0;margin-top:1px;color:var(--silver);}
+
+  .place-btn{
+    width:100%;padding:16px 0;text-align:center;
+    background:linear-gradient(120deg,var(--silver),var(--silver-bright));
+    color:var(--bg);border:none;border-radius:var(--radius);
+    font-size:14.5px;font-weight:700;letter-spacing:0.02em;cursor:pointer;
+  }
+  .place-btn:disabled{opacity:0.5;}
+  .status-msg{text-align:center;font-size:12.5px;color:var(--text-dim);margin-top:12px;}
+
+  .empty-state, .confirm-state{padding:80px 22px;text-align:center;}
+  .empty-state p, .confirm-state p{color:var(--text-dim);font-size:13.5px;margin-bottom:20px;}
+  .confirm-state h2{font-family:'Fraunces',serif;font-size:22px;margin-bottom:12px;}
+  .confirm-icon{width:56px;height:56px;margin:0 auto 20px;border:1px solid var(--silver);border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .confirm-icon svg{width:26px;height:26px;color:var(--silver-bright);}
+  .link-btn{display:inline-block;padding:13px 26px;border:1px solid var(--silver-deep);color:var(--silver-bright);border-radius:var(--radius);font-size:13px;font-weight:600;}
+</style>
+</head>
+<body>
+
+<header>
+  <a href="index.html"><svg class="navicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 6l-6 6 6 6"/></svg></a>
+  <a href="index.html" class="logo">fashion1sta</a>
+  <span style="width:20px;"></span>
+</header>
+
+<div id="root">
+  <p class="status-msg" style="padding:60px 22px;text-align:center;">Loading your cart...</p>
+</div>
+
+<script type="module">
+let cartApi = null;
+let fbApi = null;
+
+function money(n){ return `BDT ${n}`; }
+
+function renderEmpty(){
+  document.getElementById('root').innerHTML = `
+    <div class="empty-state">
+      <p>Your cart is empty — add something first.</p>
+      <a class="link-btn" href="shop.html">Browse the shop →</a>
+    </div>`;
+}
+
+function renderConfirm(){
+  document.getElementById('root').innerHTML = `
+    <div class="confirm-state">
+      <div class="confirm-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></div>
+      <h2 class="display">Order placed</h2>
+      <p>We've opened WhatsApp with your order details — send the message to confirm with us. Cash on delivery.</p>
+      <a class="link-btn" href="shop.html">Continue shopping →</a>
+    </div>`;
+}
+
+function renderCheckout(cart){
+  const total = cart.reduce((sum,c)=>sum + c.price*c.qty, 0);
+  const itemsHtml = cart.map(c=>`
+    <div class="summary-item">
+      <div class="si-media">${c.imageUrl?`<img src="${c.imageUrl}">`:''}</div>
+      <div class="si-info"><h4>${c.name}</h4><p>Qty ${c.qty} × ${money(c.price)}</p></div>
+      <div class="si-total">${money(c.price*c.qty)}</div>
+    </div>`).join('');
+
+  document.getElementById('root').innerHTML = `
+    <div class="page-title">Checkout</div>
+    <div class="section">
+      <div class="section-label">Your order</div>
+      ${itemsHtml}
+      <div class="total-row"><span>Total</span><span>${money(total)}</span></div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Delivery details</div>
+      <div class="field" id="fName">
+        <label>Full name</label>
+        <input type="text" id="inName" placeholder="Your name">
+        <p class="err">Name is required.</p>
+      </div>
+      <div class="field" id="fPhone">
+        <label>Phone number</label>
+        <input type="tel" id="inPhone" placeholder="01XXXXXXXXX">
+        <p class="err">A valid phone number is required.</p>
+      </div>
+      <div class="field" id="fAddress">
+        <label>Delivery address</label>
+        <textarea id="inAddress" placeholder="House, road, area, city"></textarea>
+        <p class="err">Address is required.</p>
+      </div>
+      <div class="field">
+        <label>Order note (optional)</label>
+        <textarea id="inNote" placeholder="Anything we should know?"></textarea>
+      </div>
+
+      <div class="pay-note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+        <span>Cash on delivery — pay when your order arrives. No online payment needed.</span>
+      </div>
+
+      <button class="place-btn" id="placeBtn">Place Order — ${money(total)}</button>
+      <p class="status-msg" id="statusMsg"></p>
+    </div>`;
+
+  document.getElementById('placeBtn').addEventListener('click', ()=>placeOrder(cart, total));
+}
+
+function validate(){
+  const name = document.getElementById('inName').value.trim();
+  const phone = document.getElementById('inPhone').value.trim();
+  const address = document.getElementById('inAddress').value.trim();
+  let ok = true;
+
+  const nameField = document.getElementById('fName');
+  nameField.classList.toggle('invalid', !name);
+  if(!name) ok = false;
+
+  const phoneField = document.getElementById('fPhone');
+  const phoneValid = /^[0-9+\-\s]{7,15}$/.test(phone);
+  phoneField.classList.toggle('invalid', !phoneValid);
+  if(!phoneValid) ok = false;
+
+  const addrField = document.getElementById('fAddress');
+  addrField.classList.toggle('invalid', !address);
+  if(!address) ok = false;
+
+  return ok ? { name, phone, address, note: document.getElementById('inNote').value.trim() } : null;
+}
+
+async function placeOrder(cart, total){
+  const details = validate();
+  if(!details) return;
+
+  const btn = document.getElementById('placeBtn');
+  const status = document.getElementById('statusMsg');
+  btn.disabled = true;
+  status.textContent = 'Placing your order...';
+
+  // Try to log the order to Firestore. If this fails for any reason, we
+  // still proceed to WhatsApp so the order is never lost.
+  try{
+    if(!fbApi){
+      const fb = await import('./js/firebase-config.js');
+      fbApi = { db: fb.db, collection: fb.collection, addDoc: fb.addDoc, serverTimestamp: fb.serverTimestamp };
+    }
+    await fbApi.addDoc(fbApi.collection(fbApi.db,'orders'), {
+      customerName: details.name,
+      phone: details.phone,
+      address: details.address,
+      note: details.note,
+      items: cart.map(c=>({ id:c.id, name:c.name, price:c.price, qty:c.qty })),
+      total,
+      status: 'pending',
+      createdAt: fbApi.serverTimestamp()
+    });
+  }catch(e){
+    console.error('Order logging failed (continuing to WhatsApp anyway):', e);
+  }
+
+  const lines = cart.map(c=>`• ${c.name} x${c.qty} — BDT ${c.price*c.qty}`).join('\n');
+  const msg = `Hi! I'd like to place an order:\n\n${lines}\n\nTotal: BDT ${total}\n\nName: ${details.name}\nPhone: ${details.phone}\nAddress: ${details.address}${details.note ? `\nNote: ${details.note}` : ''}`;
+  window.open(`https://wa.me/8801XXXXXXXXX?text=${encodeURIComponent(msg)}`, '_blank');
+
+  if(cartApi) cartApi.clearCart();
+  renderConfirm();
+}
+
+async function init(){
+  try{
+    cartApi = await import('./js/cart.js');
+  }catch(e){
+    console.error('Cart module failed to load:', e);
+  }
+  const cart = cartApi ? cartApi.getCart() : [];
+  if(!cart.length){ renderEmpty(); return; }
+  renderCheckout(cart);
+}
+init();
+</script>
+</body>
+</html>
