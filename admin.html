@@ -18,7 +18,7 @@
   .display{font-family:'Fraunces',serif;}
   input,select,button,textarea{font-family:inherit;}
 
-  /* ---------- PASSWORD GATE ---------- */
+  /* ---------- AUTH GATE ---------- */
   #gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
   .gate-box{width:100%;max-width:320px;text-align:center;}
   .gate-box h1{font-family:'Fraunces',serif;font-size:22px;letter-spacing:0.1em;color:var(--silver);margin-bottom:22px;}
@@ -30,7 +30,9 @@
   #dash{display:none;min-height:100vh;}
   .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--line);background:var(--bg-alt);position:sticky;top:0;z-index:10;}
   .topbar .logo{font-family:'Fraunces',serif;font-size:17px;letter-spacing:0.14em;color:var(--silver);}
-  .topbar a.view-site{font-size:12px;color:var(--text-dim);border:1px solid var(--line);padding:7px 12px;border-radius:16px;}
+  .topbar-actions{display:flex;align-items:center;gap:10px;}
+  .topbar a.view-site, .topbar button.logout-btn{font-size:12px;color:var(--text-dim);border:1px solid var(--line);padding:7px 12px;border-radius:16px;background:none;cursor:pointer;}
+  .topbar button.logout-btn:hover{color:#e08a8a;border-color:#e08a8a;}
 
   .tabs{display:flex;gap:8px;padding:16px 20px 0;overflow-x:auto;}
   .tab{padding:9px 16px;font-size:12.5px;border:1px solid var(--line);border-radius:16px;color:var(--text-dim);white-space:nowrap;cursor:pointer;}
@@ -64,16 +66,20 @@
 <div id="gate">
   <div class="gate-box">
     <h1 class="display">fashion1sta ADMIN</h1>
-    <input type="password" id="passInput" placeholder="Passcode">
-    <button onclick="tryLogin()">Enter</button>
-    <p class="gate-err" id="gateErr">Wrong passcode — try again.</p>
+    <input type="email" id="emailInput" placeholder="Admin Email">
+    <input type="password" id="passInput" placeholder="Password">
+    <button id="loginBtn" onclick="tryLogin()">Login</button>
+    <p class="gate-err" id="gateErr"></p>
   </div>
 </div>
 
 <div id="dash">
   <div class="topbar">
     <span class="logo">fashion1sta · Admin</span>
-    <a class="view-site" href="index.html" target="_blank">View site →</a>
+    <div class="topbar-actions">
+      <a class="view-site" href="index.html" target="_blank">View site →</a>
+      <button class="logout-btn" onclick="tryLogout()">Logout</button>
+    </div>
   </div>
   <div class="tabs">
     <div class="tab active" data-panel="dashPanel">Dashboard</div>
@@ -167,26 +173,56 @@
   <div class="panel" id="ordersPanel">
     <div class="card-form">
       <h3>Orders</h3>
-      <p style="font-size:12.5px;color:var(--text-dim);">Orders currently come in via the WhatsApp "Order Now" button on each product — check your WhatsApp for incoming messages. A logged order history here can be added next.</p>
+      <p style="font-size:12.5px;color:var(--text-dim);">Orders currently come in via WhatsApp. Customer log history can be accessed here.</p>
     </div>
   </div>
 </div>
 
 <script type="module">
 import { db, collection, getDocs, addDoc, deleteDoc, doc, serverTimestamp } from './js/firebase-config.js';
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import { uploadToImgbb } from './js/imgbb.js';
 
-// ---------- Passcode gate (swap for real Firebase Auth before going live) ----------
-const ADMIN_PASSCODE = "argentum2026";
-window.tryLogin = function(){
-  const val = document.getElementById('passInput').value;
-  if(val === ADMIN_PASSCODE){
-    sessionStorage.setItem('argentum_admin','1');
+const auth = getAuth();
+
+// ---------- Firebase Authentication Listener ----------
+onAuthStateChanged(auth, (user) => {
+  if (user) {
     showDash();
   } else {
-    document.getElementById('gateErr').style.display = 'block';
+    showGate();
+  }
+});
+
+window.tryLogin = async function(){
+  const email = document.getElementById('emailInput').value.trim();
+  const pass = document.getElementById('passInput').value.trim();
+  const errEl = document.getElementById('gateErr');
+  const btn = document.getElementById('loginBtn');
+
+  if(!email || !pass) {
+    errEl.textContent = 'Please enter email and password.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  errEl.style.display = 'none';
+
+  try {
+    await signInWithEmailAndPassword(auth, email, pass);
+  } catch(e) {
+    errEl.textContent = 'Login failed: ' + e.message;
+    errEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
   }
 };
+
+window.tryLogout = async function(){
+  await signOut(auth);
+};
+
 function showDash(){
   document.getElementById('gate').style.display = 'none';
   document.getElementById('dash').style.display = 'block';
@@ -194,7 +230,11 @@ function showDash(){
   loadProductsList();
   loadDashboardStats();
 }
-if(sessionStorage.getItem('argentum_admin') === '1') showDash();
+
+function showGate(){
+  document.getElementById('gate').style.display = 'flex';
+  document.getElementById('dash').style.display = 'none';
+}
 
 // ---------- Tabs ----------
 document.querySelectorAll('.tab').forEach(t=>{
@@ -236,6 +276,7 @@ window.addSlide = async function(){
   }
   btn.disabled = false;
 };
+
 async function loadSlidesList(){
   const list = document.getElementById('slidesList');
   list.innerHTML = 'Loading...';
@@ -292,6 +333,7 @@ window.addProduct = async function(){
   }
   btn.disabled = false;
 };
+
 async function loadProductsList(){
   const list = document.getElementById('productsList');
   list.innerHTML = 'Loading...';
