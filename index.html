@@ -82,10 +82,10 @@
   .subs a{display:block;padding:10px 0 10px 14px;font-size:13.5px;color:var(--text-dim);border-bottom:1px solid var(--line);}
   .subs a:last-child{border-bottom:none;}
 
-  /* ---------- HERO SLIDER ---------- */
-  .hero-slider{position:relative;overflow:hidden;}
-  .slides{display:flex;transition:transform 0.5s ease;}
-  .slide{flex:0 0 100%;position:relative;padding:64px 26px 56px;text-align:center;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  /* ---------- VERTICAL HERO SLIDER ---------- */
+  .hero-slider{position:relative;overflow:hidden;height:380px;}
+  .slides{display:flex;flex-direction:column;height:100%;transition:transform 0.5s ease;}
+  .slide{flex:0 0 100%;height:100%;position:relative;padding:48px 26px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;}
   .slide .sglow{position:absolute;left:50%;top:40%;width:260px;height:260px;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(242,244,247,0.16) 0%,rgba(184,188,196,0.06) 45%,transparent 72%);filter:blur(6px);z-index:0;}
   .slide-icon{position:relative;z-index:1;width:56px;height:56px;margin-bottom:18px;}
   .slide h1{position:relative;z-index:1;font-size:clamp(24px,6.2vw,36px);font-weight:500;letter-spacing:0.01em;margin-bottom:12px;}
@@ -93,9 +93,9 @@
   .btn{position:relative;z-index:1;display:inline-flex;align-items:center;gap:8px;padding:13px 28px;border:1px solid var(--silver);color:var(--bg);background:linear-gradient(120deg,var(--silver),var(--silver-bright));font-size:13.5px;font-weight:600;letter-spacing:0.03em;border-radius:var(--radius);transition:transform 0.2s ease, box-shadow 0.2s ease;}
   .btn:active{transform:scale(0.97);}
   .btn:hover{box-shadow:0 0 22px rgba(242,244,247,0.3);}
-  .dots{display:flex;justify-content:center;gap:7px;padding:14px 0 22px;}
-  .dot{width:6px;height:6px;border-radius:50%;background:var(--line);cursor:pointer;transition:background 0.2s ease, width 0.2s ease;}
-  .dot.active{background:var(--silver-bright);width:18px;border-radius:3px;}
+  .dots{position:absolute;right:18px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px;z-index:10;padding:0;}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--line);cursor:pointer;transition:background 0.2s ease, height 0.2s ease, width 0.2s ease;}
+  .dot.active{background:var(--silver-bright);height:18px;width:6px;border-radius:3px;}
 
   /* ---------- CATEGORY STRIP ---------- */
   .cats{display:flex;gap:10px;overflow-x:auto;padding:0 22px 32px;scrollbar-width:none;}
@@ -274,7 +274,7 @@ window.toggleCart = function(open){
 };
 window.checkoutCart = checkoutWhatsApp;
 
-/* ---------- Category tree (will map to admin-managed Categories later) ---------- */
+/* ---------- Category tree ---------- */
 const categoryTree = [
   {name:"New In", subs:[]},
   {name:"Glasses", subs:["Rimless","Aviators","Round"]},
@@ -328,7 +328,7 @@ let heroSlides = [];
 let current = 0;
 function goTo(i){
   current = i;
-  slidesEl.style.transform = `translateX(-${i*100}%)`;
+  slidesEl.style.transform = `translateY(-${i*100}%)`;
   document.querySelectorAll('.dot').forEach((d,j)=>d.classList.toggle('active', j===i));
 }
 async function initHero(){
@@ -378,7 +378,7 @@ async function loadProducts(){
     const fetchPromise = getDocs(collection(db,'products'));
     const timeout = new Promise(resolve => setTimeout(()=>resolve(null), 6000));
     const snap = await Promise.race([fetchPromise, timeout]);
-    if(!snap || snap.empty) return null; // signal caller to use seed data
+    if(!snap || snap.empty) return null;
     return snap.docs.map(d=>({id:d.id, ...d.data()}));
   }catch(e){
     console.error('Products load failed, using seed data:', e);
@@ -427,7 +427,8 @@ async function initProducts(){
   renderCards('glassesGrid', all.filter(p=>p.category==="Glasses").slice(0,4));
   renderCards('newInRow', all.length ? all.slice(0,8) : [...seedProducts.arrivals, ...seedProducts.Glasses]);
 }
-/* ---------- Scroll reveal — watches .reveal elements, slides them into place ---------- */
+
+/* ---------- Scroll reveal ---------- */
 function initScrollReveal(){
   const observer = new IntersectionObserver((entries)=>{
     entries.forEach(entry=>{
