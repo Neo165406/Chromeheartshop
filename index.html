@@ -204,7 +204,7 @@
   <div id="cartItems"></div>
   <div class="cart-footer">
     <div class="cart-total-row"><span>Total</span><span id="cartTotal">BDT 0</span></div>
-    <button class="btn" id="cartCheckoutBtn" style="width:100%;justify-content:center;" onclick="checkoutCart()">Checkout via WhatsApp</button>
+    <button class="btn" id="cartCheckoutBtn" style="width:100%;justify-content:center;" onclick="checkoutCart()">Checkout</button>
   </div>
 </nav>
 
@@ -272,7 +272,7 @@ window.toggleCart = function(open){
   if(open){ document.getElementById('drawer').classList.remove('open'); renderCartDrawer(); }
   document.getElementById('scrim').classList.toggle('open', open || document.getElementById('drawer').classList.contains('open'));
 };
-window.checkoutCart = checkoutWhatsApp;
+window.checkoutCart = function(){ window.location.href = 'checkout.html'; };
 
 /* ---------- Category tree (will map to admin-managed Categories later) ---------- */
 const categoryTree = [
