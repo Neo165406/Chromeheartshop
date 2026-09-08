@@ -89,6 +89,11 @@ export function renderCartDrawer(){
   });
 }
 
+export function clearCart(){
+  saveCart([]);
+  renderCartDrawer();
+}
+
 export function checkoutWhatsApp(){
   const cart = getCart();
   if(cart.length===0) return;
