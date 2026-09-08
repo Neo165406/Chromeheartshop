@@ -1,15 +1,30 @@
 // js/firebase-config.js
-// Shared Firebase/Firestore/Auth setup for fashion1sta. Imported as an ES
-// module by index.html and admin.html — no build step required.
+// Shared Firebase/Firestore/Auth setup for fashion1sta.
+// Imported as an ES module by index.html and admin.html — no build step required.
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+
 import {
-  getFirestore, collection, getDocs, getDoc, addDoc, updateDoc, deleteDoc,
-  doc, query, orderBy, serverTimestamp
+  getFirestore,
+  collection,
+  getDocs,
+  getDoc,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  query,
+  orderBy,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
 import {
-  getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut
+  getAuth,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyC_Fgdc_JlFlrPwByNQIa3e-MMGmoRXRWE",
@@ -21,12 +36,33 @@ const firebaseConfig = {
   measurementId: "G-L6NY1E2LH6"
 };
 
+
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
+
+// Initialize Firestore
 const db = getFirestore(app);
+
+// Initialize Authentication
 const auth = getAuth(app);
 
+
+// Export everything needed by index.html and admin.html
 export {
-  db, collection, getDocs, getDoc, addDoc, updateDoc, deleteDoc,
-  doc, query, orderBy, serverTimestamp,
-  auth, signInWithEmailAndPassword, onAuthStateChanged, signOut
+  db,
+  collection,
+  getDocs,
+  getDoc,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  query,
+  orderBy,
+  serverTimestamp,
+
+  auth,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut
 };
