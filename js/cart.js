@@ -1,5 +1,5 @@
- // js/cart.js
-// Shared cart logic for ARGENTUM — localStorage-backed so it persists
+// js/cart.js
+// Shared cart logic for fashion1sta — localStorage-backed so it persists
 // across index.html and shop.html without a backend. Import the pieces
 // you need; renderCartDrawer()/updateCartBadge() expect the drawer
 // markup (#cartItems, #cartTotal, #cartCheckoutBtn, #cartBadge) to
@@ -97,6 +97,12 @@ export function checkoutWhatsApp(){
   window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
+// Instant single-item order, bypassing the cart — used by "Buy Now".
+export function buyNowWhatsApp(item, qty=1){
+  const msg = `Hi! I'd like to buy:\n• ${item.name} x${qty} — BDT ${item.price*qty}\n\nTotal: BDT ${item.price*qty}`;
+  window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
 export function showToast(msg){
   let t = document.getElementById('toast');
   if(!t){
@@ -111,21 +117,34 @@ export function showToast(msg){
   window._toastTimer = setTimeout(()=>t.classList.remove('show'), 1800);
 }
 
-// Wires up "Add to Cart" buttons inside a container via event delegation,
-// so it works even for cards rendered after Firestore data loads.
+// Wires up "Add to Cart" and "Buy Now" buttons inside a container via
+// event delegation, so it works even for cards rendered after Firestore
+// data loads.
 export function wireAddToCart(containerId){
   const el = document.getElementById(containerId);
   if(!el) return;
   el.addEventListener('click', (e)=>{
-    const btn = e.target.closest('.add-cart-btn');
-    if(!btn) return;
-    addToCart({
-      id: btn.dataset.id,
-      name: btn.dataset.name,
-      price: Number(btn.dataset.price),
-      imageUrl: btn.dataset.image || null
-    });
-    showToast(`Added "${btn.dataset.name}" to cart`);
+    const addBtn = e.target.closest('.add-cart-btn');
+    if(addBtn){
+      addToCart({
+        id: addBtn.dataset.id,
+        name: addBtn.dataset.name,
+        price: Number(addBtn.dataset.price),
+        imageUrl: addBtn.dataset.image || null
+      });
+      showToast(`Added "${addBtn.dataset.name}" to cart`);
+      return;
+    }
+    const buyBtn = e.target.closest('.buy-now-btn');
+    if(buyBtn){
+      addToCart({
+        id: buyBtn.dataset.id,
+        name: buyBtn.dataset.name,
+        price: Number(buyBtn.dataset.price),
+        imageUrl: buyBtn.dataset.image || null
+      });
+      if(typeof window.toggleCart === 'function') window.toggleCart(true);
+    }
   });
 }
 
