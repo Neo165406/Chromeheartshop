@@ -18,7 +18,7 @@
   .display{font-family:'Fraunces',serif;}
   input,select,button,textarea{font-family:inherit;}
 
-  /* ---------- AUTH GATE ---------- */
+  /* ---------- PASSWORD GATE ---------- */
   #gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
   .gate-box{width:100%;max-width:320px;text-align:center;}
   .gate-box h1{font-family:'Fraunces',serif;font-size:22px;letter-spacing:0.1em;color:var(--silver);margin-bottom:22px;}
@@ -30,9 +30,7 @@
   #dash{display:none;min-height:100vh;}
   .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--line);background:var(--bg-alt);position:sticky;top:0;z-index:10;}
   .topbar .logo{font-family:'Fraunces',serif;font-size:17px;letter-spacing:0.14em;color:var(--silver);}
-  .topbar-actions{display:flex;align-items:center;gap:10px;}
-  .topbar a.view-site, .topbar button.logout-btn{font-size:12px;color:var(--text-dim);border:1px solid var(--line);padding:7px 12px;border-radius:16px;background:none;cursor:pointer;}
-  .topbar button.logout-btn:hover{color:#e08a8a;border-color:#e08a8a;}
+  .topbar a.view-site, .topbar button.view-site{font-size:12px;color:var(--text-dim);border:1px solid var(--line);padding:7px 12px;border-radius:16px;background:none;font-family:inherit;}
 
   .tabs{display:flex;gap:8px;padding:16px 20px 0;overflow-x:auto;}
   .tab{padding:9px 16px;font-size:12.5px;border:1px solid var(--line);border-radius:16px;color:var(--text-dim);white-space:nowrap;cursor:pointer;}
@@ -59,6 +57,7 @@
   .item .info h4{font-size:13.5px;margin-bottom:3px;}
   .item .info p{font-size:11.5px;color:var(--text-dim);}
   .item .del{color:#e08a8a;font-size:12px;border:1px solid rgba(224,138,138,0.3);padding:6px 10px;border-radius:14px;cursor:pointer;background:none;flex-shrink:0;}
+  .item .toggle-status{color:var(--silver-bright);font-size:11px;border:1px solid var(--line);padding:6px 10px;border-radius:14px;cursor:pointer;background:none;flex-shrink:0;white-space:nowrap;}
 </style>
 </head>
 <body>
@@ -66,19 +65,19 @@
 <div id="gate">
   <div class="gate-box">
     <h1 class="display">fashion1sta ADMIN</h1>
-    <input type="email" id="emailInput" placeholder="Admin Email">
-    <input type="password" id="passInput" placeholder="Password">
-    <button id="loginBtn" onclick="tryLogin()">Login</button>
-    <p class="gate-err" id="gateErr"></p>
+    <input type="email" id="emailInput" placeholder="Email" autocomplete="username">
+    <input type="password" id="passInput" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter') tryLogin();">
+    <button onclick="tryLogin()" id="loginBtn">Sign In</button>
+    <p class="gate-err" id="gateErr">Wrong email or password — try again.</p>
   </div>
 </div>
 
 <div id="dash">
   <div class="topbar">
     <span class="logo">fashion1sta · Admin</span>
-    <div class="topbar-actions">
+    <div style="display:flex;align-items:center;gap:10px;">
       <a class="view-site" href="index.html" target="_blank">View site →</a>
-      <button class="logout-btn" onclick="tryLogout()">Logout</button>
+      <button class="view-site" style="cursor:pointer;" onclick="doLogout()">Log out</button>
     </div>
   </div>
   <div class="tabs">
@@ -173,54 +172,38 @@
   <div class="panel" id="ordersPanel">
     <div class="card-form">
       <h3>Orders</h3>
-      <p style="font-size:12.5px;color:var(--text-dim);">Orders currently come in via WhatsApp. Customer log history can be accessed here.</p>
+      <p style="font-size:12.5px;color:var(--text-dim);">Placed through the checkout form — each order also sends a WhatsApp message, this list is the record.</p>
     </div>
+    <div class="list" id="ordersList"></div>
   </div>
 </div>
 
 <script type="module">
-import { db, collection, getDocs, addDoc, deleteDoc, doc, serverTimestamp } from './js/firebase-config.js';
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+import { db, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, auth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from './js/firebase-config.js';
 import { uploadToImgbb } from './js/imgbb.js';
 
-const auth = getAuth();
-
-// ---------- Firebase Authentication Listener ----------
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    showDash();
-  } else {
-    showGate();
-  }
-});
-
+// ---------- Firebase Auth gate ----------
 window.tryLogin = async function(){
   const email = document.getElementById('emailInput').value.trim();
-  const pass = document.getElementById('passInput').value.trim();
-  const errEl = document.getElementById('gateErr');
+  const pass = document.getElementById('passInput').value;
   const btn = document.getElementById('loginBtn');
-
-  if(!email || !pass) {
-    errEl.textContent = 'Please enter email and password.';
-    errEl.style.display = 'block';
-    return;
-  }
-
+  const err = document.getElementById('gateErr');
+  err.style.display = 'none';
   btn.disabled = true;
-  errEl.style.display = 'none';
-
-  try {
+  btn.textContent = 'Signing in...';
+  try{
     await signInWithEmailAndPassword(auth, email, pass);
-  } catch(e) {
-    errEl.textContent = 'Login failed: ' + e.message;
-    errEl.style.display = 'block';
-  } finally {
-    btn.disabled = false;
+    // onAuthStateChanged below handles showing the dashboard.
+  }catch(e){
+    console.error('Login failed:', e);
+    err.style.display = 'block';
   }
+  btn.disabled = false;
+  btn.textContent = 'Sign In';
 };
 
-window.tryLogout = async function(){
-  await signOut(auth);
+window.doLogout = function(){
+  signOut(auth);
 };
 
 function showDash(){
@@ -230,11 +213,15 @@ function showDash(){
   loadProductsList();
   loadDashboardStats();
 }
-
 function showGate(){
   document.getElementById('gate').style.display = 'flex';
   document.getElementById('dash').style.display = 'none';
 }
+
+onAuthStateChanged(auth, (user)=>{
+  if(user) showDash();
+  else showGate();
+});
 
 // ---------- Tabs ----------
 document.querySelectorAll('.tab').forEach(t=>{
@@ -243,6 +230,7 @@ document.querySelectorAll('.tab').forEach(t=>{
     document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
     t.classList.add('active');
     document.getElementById(t.dataset.panel).classList.add('active');
+    if(t.dataset.panel === 'ordersPanel') loadOrdersList();
   });
 });
 
@@ -276,7 +264,6 @@ window.addSlide = async function(){
   }
   btn.disabled = false;
 };
-
 async function loadSlidesList(){
   const list = document.getElementById('slidesList');
   list.innerHTML = 'Loading...';
@@ -333,7 +320,6 @@ window.addProduct = async function(){
   }
   btn.disabled = false;
 };
-
 async function loadProductsList(){
   const list = document.getElementById('productsList');
   list.innerHTML = 'Loading...';
@@ -371,6 +357,49 @@ async function loadDashboardStats(){
     document.getElementById('statSold').textContent = products.reduce((sum,p)=>sum+(p.sold||0),0);
   }catch(e){
     console.error('Dashboard stats failed:', e);
+  }
+}
+
+// ---------- Orders ----------
+async function loadOrdersList(){
+  const list = document.getElementById('ordersList');
+  list.innerHTML = 'Loading...';
+  try{
+    const snap = await getDocs(collection(db,'orders'));
+    if(snap.empty){
+      list.innerHTML = '<p style="color:var(--text-dim);font-size:12.5px;">No orders yet — they\'ll show up here as customers check out.</p>';
+      return;
+    }
+    const orders = snap.docs.map(d=>({id:d.id, ...d.data()}))
+      .sort((a,b)=>(b.createdAt?.seconds||0) - (a.createdAt?.seconds||0));
+    list.innerHTML = '';
+    orders.forEach(o=>{
+      const itemsText = (o.items||[]).map(i=>`${i.name} x${i.qty}`).join(', ');
+      const el = document.createElement('div');
+      el.className = 'item';
+      el.style.alignItems = 'flex-start';
+      el.innerHTML = `
+        <div class="info">
+          <h4>${o.customerName || 'Unnamed'} · BDT ${o.total}</h4>
+          <p>${o.phone || ''}</p>
+          <p>${o.address || ''}</p>
+          <p>${itemsText}</p>
+          ${o.note ? `<p>Note: ${o.note}</p>` : ''}
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+          <span style="font-size:10.5px;padding:3px 8px;border-radius:10px;border:1px solid var(--line);color:${o.status==='fulfilled'?'var(--silver-bright)':'var(--text-dim)'};">${o.status||'pending'}</span>
+          <button class="toggle-status" data-id="${o.id}" data-status="${o.status||'pending'}">${o.status==='fulfilled' ? 'Mark pending' : 'Mark fulfilled'}</button>
+        </div>`;
+      el.querySelector('button[data-id]').addEventListener('click', async (e)=>{
+        const newStatus = e.target.dataset.status === 'fulfilled' ? 'pending' : 'fulfilled';
+        await updateDoc(doc(db,'orders',o.id), { status: newStatus });
+        loadOrdersList();
+      });
+      list.appendChild(el);
+    });
+  }catch(e){
+    console.error('Orders load failed:', e);
+    list.innerHTML = '<p style="color:var(--text-dim);font-size:12.5px;">Could not load orders.</p>';
   }
 }
 </script>
