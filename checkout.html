@@ -113,8 +113,11 @@ function renderConfirm(){
     </div>`;
 }
 
+const DELIVERY_INSIDE_DHAKA = 70;
+const DELIVERY_OUTSIDE_DHAKA = 130;
+
 function renderCheckout(cart){
-  const total = cart.reduce((sum,c)=>sum + c.price*c.qty, 0);
+  const subtotal = cart.reduce((sum,c)=>sum + c.price*c.qty, 0);
   const itemsHtml = cart.map(c=>`
     <div class="summary-item">
       <div class="si-media">${c.imageUrl?`<img src="${c.imageUrl}">`:''}</div>
@@ -127,7 +130,15 @@ function renderCheckout(cart){
     <div class="section">
       <div class="section-label">Your order</div>
       ${itemsHtml}
-      <div class="total-row"><span>Total</span><span>${money(total)}</span></div>
+      <div class="total-row" style="padding-top:14px;font-size:13.5px;font-weight:400;color:var(--text-dim);">
+        <span>Subtotal</span><span id="subtotalVal" style="color:var(--text-dim);">${money(subtotal)}</span>
+      </div>
+      <div class="total-row" style="padding-top:6px;font-size:13.5px;font-weight:400;color:var(--text-dim);">
+        <span>Delivery</span><span id="deliveryVal" style="color:var(--text-dim);">${money(DELIVERY_INSIDE_DHAKA)}</span>
+      </div>
+      <div class="total-row" style="padding-top:10px;border-top:1px solid var(--line);margin-top:8px;">
+        <span>Total</span><span id="grandTotalVal">${money(subtotal + DELIVERY_INSIDE_DHAKA)}</span>
+      </div>
     </div>
 
     <div class="section">
@@ -147,6 +158,21 @@ function renderCheckout(cart){
         <textarea id="inAddress" placeholder="House, road, area, city"></textarea>
         <p class="err">Address is required.</p>
       </div>
+
+      <div class="field">
+        <label>Delivery location</label>
+        <div style="display:flex;gap:10px;">
+          <label style="flex:1;display:flex;align-items:center;gap:8px;padding:12px 14px;background:var(--card);border:1px solid var(--silver);border-radius:2px;cursor:pointer;font-size:13px;">
+            <input type="radio" name="deliveryZone" value="inside" checked style="width:auto;margin:0;">
+            Inside Dhaka — ${money(DELIVERY_INSIDE_DHAKA)}
+          </label>
+          <label style="flex:1;display:flex;align-items:center;gap:8px;padding:12px 14px;background:var(--card);border:1px solid var(--line);border-radius:2px;cursor:pointer;font-size:13px;">
+            <input type="radio" name="deliveryZone" value="outside" style="width:auto;margin:0;">
+            Outside Dhaka — ${money(DELIVERY_OUTSIDE_DHAKA)}
+          </label>
+        </div>
+      </div>
+
       <div class="field">
         <label>Order note (optional)</label>
         <textarea id="inNote" placeholder="Anything we should know?"></textarea>
@@ -157,11 +183,33 @@ function renderCheckout(cart){
         <span>Cash on delivery — pay when your order arrives. No online payment needed.</span>
       </div>
 
-      <button class="place-btn" id="placeBtn">Place Order — ${money(total)}</button>
+      <button class="place-btn" id="placeBtn">Place Order — ${money(subtotal + DELIVERY_INSIDE_DHAKA)}</button>
       <p class="status-msg" id="statusMsg"></p>
     </div>`;
 
-  document.getElementById('placeBtn').addEventListener('click', ()=>placeOrder(cart, total));
+  const zoneInputs = document.querySelectorAll('input[name="deliveryZone"]');
+  zoneInputs.forEach(input=>{
+    input.addEventListener('change', ()=>{
+      zoneInputs.forEach(i=>{ i.closest('label').style.borderColor = i.checked ? 'var(--silver)' : 'var(--line)'; });
+      updateTotals(subtotal);
+    });
+  });
+
+  updateTotals(subtotal);
+  document.getElementById('placeBtn').addEventListener('click', ()=>placeOrder(cart, subtotal));
+}
+
+function getDeliveryCharge(){
+  const checked = document.querySelector('input[name="deliveryZone"]:checked');
+  return checked && checked.value === 'outside' ? DELIVERY_OUTSIDE_DHAKA : DELIVERY_INSIDE_DHAKA;
+}
+
+function updateTotals(subtotal){
+  const delivery = getDeliveryCharge();
+  const grand = subtotal + delivery;
+  document.getElementById('deliveryVal').textContent = money(delivery);
+  document.getElementById('grandTotalVal').textContent = money(grand);
+  document.getElementById('placeBtn').textContent = `Place Order — ${money(grand)}`;
 }
 
 function validate(){
@@ -186,9 +234,14 @@ function validate(){
   return ok ? { name, phone, address, note: document.getElementById('inNote').value.trim() } : null;
 }
 
-async function placeOrder(cart, total){
+async function placeOrder(cart, subtotal){
   const details = validate();
   if(!details) return;
+
+  const deliveryCharge = getDeliveryCharge();
+  const deliveryZone = document.querySelector('input[name="deliveryZone"]:checked').value === 'outside'
+    ? 'Outside Dhaka' : 'Inside Dhaka';
+  const grandTotal = subtotal + deliveryCharge;
 
   const btn = document.getElementById('placeBtn');
   const status = document.getElementById('statusMsg');
@@ -208,7 +261,10 @@ async function placeOrder(cart, total){
       address: details.address,
       note: details.note,
       items: cart.map(c=>({ id:c.id, name:c.name, price:c.price, qty:c.qty })),
-      total,
+      subtotal,
+      deliveryZone,
+      deliveryCharge,
+      total: grandTotal,
       status: 'pending',
       createdAt: fbApi.serverTimestamp()
     });
@@ -217,7 +273,7 @@ async function placeOrder(cart, total){
   }
 
   const lines = cart.map(c=>`• ${c.name} x${c.qty} — BDT ${c.price*c.qty}`).join('\n');
-  const msg = `Hi! I'd like to place an order:\n\n${lines}\n\nTotal: BDT ${total}\n\nName: ${details.name}\nPhone: ${details.phone}\nAddress: ${details.address}${details.note ? `\nNote: ${details.note}` : ''}`;
+  const msg = `Hi! I'd like to place an order:\n\n${lines}\n\nSubtotal: BDT ${subtotal}\nDelivery (${deliveryZone}): BDT ${deliveryCharge}\nTotal: BDT ${grandTotal}\n\nName: ${details.name}\nPhone: ${details.phone}\nAddress: ${details.address}${details.note ? `\nNote: ${details.note}` : ''}`;
   window.open(`https://wa.me/8801XXXXXXXXX?text=${encodeURIComponent(msg)}`, '_blank');
 
   if(cartApi) cartApi.clearCart();
