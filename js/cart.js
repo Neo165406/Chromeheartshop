@@ -6,7 +6,7 @@
 // already be on the page.
 
 const CART_KEY = 'argentum_cart';
-const WA_NUMBER = '8801XXXXXXXXX';
+const WA_NUMBER = '8801759406602';
 
 export function getCart(){
   try{ return JSON.parse(localStorage.getItem(CART_KEY)) || []; }
