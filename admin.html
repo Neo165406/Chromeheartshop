@@ -6,7 +6,6 @@
 <title>fashion1sta Admin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-
 <style>
   :root{
     --bg:#0a0b0d;--bg-alt:#15171a;--card:#17191c;
@@ -14,1861 +13,443 @@
     --text:#f2f3f5;--text-dim:#9195a0;--line:rgba(184,188,196,0.22);
     --radius:4px;
   }
-
   *{box-sizing:border-box;margin:0;padding:0;}
-
-  body{
-    background:var(--bg);
-    color:var(--text);
-    font-family:'Instrument Sans',sans-serif;
-    -webkit-font-smoothing:antialiased;
-  }
-
+  body{background:var(--bg);color:var(--text);font-family:'Instrument Sans',sans-serif;-webkit-font-smoothing:antialiased;}
   .display{font-family:'Fraunces',serif;}
-
-  input,select,button,textarea{
-    font-family:inherit;
-  }
+  input,select,button,textarea{font-family:inherit;}
 
   /* ---------- PASSWORD GATE ---------- */
-
-  #gate{
-    min-height:100vh;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:24px;
-  }
-
-  .gate-box{
-    width:100%;
-    max-width:320px;
-    text-align:center;
-  }
-
-  .gate-box h1{
-    font-family:'Fraunces',serif;
-    font-size:22px;
-    letter-spacing:0.1em;
-    color:var(--silver);
-    margin-bottom:22px;
-  }
-
-  .gate-box input{
-    width:100%;
-    padding:13px 16px;
-    background:var(--card);
-    border:1px solid var(--line);
-    color:var(--text);
-    border-radius:var(--radius);
-    font-size:14px;
-    margin-bottom:12px;
-  }
-
-  .gate-box button{
-    width:100%;
-    padding:13px;
-    background:linear-gradient(120deg,var(--silver),var(--silver-bright));
-    color:var(--bg);
-    border:none;
-    border-radius:var(--radius);
-    font-weight:600;
-    font-size:13.5px;
-    cursor:pointer;
-  }
-
-  .gate-box button:disabled{
-    opacity:0.6;
-    cursor:not-allowed;
-  }
-
-  .gate-err{
-    color:#e08a8a;
-    font-size:12.5px;
-    margin-top:10px;
-    display:none;
-    line-height:1.5;
-  }
+  #gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+  .gate-box{width:100%;max-width:320px;text-align:center;}
+  .gate-box h1{font-family:'Fraunces',serif;font-size:22px;letter-spacing:0.1em;color:var(--silver);margin-bottom:22px;}
+  .gate-box input{width:100%;padding:13px 16px;background:var(--card);border:1px solid var(--line);color:var(--text);border-radius:var(--radius);font-size:14px;margin-bottom:12px;}
+  .gate-box button{width:100%;padding:13px;background:linear-gradient(120deg,var(--silver),var(--silver-bright));color:var(--bg);border:none;border-radius:var(--radius);font-weight:600;font-size:13.5px;cursor:pointer;}
+  .gate-err{color:#e08a8a;font-size:12.5px;margin-top:10px;display:none;}
 
   /* ---------- DASHBOARD LAYOUT ---------- */
+  #dash{display:none;min-height:100vh;}
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--line);background:var(--bg-alt);position:sticky;top:0;z-index:10;}
+  .topbar .logo{font-family:'Fraunces',serif;font-size:17px;letter-spacing:0.14em;color:var(--silver);}
+  .topbar a.view-site, .topbar button.view-site{font-size:12px;color:var(--text-dim);border:1px solid var(--line);padding:7px 12px;border-radius:16px;background:none;font-family:inherit;}
 
-  #dash{
-    display:none;
-    min-height:100vh;
-  }
+  .tabs{display:flex;gap:8px;padding:16px 20px 0;overflow-x:auto;}
+  .tab{padding:9px 16px;font-size:12.5px;border:1px solid var(--line);border-radius:16px;color:var(--text-dim);white-space:nowrap;cursor:pointer;}
+  .tab.active{background:var(--silver-bright);color:var(--bg);border-color:var(--silver-bright);font-weight:600;}
 
-  .topbar{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:16px 20px;
-    border-bottom:1px solid var(--line);
-    background:var(--bg-alt);
-    position:sticky;
-    top:0;
-    z-index:10;
-  }
+  .panel{display:none;padding:20px;}
+  .panel.active{display:block;}
 
-  .topbar .logo{
-    font-family:'Fraunces',serif;
-    font-size:17px;
-    letter-spacing:0.14em;
-    color:var(--silver);
-  }
+  .card-form{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:24px;}
+  .card-form h3{font-family:'Fraunces',serif;font-size:15px;margin-bottom:14px;color:var(--silver);}
+  .field{margin-bottom:12px;}
+  .field label{display:block;font-size:11.5px;color:var(--text-dim);margin-bottom:6px;}
+  .field input, .field select, .field textarea{width:100%;padding:10px 12px;background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:var(--radius);font-size:13.5px;}
+  .field textarea{resize:vertical;min-height:60px;}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .save-btn{padding:11px 22px;background:linear-gradient(120deg,var(--silver),var(--silver-bright));color:var(--bg);border:none;border-radius:var(--radius);font-weight:600;font-size:13px;cursor:pointer;}
+  .save-btn:disabled{opacity:0.5;}
+  .status-msg{font-size:12px;margin-top:8px;color:var(--text-dim);}
 
-  .topbar a.view-site,
-  .topbar button.view-site{
-    font-size:12px;
-    color:var(--text-dim);
-    border:1px solid var(--line);
-    padding:7px 12px;
-    border-radius:16px;
-    background:none;
-    font-family:inherit;
-  }
-
-  .tabs{
-    display:flex;
-    gap:8px;
-    padding:16px 20px 0;
-    overflow-x:auto;
-  }
-
-  .tab{
-    padding:9px 16px;
-    font-size:12.5px;
-    border:1px solid var(--line);
-    border-radius:16px;
-    color:var(--text-dim);
-    white-space:nowrap;
-    cursor:pointer;
-  }
-
-  .tab.active{
-    background:var(--silver-bright);
-    color:var(--bg);
-    border-color:var(--silver-bright);
-    font-weight:600;
-  }
-
-  .panel{
-    display:none;
-    padding:20px;
-  }
-
-  .panel.active{
-    display:block;
-  }
-
-  .card-form{
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:var(--radius);
-    padding:18px;
-    margin-bottom:24px;
-  }
-
-  .card-form h3{
-    font-family:'Fraunces',serif;
-    font-size:15px;
-    margin-bottom:14px;
-    color:var(--silver);
-  }
-
-  .field{
-    margin-bottom:12px;
-  }
-
-  .field label{
-    display:block;
-    font-size:11.5px;
-    color:var(--text-dim);
-    margin-bottom:6px;
-  }
-
-  .field input,
-  .field select,
-  .field textarea{
-    width:100%;
-    padding:10px 12px;
-    background:var(--bg);
-    border:1px solid var(--line);
-    color:var(--text);
-    border-radius:var(--radius);
-    font-size:13.5px;
-  }
-
-  .field textarea{
-    resize:vertical;
-    min-height:60px;
-  }
-
-  .row2{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:10px;
-  }
-
-  .save-btn{
-    padding:11px 22px;
-    background:linear-gradient(120deg,var(--silver),var(--silver-bright));
-    color:var(--bg);
-    border:none;
-    border-radius:var(--radius);
-    font-weight:600;
-    font-size:13px;
-    cursor:pointer;
-  }
-
-  .save-btn:disabled{
-    opacity:0.5;
-  }
-
-  .status-msg{
-    font-size:12px;
-    margin-top:8px;
-    color:var(--text-dim);
-  }
-
-  .list{
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-  }
-
-  .item{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:var(--radius);
-    padding:12px;
-  }
-
-  .item img{
-    width:48px;
-    height:48px;
-    object-fit:cover;
-    border-radius:4px;
-    background:var(--bg-alt);
-  }
-
-  .item .info{
-    flex:1;
-    min-width:0;
-  }
-
-  .item .info h4{
-    font-size:13.5px;
-    margin-bottom:3px;
-  }
-
-  .item .info p{
-    font-size:11.5px;
-    color:var(--text-dim);
-  }
-
-  .item .del{
-    color:#e08a8a;
-    font-size:12px;
-    border:1px solid rgba(224,138,138,0.3);
-    padding:6px 10px;
-    border-radius:14px;
-    cursor:pointer;
-    background:none;
-    flex-shrink:0;
-  }
-
-  .item .toggle-status{
-    color:var(--silver-bright);
-    font-size:11px;
-    border:1px solid var(--line);
-    padding:6px 10px;
-    border-radius:14px;
-    cursor:pointer;
-    background:none;
-    flex-shrink:0;
-    white-space:nowrap;
-  }
-
-  @media(max-width:600px){
-    .topbar{
-      padding:14px;
-    }
-
-    .topbar .logo{
-      font-size:14px;
-    }
-
-    .tabs{
-      padding-left:14px;
-      padding-right:14px;
-    }
-
-    .panel{
-      padding:14px;
-    }
-
-    .row2{
-      grid-template-columns:1fr;
-      gap:0;
-    }
-  }
+  .list{display:flex;flex-direction:column;gap:10px;}
+  .item{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px;}
+  .item img{width:48px;height:48px;object-fit:cover;border-radius:4px;background:var(--bg-alt);}
+  .item .info{flex:1;min-width:0;}
+  .item .info h4{font-size:13.5px;margin-bottom:3px;}
+  .item .info p{font-size:11.5px;color:var(--text-dim);}
+  .item .del{color:#e08a8a;font-size:12px;border:1px solid rgba(224,138,138,0.3);padding:6px 10px;border-radius:14px;cursor:pointer;background:none;flex-shrink:0;}
+  .item .toggle-status{color:var(--silver-bright);font-size:11px;border:1px solid var(--line);padding:6px 10px;border-radius:14px;cursor:pointer;background:none;flex-shrink:0;white-space:nowrap;}
 </style>
 </head>
-
 <body>
-
-<!-- =========================================================
-     LOGIN GATE
-========================================================= -->
 
 <div id="gate">
   <div class="gate-box">
-
     <h1 class="display">fashion1sta ADMIN</h1>
-
-    <input
-      type="email"
-      id="emailInput"
-      placeholder="Email"
-      autocomplete="username"
-    >
-
-    <input
-      type="password"
-      id="passInput"
-      placeholder="Password"
-      autocomplete="current-password"
-      onkeydown="if(event.key==='Enter') tryLogin();"
-    >
-
-    <button onclick="tryLogin()" id="loginBtn">
-      Sign In
-    </button>
-
-    <p class="gate-err" id="gateErr"></p>
-
+    <input type="email" id="emailInput" placeholder="Email" autocomplete="username">
+    <input type="password" id="passInput" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter') tryLogin();">
+    <button onclick="tryLogin()" id="loginBtn">Sign In</button>
+    <p class="gate-err" id="gateErr">Wrong email or password — try again.</p>
   </div>
 </div>
-
-
-<!-- =========================================================
-     DASHBOARD
-========================================================= -->
 
 <div id="dash">
-
   <div class="topbar">
-
-    <span class="logo">
-      fashion1sta · Admin
-    </span>
-
+    <span class="logo">fashion1sta · Admin</span>
     <div style="display:flex;align-items:center;gap:10px;">
-
-      <a
-        class="view-site"
-        href="index.html"
-        target="_blank"
-      >
-        View site →
-      </a>
-
-      <button
-        class="view-site"
-        style="cursor:pointer;"
-        onclick="doLogout()"
-      >
-        Log out
-      </button>
-
+      <a class="view-site" href="index.html" target="_blank">View site →</a>
+      <button class="view-site" style="cursor:pointer;" onclick="doLogout()">Log out</button>
     </div>
-
   </div>
-
-
-  <!-- =======================================================
-       TABS
-  ======================================================== -->
-
   <div class="tabs">
-
-    <div
-      class="tab active"
-      data-panel="dashPanel"
-    >
-      Dashboard
-    </div>
-
-    <div
-      class="tab"
-      data-panel="slidesPanel"
-    >
-      Slides
-    </div>
-
-    <div
-      class="tab"
-      data-panel="productsPanel"
-    >
-      Products
-    </div>
-
-    <div
-      class="tab"
-      data-panel="ordersPanel"
-    >
-      Orders
-    </div>
-
+    <div class="tab active" data-panel="dashPanel">Dashboard</div>
+    <div class="tab" data-panel="slidesPanel">Slides</div>
+    <div class="tab" data-panel="productsPanel">Products</div>
+    <div class="tab" data-panel="ordersPanel">Orders</div>
+    <div class="tab" data-panel="settingsPanel">Settings</div>
   </div>
 
-
-  <!-- =======================================================
-       DASHBOARD
-  ======================================================== -->
-
-  <div
-    class="panel active"
-    id="dashPanel"
-  >
-
+  <!-- ---------- DASHBOARD ---------- -->
+  <div class="panel active" id="dashPanel">
     <div class="card-form">
-
       <h3>Overview</h3>
-
-      <div
-        id="dashStats"
-        style="display:grid;grid-template-columns:1fr 1fr;gap:12px;"
-      >
-
+      <div id="dashStats" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
         <div style="background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:14px;">
-          <div
-            style="font-size:22px;font-weight:700;color:var(--silver-bright);"
-            id="statProducts"
-          >
-            –
-          </div>
-
-          <div style="font-size:11.5px;color:var(--text-dim);">
-            Products
-          </div>
+          <div style="font-size:22px;font-weight:700;color:var(--silver-bright);" id="statProducts">–</div>
+          <div style="font-size:11.5px;color:var(--text-dim);">Products</div>
         </div>
-
-
         <div style="background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:14px;">
-          <div
-            style="font-size:22px;font-weight:700;color:var(--silver-bright);"
-            id="statSlides"
-          >
-            –
-          </div>
-
-          <div style="font-size:11.5px;color:var(--text-dim);">
-            Hero banners
-          </div>
+          <div style="font-size:22px;font-weight:700;color:var(--silver-bright);" id="statSlides">–</div>
+          <div style="font-size:11.5px;color:var(--text-dim);">Hero banners</div>
         </div>
-
-
         <div style="background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:14px;">
-          <div
-            style="font-size:22px;font-weight:700;color:var(--silver-bright);"
-            id="statFeatured"
-          >
-            –
-          </div>
-
-          <div style="font-size:11.5px;color:var(--text-dim);">
-            In New In
-          </div>
+          <div style="font-size:22px;font-weight:700;color:var(--silver-bright);" id="statFeatured">–</div>
+          <div style="font-size:11.5px;color:var(--text-dim);">In New In</div>
         </div>
-
-
         <div style="background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:14px;">
-          <div
-            style="font-size:22px;font-weight:700;color:var(--silver-bright);"
-            id="statSold"
-          >
-            –
-          </div>
-
-          <div style="font-size:11.5px;color:var(--text-dim);">
-            Total units sold
-          </div>
+          <div style="font-size:22px;font-weight:700;color:var(--silver-bright);" id="statSold">–</div>
+          <div style="font-size:11.5px;color:var(--text-dim);">Total units sold</div>
         </div>
-
       </div>
-
     </div>
-
   </div>
 
-
-  <!-- =======================================================
-       SLIDES
-  ======================================================== -->
-
-  <div
-    class="panel"
-    id="slidesPanel"
-  >
-
+  <!-- ---------- SLIDES ---------- -->
+  <div class="panel" id="slidesPanel">
     <div class="card-form">
-
       <h3>Add hero banner</h3>
-
-      <div class="field">
-        <label>Title</label>
-        <input
-          id="sTitle"
-          placeholder="e.g. Fresh weekly drops"
-        >
-      </div>
-
-
-      <div class="field">
-        <label>Subtext</label>
-
-        <textarea
-          id="sText"
-          placeholder="One or two lines under the title"
-        ></textarea>
-
-      </div>
-
-
+      <div class="field"><label>Title</label><input id="sTitle" placeholder="e.g. Fresh weekly drops"></div>
+      <div class="field"><label>Subtext</label><textarea id="sText" placeholder="One or two lines under the title"></textarea></div>
       <div class="row2">
-
-        <div class="field">
-
-          <label>Button label</label>
-
-          <input
-            id="sCta"
-            placeholder="Shop Now"
-            value="Shop Now"
-          >
-
-        </div>
-
-
-        <div class="field">
-
-          <label>Button link (#section or URL)</label>
-
-          <input
-            id="sHref"
-            placeholder="#glasses"
-          >
-
-        </div>
-
+        <div class="field"><label>Button label</label><input id="sCta" placeholder="Shop Now" value="Shop Now"></div>
+        <div class="field"><label>Button link (#section or URL)</label><input id="sHref" placeholder="#glasses"></div>
       </div>
-
-
-      <div class="field">
-
-        <label>
-          Order (lower shows first)
-        </label>
-
-        <input
-          id="sOrder"
-          type="number"
-          value="0"
-        >
-
-      </div>
-
-
-      <div class="field">
-
-        <label>
-          Banner image (optional — falls back to an icon)
-        </label>
-
-        <input
-          id="sImage"
-          type="file"
-          accept="image/*"
-        >
-
-      </div>
-
-
-      <button
-        class="save-btn"
-        id="sSaveBtn"
-        onclick="addSlide()"
-      >
-        Save banner
-      </button>
-
-      <p
-        class="status-msg"
-        id="sStatus"
-      ></p>
-
+      <div class="field"><label>Order (lower shows first)</label><input id="sOrder" type="number" value="0"></div>
+      <div class="field"><label>Banner image (optional — falls back to an icon)</label><input id="sImage" type="file" accept="image/*"></div>
+      <button class="save-btn" id="sSaveBtn" onclick="addSlide()">Save banner</button>
+      <p class="status-msg" id="sStatus"></p>
     </div>
-
-
-    <div
-      class="list"
-      id="slidesList"
-    ></div>
-
+    <div class="list" id="slidesList"></div>
   </div>
 
-
-  <!-- =======================================================
-       PRODUCTS
-  ======================================================== -->
-
-  <div
-    class="panel"
-    id="productsPanel"
-  >
-
+  <!-- ---------- PRODUCTS ---------- -->
+  <div class="panel" id="productsPanel">
     <div class="card-form">
-
       <h3>Add product</h3>
-
-
-      <div class="field">
-
-        <label>Name</label>
-
-        <input
-          id="pName"
-          placeholder="e.g. Gothic Cross Rimless"
-        >
-
-      </div>
-
-
+      <div class="field"><label>Name</label><input id="pName" placeholder="e.g. Gothic Cross Rimless"></div>
       <div class="row2">
-
-        <div class="field">
-
-          <label>Price (BDT)</label>
-
-          <input
-            id="pPrice"
-            type="number"
-          >
-
-        </div>
-
-
-        <div class="field">
-
-          <label>
-            Was price (optional — shows a discount badge)
-          </label>
-
-          <input
-            id="pWas"
-            type="number"
-          >
-
-        </div>
-
+        <div class="field"><label>Price (BDT)</label><input id="pPrice" type="number"></div>
+        <div class="field"><label>Was price (optional — shows a discount badge)</label><input id="pWas" type="number"></div>
       </div>
-
-
       <div class="row2">
-
         <div class="field">
-
           <label>Category</label>
-
           <select id="pCategory">
-            <option>Glasses</option>
-            <option>Accessories</option>
+            <option>Glasses</option><option>Accessories</option>
           </select>
-
         </div>
-
-
         <div class="field">
-
           <label>Subcategory</label>
-
-          <input
-            id="pSub"
-            list="subOptions"
-            placeholder="e.g. Rings"
-          >
-
+          <input id="pSub" list="subOptions" placeholder="e.g. Rings">
           <datalist id="subOptions">
-            <option value="Bandana">
-            <option value="Belts">
-            <option value="Bracelets">
-            <option value="Chain-Necklaces">
-            <option value="Earrings">
-            <option value="Fake Piercings">
-            <option value="Keychains">
-            <option value="Ring Watch">
-            <option value="Rings">
-            <option value="Sunglasses">
-            <option value="Tattoo">
-            <option value="Teeth-Grillz">
-            <option value="Wallet">
-            <option value="Wallet Chains">
-            <option value="Watches">
-            <option value="Rimless">
-            <option value="Aviators">
-            <option value="Round">
+            <option value="Bandana"><option value="Belts"><option value="Bracelets">
+            <option value="Chain-Necklaces"><option value="Earrings"><option value="Fake Piercings">
+            <option value="Keychains"><option value="Ring Watch"><option value="Rings">
+            <option value="Sunglasses"><option value="Tattoo"><option value="Teeth-Grillz">
+            <option value="Wallet"><option value="Wallet Chains"><option value="Watches">
+            <option value="Rimless"><option value="Aviators"><option value="Round">
           </datalist>
-
         </div>
-
       </div>
-
-
-      <div class="field">
-
-        <label>
-          Sold count (shows "X sold" on the card — optional)
-        </label>
-
-        <input
-          id="pSold"
-          type="number"
-          placeholder="e.g. 240"
-        >
-
-      </div>
-
-
-      <div class="field">
-
-        <label>
-
-          <input
-            type="checkbox"
-            id="pFeatured"
-            style="width:auto;margin-right:6px;"
-          >
-
-          Show in "New In"
-
-        </label>
-
-      </div>
-
-
-      <div class="field">
-
-        <label>Product image</label>
-
-        <input
-          id="pImage"
-          type="file"
-          accept="image/*"
-        >
-
-      </div>
-
-
-      <button
-        class="save-btn"
-        id="pSaveBtn"
-        onclick="addProduct()"
-      >
-        Save product
-      </button>
-
-      <p
-        class="status-msg"
-        id="pStatus"
-      ></p>
-
+      <div class="field"><label>Description (4-5 lines about the product)</label><textarea id="pDescription" rows="5" placeholder="Material, style, fit, care instructions, what makes it special..." style="width:100%;padding:10px 12px;background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:var(--radius);font-size:13.5px;font-family:inherit;resize:vertical;"></textarea></div>
+      <div class="field"><label>Sold count (shows "X sold" on the card — optional)</label><input id="pSold" type="number" placeholder="e.g. 240"></div>
+      <div class="field"><label><input type="checkbox" id="pFeatured" style="width:auto;margin-right:6px;">Show in "New In"</label></div>
+      <div class="field"><label>Product image</label><input id="pImage" type="file" accept="image/*"></div>
+      <button class="save-btn" id="pSaveBtn" onclick="addProduct()">Save product</button>
+      <p class="status-msg" id="pStatus"></p>
     </div>
-
-
-    <div
-      class="list"
-      id="productsList"
-    ></div>
-
+    <div class="list" id="productsList"></div>
   </div>
 
-
-  <!-- =======================================================
-       ORDERS
-  ======================================================== -->
-
-  <div
-    class="panel"
-    id="ordersPanel"
-  >
-
+  <!-- ---------- ORDERS ---------- -->
+  <div class="panel" id="ordersPanel">
     <div class="card-form">
-
       <h3>Orders</h3>
-
-      <p style="font-size:12.5px;color:var(--text-dim);">
-        Placed through the checkout form — each order also sends a WhatsApp message, this list is the record.
-      </p>
-
+      <p style="font-size:12.5px;color:var(--text-dim);">Placed through the checkout form — each order also sends a WhatsApp message, this list is the record.</p>
     </div>
-
-
-    <div
-      class="list"
-      id="ordersList"
-    ></div>
-
+    <div class="list" id="ordersList"></div>
   </div>
 
+  <!-- ---------- SETTINGS ---------- -->
+  <div class="panel" id="settingsPanel">
+    <div class="card-form">
+      <h3>Delivery charges</h3>
+      <div class="row2">
+        <div class="field"><label>Inside Dhaka (BDT)</label><input id="sInsideDhaka" type="number" placeholder="70"></div>
+        <div class="field"><label>Outside Dhaka (BDT)</label><input id="sOutsideDhaka" type="number" placeholder="130"></div>
+      </div>
+      <button class="save-btn" id="settingsSaveBtn" onclick="saveDeliverySettings()">Save charges</button>
+      <p class="status-msg" id="settingsStatus"></p>
+    </div>
+  </div>
 </div>
 
-
-<!-- =========================================================
-     JAVASCRIPT
-========================================================= -->
-
 <script type="module">
+import { db, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, getDoc, setDoc, serverTimestamp, auth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from './js/firebase-config.js';
+import { uploadToImgbb } from './js/imgbb.js';
 
-import {
-  db,
-  collection,
-  getDocs,
-  addDoc,
-  updateDoc,
-  deleteDoc,
-  doc,
-  serverTimestamp,
-  auth,
-  signInWithEmailAndPassword,
-  onAuthStateChanged,
-  signOut
-} from './js/firebase-config.js';
-
-import {
-  uploadToImgbb
-} from './js/imgbb.js';
-
-
-// =========================================================
-// FIREBASE AUTH GATE
-// =========================================================
-
+// ---------- Firebase Auth gate ----------
 window.tryLogin = async function(){
-
-  const email =
-    document.getElementById('emailInput').value.trim();
-
-  const pass =
-    document.getElementById('passInput').value;
-
-  const btn =
-    document.getElementById('loginBtn');
-
-  const err =
-    document.getElementById('gateErr');
-
-
-  // Basic validation
-
-  if(!email || !pass){
-
-    err.textContent =
-      'Please enter your email and password.';
-
-    err.style.display = 'block';
-
-    return;
-  }
-
-
-  // Reset error
-
+  const email = document.getElementById('emailInput').value.trim();
+  const pass = document.getElementById('passInput').value;
+  const btn = document.getElementById('loginBtn');
+  const err = document.getElementById('gateErr');
   err.style.display = 'none';
-
-  err.textContent = '';
-
-
-  // Loading state
-
   btn.disabled = true;
   btn.textContent = 'Signing in...';
-
-
   try{
-
-    await signInWithEmailAndPassword(
-      auth,
-      email,
-      pass
-    );
-
-    console.log(
-      'Firebase login successful:',
-      email
-    );
-
-    // onAuthStateChanged() will
-    // automatically show dashboard.
-
-  }
-
-  catch(e){
-
-    console.error(
-      'Firebase Login Error:',
-      e
-    );
-
-
-    // Show exact Firebase error
-
-    let message =
-      e.code
-        ? e.code + ' — ' + e.message
-        : e.message || 'Login failed.';
-
-
-    err.textContent = message;
+    await signInWithEmailAndPassword(auth, email, pass);
+    // onAuthStateChanged below handles showing the dashboard.
+  }catch(e){
+    console.error('Login failed:', e);
     err.style.display = 'block';
-
   }
-
-
   btn.disabled = false;
   btn.textContent = 'Sign In';
-
 };
 
-
-// =========================================================
-// LOGOUT
-// =========================================================
-
-window.doLogout = async function(){
-
-  try{
-
-    await signOut(auth);
-
-  }
-
-  catch(e){
-
-    console.error(
-      'Logout failed:',
-      e
-    );
-
-  }
-
+window.doLogout = function(){
+  signOut(auth);
 };
-
-
-// =========================================================
-// SHOW DASHBOARD
-// =========================================================
 
 function showDash(){
-
-  document.getElementById('gate').style.display =
-    'none';
-
-  document.getElementById('dash').style.display =
-    'block';
-
-
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('dash').style.display = 'block';
   loadSlidesList();
   loadProductsList();
   loadDashboardStats();
-
 }
-
-
-// =========================================================
-// SHOW LOGIN
-// =========================================================
-
 function showGate(){
-
-  document.getElementById('gate').style.display =
-    'flex';
-
-  document.getElementById('dash').style.display =
-    'none';
-
+  document.getElementById('gate').style.display = 'flex';
+  document.getElementById('dash').style.display = 'none';
 }
 
+onAuthStateChanged(auth, (user)=>{
+  if(user) showDash();
+  else showGate();
+});
 
-// =========================================================
-// AUTH STATE
-// =========================================================
-
-onAuthStateChanged(
-  auth,
-  (user)=>{
-
-    if(user){
-
-      console.log(
-        'Authenticated user:',
-        user.email
-      );
-
-      showDash();
-
-    }
-
-    else{
-
-      showGate();
-
-    }
-
-  }
-);
-
-
-// =========================================================
-// TABS
-// =========================================================
-
-document
-  .querySelectorAll('.tab')
-  .forEach(t=>{
-
-    t.addEventListener(
-      'click',
-      ()=>{
-
-        document
-          .querySelectorAll('.tab')
-          .forEach(x =>
-            x.classList.remove('active')
-          );
-
-
-        document
-          .querySelectorAll('.panel')
-          .forEach(x =>
-            x.classList.remove('active')
-          );
-
-
-        t.classList.add('active');
-
-
-        document
-          .getElementById(t.dataset.panel)
-          .classList.add('active');
-
-
-        if(
-          t.dataset.panel === 'ordersPanel'
-        ){
-
-          loadOrdersList();
-
-        }
-
-      }
-    );
-
+// ---------- Tabs ----------
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById(t.dataset.panel).classList.add('active');
+    if(t.dataset.panel === 'ordersPanel') loadOrdersList();
+    if(t.dataset.panel === 'settingsPanel') loadDeliverySettings();
   });
+});
 
-
-// =========================================================
-// ADD SLIDE
-// =========================================================
-
+// ---------- Slides ----------
 window.addSlide = async function(){
-
-  const btn =
-    document.getElementById('sSaveBtn');
-
-  const status =
-    document.getElementById('sStatus');
-
-  const title =
-    document.getElementById('sTitle')
-      .value
-      .trim();
-
-
-  if(!title){
-
-    status.textContent =
-      'Title is required.';
-
-    return;
-
-  }
-
-
-  btn.disabled = true;
-  status.textContent = 'Saving...';
-
-
+  const btn = document.getElementById('sSaveBtn');
+  const status = document.getElementById('sStatus');
+  const title = document.getElementById('sTitle').value.trim();
+  if(!title){ status.textContent = 'Title is required.'; return; }
+  btn.disabled = true; status.textContent = 'Saving...';
   try{
-
     let imageUrl = null;
-
-
-    const file =
-      document.getElementById('sImage')
-        .files[0];
-
-
-    if(file){
-
-      status.textContent =
-        'Uploading image...';
-
-      imageUrl =
-        await uploadToImgbb(file);
-
-    }
-
-
-    await addDoc(
-      collection(db,'slides'),
-      {
-
-        title,
-
-        text:
-          document
-            .getElementById('sText')
-            .value
-            .trim(),
-
-        cta:
-          document
-            .getElementById('sCta')
-            .value
-            .trim() || 'Shop Now',
-
-        href:
-          document
-            .getElementById('sHref')
-            .value
-            .trim() || '#',
-
-        order:
-          Number(
-            document
-              .getElementById('sOrder')
-              .value
-          ) || 0,
-
-        imageUrl,
-
-        createdAt:
-          serverTimestamp()
-
-      }
-    );
-
-
-    status.textContent =
-      'Saved.';
-
-
-    [
-      'sTitle',
-      'sText',
-      'sCta',
-      'sHref',
-      'sOrder'
-    ]
-    .forEach(
-      id =>
-        document
-          .getElementById(id)
-          .value = ''
-    );
-
-
-    document
-      .getElementById('sImage')
-      .value = '';
-
-
+    const file = document.getElementById('sImage').files[0];
+    if(file){ status.textContent = 'Uploading image...'; imageUrl = await uploadToImgbb(file); }
+    await addDoc(collection(db,'slides'), {
+      title,
+      text: document.getElementById('sText').value.trim(),
+      cta: document.getElementById('sCta').value.trim() || 'Shop Now',
+      href: document.getElementById('sHref').value.trim() || '#',
+      order: Number(document.getElementById('sOrder').value) || 0,
+      imageUrl,
+      createdAt: serverTimestamp()
+    });
+    status.textContent = 'Saved.';
+    ['sTitle','sText','sCta','sHref','sOrder'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('sImage').value='';
     loadSlidesList();
     loadDashboardStats();
-
+  }catch(e){
+    console.error(e); status.textContent = 'Failed: ' + e.message;
   }
-
-  catch(e){
-
-    console.error(e);
-
-    status.textContent =
-      'Failed: ' + e.message;
-
-  }
-
-
   btn.disabled = false;
-
 };
-
-
-// =========================================================
-// LOAD SLIDES
-// =========================================================
-
 async function loadSlidesList(){
-
-  const list =
-    document.getElementById('slidesList');
-
-  list.innerHTML =
-    'Loading...';
-
-
-  try{
-
-    const snap =
-      await getDocs(
-        collection(db,'slides')
-      );
-
-
-    if(snap.empty){
-
-      list.innerHTML =
-        '<p style="color:var(--text-dim);font-size:12.5px;">No banners yet — the site shows default demo banners until you add one.</p>';
-
-      return;
-
-    }
-
-
-    list.innerHTML = '';
-
-
-    snap.docs.forEach(d=>{
-
-      const s =
-        d.data();
-
-
-      const el =
-        document.createElement('div');
-
-      el.className =
-        'item';
-
-
-      el.innerHTML = `
-
-        ${
-          s.imageUrl
-            ? `<img src="${s.imageUrl}">`
-            : '<div style="width:48px;height:48px;background:var(--bg-alt);border-radius:4px;"></div>'
-        }
-
-        <div class="info">
-
-          <h4>
-            ${s.title}
-          </h4>
-
-          <p>
-            order: ${s.order || 0}
-            ·
-            ${s.cta || ''}
-          </p>
-
-        </div>
-
-        <button
-          class="del"
-          data-id="${d.id}"
-        >
-          Delete
-        </button>
-
-      `;
-
-
-      el
-        .querySelector('.del')
-        .addEventListener(
-          'click',
-          async ()=>{
-
-            await deleteDoc(
-              doc(db,'slides',d.id)
-            );
-
-            loadSlidesList();
-            loadDashboardStats();
-
-          }
-        );
-
-
-      list.appendChild(el);
-
+  const list = document.getElementById('slidesList');
+  list.innerHTML = 'Loading...';
+  const snap = await getDocs(collection(db,'slides'));
+  if(snap.empty){ list.innerHTML = '<p style="color:var(--text-dim);font-size:12.5px;">No banners yet — the site shows default demo banners until you add one.</p>'; return; }
+  list.innerHTML = '';
+  snap.docs.forEach(d=>{
+    const s = d.data();
+    const el = document.createElement('div');
+    el.className = 'item';
+    el.innerHTML = `
+      ${s.imageUrl ? `<img src="${s.imageUrl}">` : '<div style="width:48px;height:48px;background:var(--bg-alt);border-radius:4px;"></div>'}
+      <div class="info"><h4>${s.title}</h4><p>order: ${s.order||0} · ${s.cta||''}</p></div>
+      <button class="del" data-id="${d.id}">Delete</button>`;
+    el.querySelector('.del').addEventListener('click', async ()=>{
+      await deleteDoc(doc(db,'slides',d.id));
+      loadSlidesList();
+      loadDashboardStats();
     });
-
-  }
-
-  catch(e){
-
-    console.error(
-      'Slides load failed:',
-      e
-    );
-
-    list.innerHTML =
-      '<p style="color:#e08a8a;font-size:12.5px;">Could not load banners. Check Firestore rules.</p>';
-
-  }
-
+    list.appendChild(el);
+  });
 }
 
-
-// =========================================================
-// ADD PRODUCT
-// =========================================================
-
+// ---------- Products ----------
 window.addProduct = async function(){
-
-  const btn =
-    document.getElementById('pSaveBtn');
-
-  const status =
-    document.getElementById('pStatus');
-
-  const name =
-    document
-      .getElementById('pName')
-      .value
-      .trim();
-
-  const price =
-    Number(
-      document
-        .getElementById('pPrice')
-        .value
-    );
-
-
-  if(!name || !price){
-
-    status.textContent =
-      'Name and price are required.';
-
-    return;
-
-  }
-
-
-  btn.disabled = true;
-  status.textContent =
-    'Saving...';
-
-
+  const btn = document.getElementById('pSaveBtn');
+  const status = document.getElementById('pStatus');
+  const name = document.getElementById('pName').value.trim();
+  const price = Number(document.getElementById('pPrice').value);
+  if(!name || !price){ status.textContent = 'Name and price are required.'; return; }
+  btn.disabled = true; status.textContent = 'Saving...';
   try{
-
     let imageUrl = null;
-
-
-    const file =
-      document
-        .getElementById('pImage')
-        .files[0];
-
-
-    if(file){
-
-      status.textContent =
-        'Uploading image...';
-
-      imageUrl =
-        await uploadToImgbb(file);
-
-    }
-
-
-    await addDoc(
-      collection(db,'products'),
-      {
-
-        name,
-
-        price,
-
-        was:
-          Number(
-            document
-              .getElementById('pWas')
-              .value
-          ) || null,
-
-        category:
-          document
-            .getElementById('pCategory')
-            .value,
-
-        subcategory:
-          document
-            .getElementById('pSub')
-            .value
-            .trim(),
-
-        sold:
-          Number(
-            document
-              .getElementById('pSold')
-              .value
-          ) || 0,
-
-        featured:
-          document
-            .getElementById('pFeatured')
-            .checked,
-
-        imageUrl,
-
-        createdAt:
-          serverTimestamp()
-
-      }
-    );
-
-
-    status.textContent =
-      'Saved.';
-
-
-    [
-      'pName',
-      'pPrice',
-      'pWas',
-      'pSub',
-      'pSold'
-    ]
-    .forEach(
-      id =>
-        document
-          .getElementById(id)
-          .value = ''
-    );
-
-
-    document
-      .getElementById('pFeatured')
-      .checked = false;
-
-
-    document
-      .getElementById('pImage')
-      .value = '';
-
-
+    const file = document.getElementById('pImage').files[0];
+    if(file){ status.textContent = 'Uploading image...'; imageUrl = await uploadToImgbb(file); }
+    await addDoc(collection(db,'products'), {
+      name, price,
+      was: Number(document.getElementById('pWas').value) || null,
+      category: document.getElementById('pCategory').value,
+      subcategory: document.getElementById('pSub').value.trim(),
+      description: document.getElementById('pDescription').value.trim(),
+      sold: Number(document.getElementById('pSold').value) || 0,
+      featured: document.getElementById('pFeatured').checked,
+      imageUrl,
+      createdAt: serverTimestamp()
+    });
+    status.textContent = 'Saved.';
+    ['pName','pPrice','pWas','pSub','pSold','pDescription'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('pFeatured').checked = false;
+    document.getElementById('pImage').value='';
     loadProductsList();
     loadDashboardStats();
-
+  }catch(e){
+    console.error(e); status.textContent = 'Failed: ' + e.message;
   }
-
-  catch(e){
-
-    console.error(e);
-
-    status.textContent =
-      'Failed: ' + e.message;
-
-  }
-
-
   btn.disabled = false;
-
 };
-
-
-// =========================================================
-// LOAD PRODUCTS
-// =========================================================
-
 async function loadProductsList(){
-
-  const list =
-    document.getElementById('productsList');
-
-  list.innerHTML =
-    'Loading...';
-
-
-  try{
-
-    const snap =
-      await getDocs(
-        collection(db,'products')
-      );
-
-
-    if(snap.empty){
-
-      list.innerHTML =
-        '<p style="color:var(--text-dim);font-size:12.5px;">No products yet — the site shows default demo products until you add some.</p>';
-
-      return;
-
-    }
-
-
-    list.innerHTML = '';
-
-
-    snap.docs.forEach(d=>{
-
-      const p =
-        d.data();
-
-
-      const el =
-        document.createElement('div');
-
-      el.className =
-        'item';
-
-
-      el.innerHTML = `
-
-        ${
-          p.imageUrl
-            ? `<img src="${p.imageUrl}">`
-            : '<div style="width:48px;height:48px;background:var(--bg-alt);border-radius:4px;"></div>'
-        }
-
-        <div class="info">
-
-          <h4>
-            ${p.name}${p.featured ? ' ★' : ''}
-          </h4>
-
-          <p>
-            ${p.category}
-            ·
-            BDT ${p.price}
-          </p>
-
-        </div>
-
-        <button
-          class="del"
-          data-id="${d.id}"
-        >
-          Delete
-        </button>
-
-      `;
-
-
-      el
-        .querySelector('.del')
-        .addEventListener(
-          'click',
-          async ()=>{
-
-            await deleteDoc(
-              doc(db,'products',d.id)
-            );
-
-            loadProductsList();
-            loadDashboardStats();
-
-          }
-        );
-
-
-      list.appendChild(el);
-
+  const list = document.getElementById('productsList');
+  list.innerHTML = 'Loading...';
+  const snap = await getDocs(collection(db,'products'));
+  if(snap.empty){ list.innerHTML = '<p style="color:var(--text-dim);font-size:12.5px;">No products yet — the site shows default demo products until you add some.</p>'; return; }
+  list.innerHTML = '';
+  snap.docs.forEach(d=>{
+    const p = d.data();
+    const el = document.createElement('div');
+    el.className = 'item';
+    el.innerHTML = `
+      ${p.imageUrl ? `<img src="${p.imageUrl}">` : '<div style="width:48px;height:48px;background:var(--bg-alt);border-radius:4px;"></div>'}
+      <div class="info"><h4>${p.name}${p.featured?' ★':''}</h4><p>${p.category} · BDT ${p.price}</p></div>
+      <button class="del" data-id="${d.id}">Delete</button>`;
+    el.querySelector('.del').addEventListener('click', async ()=>{
+      await deleteDoc(doc(db,'products',d.id));
+      loadProductsList();
+      loadDashboardStats();
     });
-
-  }
-
-  catch(e){
-
-    console.error(
-      'Products load failed:',
-      e
-    );
-
-    list.innerHTML =
-      '<p style="color:#e08a8a;font-size:12.5px;">Could not load products. Check Firestore rules.</p>';
-
-  }
-
+    list.appendChild(el);
+  });
 }
 
-
-// =========================================================
-// DASHBOARD STATS
-// =========================================================
-
+// ---------- Dashboard ----------
 async function loadDashboardStats(){
-
   try{
-
-    const [
-      productsSnap,
-      slidesSnap
-    ] = await Promise.all([
-
-      getDocs(
-        collection(db,'products')
-      ),
-
-      getDocs(
-        collection(db,'slides')
-      )
-
+    const [productsSnap, slidesSnap] = await Promise.all([
+      getDocs(collection(db,'products')),
+      getDocs(collection(db,'slides'))
     ]);
-
-
-    const products =
-      productsSnap.docs.map(
-        d => d.data()
-      );
-
-
-    document
-      .getElementById('statProducts')
-      .textContent =
-      products.length;
-
-
-    document
-      .getElementById('statSlides')
-      .textContent =
-      slidesSnap.size;
-
-
-    document
-      .getElementById('statFeatured')
-      .textContent =
-      products.filter(
-        p => p.featured
-      ).length;
-
-
-    document
-      .getElementById('statSold')
-      .textContent =
-      products.reduce(
-        (sum,p)=>
-          sum + (p.sold || 0),
-        0
-      );
-
+    const products = productsSnap.docs.map(d=>d.data());
+    document.getElementById('statProducts').textContent = products.length;
+    document.getElementById('statSlides').textContent = slidesSnap.size;
+    document.getElementById('statFeatured').textContent = products.filter(p=>p.featured).length;
+    document.getElementById('statSold').textContent = products.reduce((sum,p)=>sum+(p.sold||0),0);
+  }catch(e){
+    console.error('Dashboard stats failed:', e);
   }
-
-  catch(e){
-
-    console.error(
-      'Dashboard stats failed:',
-      e
-    );
-
-  }
-
 }
 
-
-// =========================================================
-// ORDERS
-// =========================================================
-
+// ---------- Orders ----------
 async function loadOrdersList(){
-
-  const list =
-    document.getElementById('ordersList');
-
-  list.innerHTML =
-    'Loading...';
-
-
+  const list = document.getElementById('ordersList');
+  list.innerHTML = 'Loading...';
   try{
-
-    const snap =
-      await getDocs(
-        collection(db,'orders')
-      );
-
-
+    const snap = await getDocs(collection(db,'orders'));
     if(snap.empty){
-
-      list.innerHTML =
-        '<p style="color:var(--text-dim);font-size:12.5px;">No orders yet — they\'ll show up here as customers check out.</p>';
-
+      list.innerHTML = '<p style="color:var(--text-dim);font-size:12.5px;">No orders yet — they\'ll show up here as customers check out.</p>';
       return;
-
     }
-
-
-    const orders =
-      snap.docs
-        .map(
-          d => ({
-            id:d.id,
-            ...d.data()
-          })
-        )
-        .sort(
-          (a,b)=>
-            (b.createdAt?.seconds || 0)
-            -
-            (a.createdAt?.seconds || 0)
-        );
-
-
+    const orders = snap.docs.map(d=>({id:d.id, ...d.data()}))
+      .sort((a,b)=>(b.createdAt?.seconds||0) - (a.createdAt?.seconds||0));
     list.innerHTML = '';
-
-
     orders.forEach(o=>{
-
-      const itemsText =
-        (o.items || [])
-          .map(
-            i =>
-              `${i.name} x${i.qty}`
-          )
-          .join(', ');
-
-
-      const el =
-        document.createElement('div');
-
-      el.className =
-        'item';
-
-      el.style.alignItems =
-        'flex-start';
-
-
+      const itemsText = (o.items||[]).map(i=>`${i.name} x${i.qty}`).join(', ');
+      const el = document.createElement('div');
+      el.className = 'item';
+      el.style.alignItems = 'flex-start';
       el.innerHTML = `
-
         <div class="info">
-
-          <h4>
-            ${o.customerName || 'Unnamed'}
-            ·
-            BDT ${o.total}
-          </h4>
-
-          <p>
-            ${o.phone || ''}
-          </p>
-
-          <p>
-            ${o.address || ''}
-          </p>
-
-          <p>
-            ${itemsText}
-          </p>
-
-          ${
-            o.note
-              ? `<p>Note: ${o.note}</p>`
-              : ''
-          }
-
+          <h4>${o.customerName || 'Unnamed'} · BDT ${o.total}</h4>
+          <p>${o.phone || ''}</p>
+          <p>${o.address || ''}</p>
+          <p>${itemsText}</p>
+          ${o.note ? `<p>Note: ${o.note}</p>` : ''}
         </div>
-
-
-        <div
-          style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;"
-        >
-
-          <span
-            style="
-              font-size:10.5px;
-              padding:3px 8px;
-              border-radius:10px;
-              border:1px solid var(--line);
-              color:${o.status === 'fulfilled'
-                ? 'var(--silver-bright)'
-                : 'var(--text-dim)'};
-            "
-          >
-            ${o.status || 'pending'}
-          </span>
-
-
-          <button
-            class="toggle-status"
-            data-id="${o.id}"
-            data-status="${o.status || 'pending'}"
-          >
-            ${
-              o.status === 'fulfilled'
-                ? 'Mark pending'
-                : 'Mark fulfilled'
-            }
-          </button>
-
-        </div>
-
-      `;
-
-
-      el
-        .querySelector('button[data-id]')
-        .addEventListener(
-          'click',
-          async (e)=>{
-
-            const newStatus =
-              e.target.dataset.status === 'fulfilled'
-                ? 'pending'
-                : 'fulfilled';
-
-
-            await updateDoc(
-              doc(db,'orders',o.id),
-              {
-                status:newStatus
-              }
-            );
-
-
-            loadOrdersList();
-
-          }
-        );
-
-
+        <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+          <span style="font-size:10.5px;padding:3px 8px;border-radius:10px;border:1px solid var(--line);color:${o.status==='fulfilled'?'var(--silver-bright)':'var(--text-dim)'};">${o.status||'pending'}</span>
+          <button class="toggle-status" data-id="${o.id}" data-status="${o.status||'pending'}">${o.status==='fulfilled' ? 'Mark pending' : 'Mark fulfilled'}</button>
+        </div>`;
+      el.querySelector('button[data-id]').addEventListener('click', async (e)=>{
+        const newStatus = e.target.dataset.status === 'fulfilled' ? 'pending' : 'fulfilled';
+        await updateDoc(doc(db,'orders',o.id), { status: newStatus });
+        loadOrdersList();
+      });
       list.appendChild(el);
-
     });
-
+  }catch(e){
+    console.error('Orders load failed:', e);
+    list.innerHTML = '<p style="color:var(--text-dim);font-size:12.5px;">Could not load orders.</p>';
   }
-
-  catch(e){
-
-    console.error(
-      'Orders load failed:',
-      e
-    );
-
-
-    list.innerHTML =
-      '<p style="color:var(--text-dim);font-size:12.5px;">Could not load orders. Check Firestore rules.</p>';
-
-  }
-
 }
 
+// ---------- Delivery settings ----------
+async function loadDeliverySettings(){
+  try{
+    const snap = await getDoc(doc(db,'settings','delivery'));
+    if(snap.exists()){
+      const d = snap.data();
+      document.getElementById('sInsideDhaka').value = d.insideDhaka ?? '';
+      document.getElementById('sOutsideDhaka').value = d.outsideDhaka ?? '';
+    }
+  }catch(e){
+    console.error('Delivery settings load failed:', e);
+  }
+}
+window.saveDeliverySettings = async function(){
+  const btn = document.getElementById('settingsSaveBtn');
+  const status = document.getElementById('settingsStatus');
+  const inside = Number(document.getElementById('sInsideDhaka').value);
+  const outside = Number(document.getElementById('sOutsideDhaka').value);
+  if(!inside || !outside){ status.textContent = 'Both charges are required.'; return; }
+  btn.disabled = true;
+  status.textContent = 'Saving...';
+  try{
+    await setDoc(doc(db,'settings','delivery'), { insideDhaka: inside, outsideDhaka: outside }, { merge: true });
+    status.textContent = 'Saved — the checkout page will use these charges now.';
+  }catch(e){
+    console.error(e);
+    status.textContent = 'Failed: ' + e.message;
+  }
+  btn.disabled = false;
+};
 </script>
-
 </body>
 </html>
