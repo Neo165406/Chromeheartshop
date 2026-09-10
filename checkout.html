@@ -113,8 +113,8 @@ function renderConfirm(){
     </div>`;
 }
 
-const DELIVERY_INSIDE_DHAKA = 70;
-const DELIVERY_OUTSIDE_DHAKA = 130;
+let DELIVERY_INSIDE_DHAKA = 70;
+let DELIVERY_OUTSIDE_DHAKA = 130;
 
 function renderCheckout(cart){
   const subtotal = cart.reduce((sum,c)=>sum + c.price*c.qty, 0);
@@ -274,10 +274,29 @@ async function placeOrder(cart, subtotal){
 
   const lines = cart.map(c=>`• ${c.name} x${c.qty} — BDT ${c.price*c.qty}`).join('\n');
   const msg = `Hi! I'd like to place an order:\n\n${lines}\n\nSubtotal: BDT ${subtotal}\nDelivery (${deliveryZone}): BDT ${deliveryCharge}\nTotal: BDT ${grandTotal}\n\nName: ${details.name}\nPhone: ${details.phone}\nAddress: ${details.address}${details.note ? `\nNote: ${details.note}` : ''}`;
-  window.open(`https://wa.me/8801XXXXXXXXX?text=${encodeURIComponent(msg)}`, '_blank');
+  window.open(`https://wa.me/8801759406602?text=${encodeURIComponent(msg)}`, '_blank');
 
   if(cartApi) cartApi.clearCart();
   renderConfirm();
+}
+
+async function loadDeliverySettings(){
+  try{
+    if(!fbApi){
+      const fb = await import('./js/firebase-config.js');
+      fbApi = { db: fb.db, collection: fb.collection, addDoc: fb.addDoc, serverTimestamp: fb.serverTimestamp, doc: fb.doc, getDoc: fb.getDoc };
+    }
+    const fetchPromise = fbApi.getDoc(fbApi.doc(fbApi.db,'settings','delivery'));
+    const timeout = new Promise(resolve => setTimeout(()=>resolve(null), 4000));
+    const snap = await Promise.race([fetchPromise, timeout]);
+    if(snap && snap.exists && snap.exists()){
+      const d = snap.data();
+      if(d.insideDhaka) DELIVERY_INSIDE_DHAKA = d.insideDhaka;
+      if(d.outsideDhaka) DELIVERY_OUTSIDE_DHAKA = d.outsideDhaka;
+    }
+  }catch(e){
+    console.error('Delivery settings load failed, using defaults:', e);
+  }
 }
 
 async function init(){
@@ -288,6 +307,7 @@ async function init(){
   }
   const cart = cartApi ? cartApi.getCart() : [];
   if(!cart.length){ renderEmpty(); return; }
+  await loadDeliverySettings();
   renderCheckout(cart);
 }
 init();
