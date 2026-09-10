@@ -216,6 +216,11 @@ function renderProduct(product, all){
         <button class="btn-outline" id="addCartBtn">Add to Cart</button>
         <button class="btn-solid" id="buyNowBtn">Buy Now</button>
       </div>
+      ${product.description ? `
+      <div style="padding:24px 0;border-top:1px solid var(--line);margin-top:8px;">
+        <div style="font-size:11px;letter-spacing:0.14em;color:var(--text-dim);text-transform:uppercase;margin-bottom:12px;">Description</div>
+        <p style="font-size:13.5px;color:var(--text-dim);line-height:1.7;white-space:pre-line;">${product.description}</p>
+      </div>` : ''}
     </div>
     <section class="collection">
       <div class="section-head"><h2 class="display">Similar Products</h2></div>
