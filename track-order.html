@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Track Order — fashion1sta</title>
+<meta name="theme-color" content="#0a0b0d">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0b0d;--card:#17191c;
+    --silver:#b8bcc4;--silver-bright:#f2f4f7;--silver-deep:#6b6f76;
+    --text:#f2f3f5;--text-dim:#9195a0;--line:rgba(184,188,196,0.22);
+    --radius:2px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Instrument Sans',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .display{font-family:'Fraunces',serif;}
+  a{color:var(--silver-bright);}
+  button{font-family:inherit;}
+  header{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:16px 22px;background:rgba(10,11,13,0.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+  .navicon{width:20px;height:20px;}
+  .logo{font-family:'Fraunces',serif;font-size:19px;letter-spacing:0.14em;font-weight:600;background:linear-gradient(120deg,var(--silver-deep),var(--silver-bright) 45%,var(--silver));-webkit-background-clip:text;background-clip:text;color:transparent;text-decoration:none;}
+  main{max-width:640px;margin:0 auto;padding:28px 22px 60px;}
+  h1{font-family:'Fraunces',serif;font-weight:500;font-size:26px;margin-bottom:6px;}
+  .updated{font-size:12px;color:var(--text-dim);margin-bottom:28px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:12px;color:var(--text-dim);margin-bottom:6px;}
+  .field input{width:100%;padding:12px 14px;background:var(--card);border:1px solid var(--line);color:var(--text);border-radius:var(--radius);font-size:14px;font-family:inherit;}
+  .field input:focus{outline:none;border-color:var(--silver);}
+  .track-btn{width:100%;padding:15px 0;text-align:center;background:linear-gradient(120deg,var(--silver),var(--silver-bright));color:var(--bg);border:none;border-radius:var(--radius);font-size:14px;font-weight:700;cursor:pointer;margin-top:6px;}
+  h2{font-family:'Fraunces',serif;font-weight:500;font-size:16px;margin:30px 0 10px;color:var(--silver-bright);}
+  p{font-size:13.5px;color:var(--text-dim);margin-bottom:10px;}
+</style>
+</head>
+<body>
+
+<header>
+  <a href="index.html"><svg class="navicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 6l-6 6 6 6"/></svg></a>
+  <a href="index.html" class="logo">fashion1sta</a>
+  <span style="width:20px;"></span>
+</header>
+
+<main>
+  <h1 class="display">Track Order</h1>
+  <p class="updated">Enter your order details and we'll check the status for you</p>
+
+  <div class="field">
+    <label>Phone number used to order</label>
+    <input type="tel" id="tPhone" placeholder="01XXXXXXXXX">
+  </div>
+  <div class="field">
+    <label>Order note (optional — e.g. items ordered, approx. date)</label>
+    <input type="text" id="tNote" placeholder="e.g. Gothic Cross Rimless, ordered last Tuesday">
+  </div>
+  <button class="track-btn" id="trackBtn">Check via WhatsApp</button>
+
+  <h2>How it works</h2>
+  <p>Every order placed on fashion1sta is confirmed and tracked through WhatsApp. Tap the button above to send us your phone number and we'll reply with your order's current status and expected delivery time.</p>
+
+  <h2>Delivery Estimate</h2>
+  <p>Inside Dhaka: 1–2 business days. Outside Dhaka: 2–5 business days, from the time your order is confirmed. See full details on our <a href="shipping.html">Shipping Info</a> page.</p>
+</main>
+
+<script>
+document.getElementById('trackBtn').addEventListener('click', ()=>{
+  const phone = document.getElementById('tPhone').value.trim();
+  const note = document.getElementById('tNote').value.trim();
+  if(!phone){
+    document.getElementById('tPhone').focus();
+    return;
+  }
+  const msg = `Hi! I'd like to track my order.\n\nPhone used to order: ${phone}${note ? `\nNote: ${note}` : ''}`;
+  window.open(`https://wa.me/8801759406602?text=${encodeURIComponent(msg)}`, '_blank');
+});
+</script>
+</body>
+</html>
