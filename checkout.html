@@ -115,6 +115,7 @@ function renderConfirm(){
 
 let DELIVERY_INSIDE_DHAKA = 70;
 let DELIVERY_OUTSIDE_DHAKA = 130;
+let appliedCoupon = null;
 
 function renderCheckout(cart){
   const subtotal = cart.reduce((sum,c)=>sum + c.price*c.qty, 0);
@@ -130,11 +131,21 @@ function renderCheckout(cart){
     <div class="section">
       <div class="section-label">Your order</div>
       ${itemsHtml}
-      <div class="total-row" style="padding-top:14px;font-size:13.5px;font-weight:400;color:var(--text-dim);">
+
+      <div style="display:flex;gap:8px;margin-top:16px;">
+        <input type="text" id="couponInput" placeholder="Coupon code" style="flex:1;padding:11px 14px;background:var(--card);border:1px solid var(--line);color:var(--text);border-radius:var(--radius);font-size:13px;text-transform:uppercase;">
+        <button id="couponApplyBtn" style="padding:11px 18px;border:1px solid var(--silver-deep);color:var(--silver-bright);background:none;border-radius:var(--radius);font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;">Apply</button>
+      </div>
+      <p id="couponMsg" style="font-size:11.5px;margin-top:6px;display:none;"></p>
+
+      <div class="total-row" style="padding-top:16px;font-size:13.5px;font-weight:400;color:var(--text-dim);">
         <span>Subtotal</span><span id="subtotalVal" style="color:var(--text-dim);">${money(subtotal)}</span>
       </div>
       <div class="total-row" style="padding-top:6px;font-size:13.5px;font-weight:400;color:var(--text-dim);">
         <span>Delivery</span><span id="deliveryVal" style="color:var(--text-dim);">${money(DELIVERY_INSIDE_DHAKA)}</span>
+      </div>
+      <div class="total-row" id="discountRow" style="padding-top:6px;font-size:13.5px;font-weight:400;color:var(--silver-bright);display:none;">
+        <span>Discount</span><span id="discountVal">-${money(0)}</span>
       </div>
       <div class="total-row" style="padding-top:10px;border-top:1px solid var(--line);margin-top:8px;">
         <span>Total</span><span id="grandTotalVal">${money(subtotal + DELIVERY_INSIDE_DHAKA)}</span>
@@ -195,6 +206,12 @@ function renderCheckout(cart){
     });
   });
 
+  appliedCoupon = null;
+  document.getElementById('couponApplyBtn').addEventListener('click', ()=>applyCoupon(subtotal));
+  document.getElementById('couponInput').addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter'){ e.preventDefault(); applyCoupon(subtotal); }
+  });
+
   updateTotals(subtotal);
   document.getElementById('placeBtn').addEventListener('click', ()=>placeOrder(cart, subtotal));
 }
@@ -204,10 +221,57 @@ function getDeliveryCharge(){
   return checked && checked.value === 'outside' ? DELIVERY_OUTSIDE_DHAKA : DELIVERY_INSIDE_DHAKA;
 }
 
+function getDiscountAmount(subtotal){
+  if(!appliedCoupon) return 0;
+  const raw = appliedCoupon.type === 'percent' ? subtotal * (appliedCoupon.value/100) : appliedCoupon.value;
+  return Math.min(Math.round(raw), subtotal);
+}
+
+async function applyCoupon(subtotal){
+  const input = document.getElementById('couponInput');
+  const msg = document.getElementById('couponMsg');
+  const code = input.value.trim().toUpperCase();
+  if(!code){ return; }
+  msg.style.display = 'block';
+  msg.style.color = 'var(--text-dim)';
+  msg.textContent = 'Checking code...';
+  try{
+    if(!fbApi){
+      const fb = await import('./js/firebase-config.js');
+      fbApi = { db: fb.db, collection: fb.collection, addDoc: fb.addDoc, serverTimestamp: fb.serverTimestamp, doc: fb.doc, getDoc: fb.getDoc };
+    }
+    const snap = await fbApi.getDoc(fbApi.doc(fbApi.db,'coupons',code));
+    if(snap.exists && snap.exists()){
+      const d = snap.data();
+      appliedCoupon = { code, type: d.type, value: d.value };
+      msg.style.color = 'var(--silver-bright)';
+      msg.textContent = `"${code}" applied — ${d.type==='percent' ? d.value+'% off' : 'BDT '+d.value+' off'}.`;
+    } else {
+      appliedCoupon = null;
+      msg.style.color = '#e08a8a';
+      msg.textContent = 'That code isn\'t valid.';
+    }
+  }catch(e){
+    console.error('Coupon check failed:', e);
+    appliedCoupon = null;
+    msg.style.color = '#e08a8a';
+    msg.textContent = 'Could not check that code — try again.';
+  }
+  updateTotals(subtotal);
+}
+
 function updateTotals(subtotal){
   const delivery = getDeliveryCharge();
-  const grand = subtotal + delivery;
+  const discount = getDiscountAmount(subtotal);
+  const grand = Math.max(0, subtotal + delivery - discount);
   document.getElementById('deliveryVal').textContent = money(delivery);
+  const discountRow = document.getElementById('discountRow');
+  if(discount > 0){
+    discountRow.style.display = 'flex';
+    document.getElementById('discountVal').textContent = `-${money(discount)}`;
+  } else {
+    discountRow.style.display = 'none';
+  }
   document.getElementById('grandTotalVal').textContent = money(grand);
   document.getElementById('placeBtn').textContent = `Place Order — ${money(grand)}`;
 }
@@ -241,7 +305,8 @@ async function placeOrder(cart, subtotal){
   const deliveryCharge = getDeliveryCharge();
   const deliveryZone = document.querySelector('input[name="deliveryZone"]:checked').value === 'outside'
     ? 'Outside Dhaka' : 'Inside Dhaka';
-  const grandTotal = subtotal + deliveryCharge;
+  const discount = getDiscountAmount(subtotal);
+  const grandTotal = Math.max(0, subtotal + deliveryCharge - discount);
 
   const btn = document.getElementById('placeBtn');
   const status = document.getElementById('statusMsg');
@@ -264,6 +329,8 @@ async function placeOrder(cart, subtotal){
       subtotal,
       deliveryZone,
       deliveryCharge,
+      couponCode: appliedCoupon ? appliedCoupon.code : null,
+      discount,
       total: grandTotal,
       status: 'pending',
       createdAt: fbApi.serverTimestamp()
@@ -273,7 +340,8 @@ async function placeOrder(cart, subtotal){
   }
 
   const lines = cart.map(c=>`• ${c.name} x${c.qty} — BDT ${c.price*c.qty}`).join('\n');
-  const msg = `Hi! I'd like to place an order:\n\n${lines}\n\nSubtotal: BDT ${subtotal}\nDelivery (${deliveryZone}): BDT ${deliveryCharge}\nTotal: BDT ${grandTotal}\n\nName: ${details.name}\nPhone: ${details.phone}\nAddress: ${details.address}${details.note ? `\nNote: ${details.note}` : ''}`;
+  const discountLine = discount > 0 ? `\nDiscount (${appliedCoupon.code}): -BDT ${discount}` : '';
+  const msg = `Hi! I'd like to place an order:\n\n${lines}\n\nSubtotal: BDT ${subtotal}\nDelivery (${deliveryZone}): BDT ${deliveryCharge}${discountLine}\nTotal: BDT ${grandTotal}\n\nName: ${details.name}\nPhone: ${details.phone}\nAddress: ${details.address}${details.note ? `\nNote: ${details.note}` : ''}`;
   window.open(`https://wa.me/8801759406602?text=${encodeURIComponent(msg)}`, '_blank');
 
   if(cartApi) cartApi.clearCart();
