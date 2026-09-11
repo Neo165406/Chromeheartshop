@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Contact — fashion1sta</title>
+<meta name="theme-color" content="#0a0b0d">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0b0d;--card:#17191c;
+    --silver:#b8bcc4;--silver-bright:#f2f4f7;--silver-deep:#6b6f76;
+    --text:#f2f3f5;--text-dim:#9195a0;--line:rgba(184,188,196,0.22);
+    --radius:2px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Instrument Sans',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .display{font-family:'Fraunces',serif;}
+  a{color:var(--silver-bright);}
+  header{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:16px 22px;background:rgba(10,11,13,0.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+  .navicon{width:20px;height:20px;}
+  .logo{font-family:'Fraunces',serif;font-size:19px;letter-spacing:0.14em;font-weight:600;background:linear-gradient(120deg,var(--silver-deep),var(--silver-bright) 45%,var(--silver));-webkit-background-clip:text;background-clip:text;color:transparent;text-decoration:none;}
+  main{max-width:640px;margin:0 auto;padding:28px 22px 60px;}
+  h1{font-family:'Fraunces',serif;font-weight:500;font-size:26px;margin-bottom:6px;}
+  .updated{font-size:12px;color:var(--text-dim);margin-bottom:28px;}
+  .contact-card{display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:16px 18px;margin-bottom:12px;}
+  .contact-card svg{width:20px;height:20px;flex-shrink:0;color:var(--silver);}
+  .contact-card .label{font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px;}
+  .contact-card .value{font-size:14px;color:var(--silver-bright);font-weight:600;}
+  .socials{display:flex;gap:14px;margin-top:26px;}
+  .socials a{width:38px;height:38px;border:1px solid var(--line);border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .socials svg{width:16px;height:16px;color:var(--silver);}
+  h2{font-family:'Fraunces',serif;font-weight:500;font-size:16px;margin:30px 0 14px;color:var(--silver-bright);}
+  p{font-size:13.5px;color:var(--text-dim);}
+</style>
+</head>
+<body>
+
+<header>
+  <a href="index.html"><svg class="navicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 6l-6 6 6 6"/></svg></a>
+  <a href="index.html" class="logo">fashion1sta</a>
+  <span style="width:20px;"></span>
+</header>
+
+<main>
+  <h1 class="display">Contact Us</h1>
+  <p class="updated">We usually reply within a few hours</p>
+
+  <a class="contact-card" href="https://wa.me/8801759406602" target="_blank">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20 12a8 8 0 1 1-3.7-6.7L20 4l-1 4.3A8 8 0 0 1 20 12z"/><path d="M9 10.5c.3 1.8 2.2 3.7 4 4"/></svg>
+    <div><div class="label">WhatsApp</div><div class="value">+880 1759-406602</div></div>
+  </a>
+
+  <a class="contact-card" href="mailto:fashionistabd.ceo@gmail.com">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 6l10 7 10-7"/></svg>
+    <div><div class="label">Email</div><div class="value">fashionistabd.ceo@gmail.com</div></div>
+  </a>
+
+  <h2>Follow Us</h2>
+  <div class="socials">
+    <a href="https://www.instagram.com/fashion1sta_bd?stkn=OWJlYzFmOWoyZnlr" target="_blank" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.8" fill="currentColor"/></svg></a>
+    <a href="https://www.facebook.com/share/19EjoiggcT/" target="_blank" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 9h3V6h-3c-2 0-3 1-3 3v2H8v3h3v6h3v-6h3l1-3h-4V9c0-.6.4-1 1-1z"/></svg></a>
+    <a href="https://wa.me/8801759406602" target="_blank" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20 12a8 8 0 1 1-3.7-6.7L20 4l-1 4.3A8 8 0 0 1 20 12z"/><path d="M9 10.5c.3 1.8 2.2 3.7 4 4"/></svg></a>
+  </div>
+
+  <h2>Business Hours</h2>
+  <p>Saturday – Thursday, 10 AM – 9 PM (Bangladesh time). Messages sent outside these hours are answered the next business day.</p>
+</main>
+
+</body>
+</html>
