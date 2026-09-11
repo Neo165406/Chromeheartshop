@@ -123,6 +123,7 @@
 // it's a catchable error instead of silently killing this entire script.
 let fbApi = null;   // { db, collection, getDocs }
 let cartApi = null; // { addToCart, buyNowWhatsApp, renderCartDrawer, updateCartBadge, checkoutWhatsApp, showToast }
+let favApi = null;  // { isFavorite, toggleFavorite }
 
 window.toggleCart = function(open){
   document.getElementById('cartDrawer').classList.toggle('open',open);
@@ -188,22 +189,33 @@ function renderProduct(product, all){
   currentAll = all;
   const root = document.getElementById('productRoot');
 
+  const outOfStock = product.stock === 0;
   const discount = product.was ? Math.round((1 - product.price/product.was) * 100) : 0;
   const soldText = product.sold ? `${product.sold >= 1000 ? (product.sold/1000).toFixed(1).replace('.0','')+'k' : product.sold} sold` : '';
   const media = product.imageUrl
-    ? `<img src="${product.imageUrl}" alt="${product.name}">`
+    ? `<img src="${product.imageUrl}" alt="${product.name}" style="${outOfStock?'opacity:0.4;':''}">`
     : iconFor(product.iconType);
 
   root.innerHTML = `
     <div class="breadcrumb"><a href="shop.html">Shop</a> / <a href="shop.html?category=${encodeURIComponent(product.category||'')}">${product.category||''}</a></div>
     <div class="p-frame">
-      ${discount>0 ? `<span class="discount-badge">-${discount}% OFF</span>` : ''}
+      ${discount>0 && !outOfStock ? `<span class="discount-badge">-${discount}% OFF</span>` : ''}
+      ${outOfStock ? `<span class="discount-badge" style="background:var(--text-dim);">Out of Stock</span>` : ''}
       ${media}
     </div>
     <div class="p-info">
-      <h1 class="display">${product.name}</h1>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
+        <h1 class="display">${product.name}</h1>
+        <button id="favBtn" aria-label="Save" style="flex-shrink:0;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:none;color:var(--silver);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:17px;height:17px;"><path d="M12 20s-8-5-8-11a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 6-8 11-8 11z"/></svg>
+        </button>
+      </div>
       <div class="p-price">BDT ${product.price}${product.was?`<span class="was">BDT ${product.was}</span>`:''}</div>
       ${soldText ? `<p class="p-sold">${soldText}</p>` : ''}
+      ${outOfStock ? `
+      <div class="p-actions">
+        <button class="btn-outline" disabled style="opacity:0.5;cursor:not-allowed;flex:1;">Currently Out of Stock</button>
+      </div>` : `
       <div class="qty-row">
         <span class="label">Quantity</span>
         <div class="qty-control">
@@ -215,7 +227,7 @@ function renderProduct(product, all){
       <div class="p-actions">
         <button class="btn-outline" id="addCartBtn">Add to Cart</button>
         <button class="btn-solid" id="buyNowBtn">Buy Now</button>
-      </div>
+      </div>`}
       ${product.description ? `
       <div style="padding:24px 0;border-top:1px solid var(--line);margin-top:8px;">
         <div style="font-size:11px;letter-spacing:0.14em;color:var(--text-dim);text-transform:uppercase;margin-bottom:12px;">Description</div>
@@ -227,6 +239,7 @@ function renderProduct(product, all){
       <div class="grid" id="similarGrid"></div>
     </section>`;
 
+  if(!outOfStock){
   document.getElementById('qtyDec').addEventListener('click', ()=>{
     qty = Math.max(1, qty-1);
     document.getElementById('qtyVal').textContent = qty;
@@ -252,11 +265,28 @@ function renderProduct(product, all){
     }
     alert('Cart is still loading — try again in a moment.');
   });
+  } // end !outOfStock guard
+
+  document.getElementById('favBtn').addEventListener('click', ()=>{
+    if(!favApi){ alert('Please try again in a moment.'); return; }
+    favApi.toggleFavorite({ id: product.id, name: product.name, price: product.price, imageUrl: product.imageUrl||null });
+    updateFavButton();
+  });
+  updateFavButton();
 
   const similar = all.filter(p=>p.category===product.category && p.id!==product.id).slice(0,4);
   document.getElementById('similarGrid').innerHTML = similar.map((p,i)=>miniCard(p,i)).join('');
 
   if(cartApi){ cartApi.updateCartBadge(); cartApi.renderCartDrawer(); }
+}
+
+function updateFavButton(){
+  const btn = document.getElementById('favBtn');
+  if(!btn || !favApi || !currentProduct) return;
+  const fav = favApi.isFavorite(currentProduct.id);
+  btn.style.color = fav ? '#e08a8a' : 'var(--silver)';
+  btn.style.borderColor = fav ? '#e08a8a' : 'var(--line)';
+  btn.querySelector('svg').setAttribute('fill', fav ? 'currentColor' : 'none');
 }
 
 async function init(){
@@ -271,6 +301,13 @@ async function init(){
     renderProduct(seedMatch, seedAll);
   } else {
     root.innerHTML = `<p class="not-found">Looking for this product…</p>`;
+  }
+
+  try{
+    favApi = await import('./js/favorites.js');
+    updateFavButton();
+  }catch(e){
+    console.error('Favorites module failed to load:', e);
   }
 
   // Step 2: try to load Firebase + cart in the background. If this fails
