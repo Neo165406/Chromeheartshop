@@ -1,4 +1,4 @@
-// js/favorites.js
+ // js/favorites.js
 // Shared favorites (wishlist) logic for fashion1sta — localStorage-backed
 // so it persists across pages without a backend.
 
