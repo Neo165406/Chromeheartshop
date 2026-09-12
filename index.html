@@ -123,6 +123,9 @@
   .cat.active{color:var(--bg);background:var(--silver-bright);border-color:var(--silver-bright);font-weight:600;}
   .cat.soon{opacity:0.45;}
   .cat .tag{font-size:9.5px;margin-left:4px;}
+  .cat-filter-btn{flex:0 0 auto;width:38px;height:38px;border:1px solid var(--line);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--silver-bright);background:none;cursor:pointer;position:relative;}
+  .cat-filter-btn svg{width:15px;height:15px;}
+  .cat-filter-btn .filter-count{position:absolute;top:-4px;right:-4px;}
 
   /* ---------- SECTIONS ---------- */
   section.collection{padding:6px 22px 48px;}
@@ -264,6 +267,10 @@
   <a class="cat active" href="shop.html?category=New">New In</a>
   <a class="cat active" href="shop.html?category=Glasses">Glasses</a>
   <a class="cat" href="shop.html?category=Accessories">Accessories</a>
+  <button class="cat-filter-btn" onclick="toggleFilter(true)" aria-label="Filter Accessories">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="4" y1="7" x2="20" y2="7"/><circle cx="9" cy="7" r="2.2"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="15" cy="17" r="2.2"/></svg>
+    <span class="filter-count" id="filterCountCat">0</span>
+  </button>
 </div>
 
 <section class="collection">
@@ -280,10 +287,6 @@
   <div class="section-head">
     <h2 class="display reveal from-left">Accessories</h2>
     <div class="head-actions">
-      <button class="filter-trigger" onclick="toggleFilter(true)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="4" y1="7" x2="20" y2="7"/><circle cx="9" cy="7" r="2.2"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="15" cy="17" r="2.2"/></svg>
-        Filter<span class="filter-count" id="filterCount">0</span>
-      </button>
       <a class="viewall" href="shop.html?category=Accessories">View all →</a>
     </div>
   </div>
@@ -399,17 +402,19 @@ window.applyFilters = function(){
     card.style.display = visible ? '' : 'none';
   });
   const total = checkedTypes.length + checkedPrices.length;
-  const countEl = document.getElementById('filterCount');
-  countEl.textContent = total;
-  countEl.style.display = total > 0 ? 'inline-flex' : 'none';
+  document.querySelectorAll('#filterCountCat').forEach(el=>{
+    el.textContent = total;
+    el.style.display = total > 0 ? 'flex' : 'none';
+  });
   toggleFilter(false);
 };
 window.clearFilters = function(){
   document.querySelectorAll('#filterDrawer input[type="checkbox"]').forEach(i=>i.checked=false);
   document.querySelectorAll('#accessoriesGrid .card').forEach(card=>card.style.display='');
-  const countEl = document.getElementById('filterCount');
-  countEl.textContent = '0';
-  countEl.style.display = 'none';
+  document.querySelectorAll('#filterCountCat').forEach(el=>{
+    el.textContent = '0';
+    el.style.display = 'none';
+  });
 };
 
 /* ---------- Hero slider — loads from Firestore "slides" collection, falls back to seed data ---------- */
