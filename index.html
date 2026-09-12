@@ -51,7 +51,7 @@
   .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--silver-bright);color:var(--bg);padding:10px 20px;border-radius:20px;font-size:12.5px;font-weight:600;opacity:0;pointer-events:none;transition:opacity 0.3s ease, transform 0.3s ease;z-index:60;white-space:nowrap;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
-  /* ---------- MENU DRAWER ---------- */
+  /* ---------- MENU / CART / FILTER DRAWERS ---------- */
   .scrim{position:fixed;inset:0;background:rgba(0,0,0,0.6);opacity:0;pointer-events:none;transition:opacity 0.35s ease;z-index:45;}
   .scrim.open{opacity:1;pointer-events:auto;}
   nav.drawer{position:fixed;inset:0 0 0 auto;width:100vw;height:100vh;background:var(--bg-alt);border-left:1px solid var(--line);transform:translateX(100%);transition:transform 0.35s ease;z-index:50;overflow-y:auto;padding:26px 22px 40px;}
@@ -83,6 +83,24 @@
   .subs a{display:block;padding:10px 0 10px 14px;font-size:13.5px;color:var(--text-dim);border-bottom:1px solid var(--line);}
   .subs a:last-child{border-bottom:none;}
 
+  /* ---------- FILTER DRAWER ---------- */
+  .section-head .head-actions{display:flex;align-items:center;gap:14px;}
+  .filter-trigger{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--silver-bright);border:1px solid var(--line);padding:7px 12px;border-radius:20px;background:none;cursor:pointer;white-space:nowrap;}
+  .filter-trigger svg{width:12px;height:12px;}
+  .filter-count{background:var(--silver-bright);color:var(--bg);font-size:9.5px;font-weight:700;min-width:15px;height:15px;border-radius:8px;display:none;align-items:center;justify-content:center;padding:0 3px;}
+
+  .filter-group{margin-bottom:28px;}
+  .filter-group-title{font-family:'Fraunces',serif;font-size:14px;letter-spacing:0.04em;color:var(--silver-bright);margin-bottom:6px;padding-bottom:10px;border-bottom:1px solid var(--line);}
+  .filter-option{display:flex;align-items:center;gap:12px;padding:11px 0;cursor:pointer;}
+  .filter-option input{position:absolute;opacity:0;width:0;height:0;}
+  .filter-check{width:17px;height:17px;border:1px solid var(--silver-deep);border-radius:3px;flex-shrink:0;position:relative;transition:border-color 0.2s ease, background 0.2s ease;}
+  .filter-option input:checked + .filter-check{background:var(--silver-bright);border-color:var(--silver-bright);}
+  .filter-option input:checked + .filter-check::after{content:"";position:absolute;left:5px;top:1.5px;width:4px;height:8px;border-right:1.6px solid var(--bg);border-bottom:1.6px solid var(--bg);transform:rotate(45deg);}
+  .filter-option span.label{font-size:13.5px;color:var(--text);text-transform:capitalize;}
+  .filter-actions{position:sticky;bottom:0;background:var(--bg-alt);padding-top:16px;margin-top:6px;border-top:1px solid var(--line);display:flex;gap:10px;}
+  .filter-clear{flex:1;text-align:center;padding:12px 0;font-size:12.5px;font-weight:600;color:var(--text-dim);border:1px solid var(--line);border-radius:var(--radius);background:none;cursor:pointer;}
+  .filter-apply{flex:1.4;justify-content:center;}
+
   /* ---------- HERO SLIDER ---------- */
   .hero-slider{position:relative;overflow:hidden;}
   .slides{display:flex;transition:transform 0.5s ease;}
@@ -108,7 +126,7 @@
 
   /* ---------- SECTIONS ---------- */
   section.collection{padding:6px 22px 48px;}
-  .section-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:20px;border-bottom:1px solid var(--line);padding-bottom:13px;}
+  .section-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:20px;border-bottom:1px solid var(--line);padding-bottom:13px;flex-wrap:wrap;gap:10px;}
   .section-head h2{font-family:'Fraunces',serif;font-weight:500;font-size:21px;}
   .section-head a.viewall{font-size:11.5px;color:var(--silver-bright);}
   .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:13px;}
@@ -178,7 +196,7 @@
   </div>
 </header>
 
-<div class="scrim" id="scrim" onclick="toggleNav(false);toggleCart(false);"></div>
+<div class="scrim" id="scrim" onclick="toggleNav(false);toggleCart(false);toggleFilter(false);"></div>
 <nav class="drawer" id="drawer">
   <div class="drawer-top">
     <h2>MENU</h2>
@@ -212,6 +230,30 @@
   </div>
 </nav>
 
+<nav class="drawer" id="filterDrawer">
+  <div class="drawer-top">
+    <h2>FILTER</h2>
+    <div class="drawer-close" onclick="toggleFilter(false)">✕</div>
+  </div>
+
+  <div class="filter-group">
+    <div class="filter-group-title">Type</div>
+    <div id="filterTypeList"></div>
+  </div>
+
+  <div class="filter-group">
+    <div class="filter-group-title">Price</div>
+    <label class="filter-option"><input type="checkbox" name="price" value="under-500"><span class="filter-check"></span><span class="label">Under BDT 500</span></label>
+    <label class="filter-option"><input type="checkbox" name="price" value="500-1000"><span class="filter-check"></span><span class="label">BDT 500 – 1000</span></label>
+    <label class="filter-option"><input type="checkbox" name="price" value="over-1000"><span class="filter-check"></span><span class="label">Over BDT 1000</span></label>
+  </div>
+
+  <div class="filter-actions">
+    <button class="filter-clear" onclick="clearFilters()">Clear All</button>
+    <button class="btn filter-apply" onclick="applyFilters()">Apply Filters</button>
+  </div>
+</nav>
+
 
 <div class="hero-slider">
   <div class="slides" id="slides"></div>
@@ -232,6 +274,20 @@
 <section class="collection" id="glasses">
   <div class="section-head"><h2 class="display reveal from-right">Glasses</h2><a class="viewall" href="shop.html?category=Glasses">View all →</a></div>
   <div class="grid" id="glassesGrid"></div>
+</section>
+
+<section class="collection" id="accessories">
+  <div class="section-head">
+    <h2 class="display reveal from-left">Accessories</h2>
+    <div class="head-actions">
+      <button class="filter-trigger" onclick="toggleFilter(true)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="4" y1="7" x2="20" y2="7"/><circle cx="9" cy="7" r="2.2"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="15" cy="17" r="2.2"/></svg>
+        Filter<span class="filter-count" id="filterCount">0</span>
+      </button>
+      <a class="viewall" href="shop.html?category=Accessories">View all →</a>
+    </div>
+  </div>
+  <div class="grid" id="accessoriesGrid"></div>
 </section>
 
 <section class="collection">
@@ -270,13 +326,18 @@ import { wireFavButtons, refreshFavButtons } from './js/favorites.js';
 
 window.toggleNav = function(open){
   document.getElementById('drawer').classList.toggle('open',open);
-  if(open) document.getElementById('cartDrawer').classList.remove('open');
-  document.getElementById('scrim').classList.toggle('open', open || document.getElementById('cartDrawer').classList.contains('open'));
+  if(open){ document.getElementById('cartDrawer').classList.remove('open'); document.getElementById('filterDrawer').classList.remove('open'); }
+  document.getElementById('scrim').classList.toggle('open', open || document.getElementById('cartDrawer').classList.contains('open') || document.getElementById('filterDrawer').classList.contains('open'));
 };
 window.toggleCart = function(open){
   document.getElementById('cartDrawer').classList.toggle('open',open);
-  if(open){ document.getElementById('drawer').classList.remove('open'); renderCartDrawer(); }
-  document.getElementById('scrim').classList.toggle('open', open || document.getElementById('drawer').classList.contains('open'));
+  if(open){ document.getElementById('drawer').classList.remove('open'); document.getElementById('filterDrawer').classList.remove('open'); renderCartDrawer(); }
+  document.getElementById('scrim').classList.toggle('open', open || document.getElementById('drawer').classList.contains('open') || document.getElementById('filterDrawer').classList.contains('open'));
+};
+window.toggleFilter = function(open){
+  document.getElementById('filterDrawer').classList.toggle('open',open);
+  if(open){ document.getElementById('drawer').classList.remove('open'); document.getElementById('cartDrawer').classList.remove('open'); }
+  document.getElementById('scrim').classList.toggle('open', open || document.getElementById('drawer').classList.contains('open') || document.getElementById('cartDrawer').classList.contains('open'));
 };
 window.checkoutCart = function(){ window.location.href = 'checkout.html'; };
 
@@ -304,10 +365,57 @@ categoryTree.forEach((cat,i)=>{
   }
 });
 
+/* ---------- Filter drawer — populated from the Accessories subcategories ---------- */
+const accessoriesCat = categoryTree.find(c=>c.name==="Accessories");
+const filterTypeList = document.getElementById('filterTypeList');
+accessoriesCat.subs.forEach(sub=>{
+  const id = 'ft-'+sub.toLowerCase().replace(/[^a-z0-9]+/g,'-');
+  filterTypeList.innerHTML += `
+    <label class="filter-option">
+      <input type="checkbox" name="type" value="${sub}" id="${id}">
+      <span class="filter-check"></span>
+      <span class="label">${sub.replace(/-/g,' ')}</span>
+    </label>`;
+});
+
+window.applyFilters = function(){
+  const checkedTypes = Array.from(document.querySelectorAll('#filterDrawer input[name="type"]:checked')).map(i=>i.value);
+  const checkedPrices = Array.from(document.querySelectorAll('#filterDrawer input[name="price"]:checked')).map(i=>i.value);
+  const cards = document.querySelectorAll('#accessoriesGrid .card');
+  cards.forEach(card=>{
+    const sub = card.dataset.sub || '';
+    const price = Number(card.dataset.priceVal || 0);
+    let visible = true;
+    if(checkedTypes.length && !checkedTypes.includes(sub)) visible = false;
+    if(checkedPrices.length){
+      const matchesPrice = checkedPrices.some(range=>{
+        if(range==='under-500') return price < 500;
+        if(range==='500-1000') return price >= 500 && price <= 1000;
+        if(range==='over-1000') return price > 1000;
+        return false;
+      });
+      if(!matchesPrice) visible = false;
+    }
+    card.style.display = visible ? '' : 'none';
+  });
+  const total = checkedTypes.length + checkedPrices.length;
+  const countEl = document.getElementById('filterCount');
+  countEl.textContent = total;
+  countEl.style.display = total > 0 ? 'inline-flex' : 'none';
+  toggleFilter(false);
+};
+window.clearFilters = function(){
+  document.querySelectorAll('#filterDrawer input[type="checkbox"]').forEach(i=>i.checked=false);
+  document.querySelectorAll('#accessoriesGrid .card').forEach(card=>card.style.display='');
+  const countEl = document.getElementById('filterCount');
+  countEl.textContent = '0';
+  countEl.style.display = 'none';
+};
+
 /* ---------- Hero slider — loads from Firestore "slides" collection, falls back to seed data ---------- */
 const heroSlidesSeed = [
   {title:"Neon silver, made for the dark", text:"Dhaka's gothic-luxury streetwear house — eyewear and accessories.", cta:"Shop Glasses", href:"#glasses", icon:"cross"},
-  {title:"Fresh weekly drops", text:"New accessories added every week — cash on delivery nationwide.", cta:"Shop Accessories", href:"shop.html?category=Accessories", icon:"chain"},
+  {title:"Fresh weekly drops", text:"New accessories added every week — cash on delivery nationwide.", cta:"Shop Accessories", href:"#accessories", icon:"chain"},
   {title:"Cash on delivery, everywhere", text:"Order from anywhere in Bangladesh, pay when it arrives at your door.", cta:"Explore All", href:"#glasses", icon:"chain"}
 ];
 async function loadSlides(){
@@ -372,6 +480,16 @@ const seedProducts = {
     {name:"Vintage Sun Frame", price:850, was:1100, iconType:"glasses", sold:1560},
     {name:"Neon Aviator Link", price:750, was:1000, iconType:"glasses", sold:980},
     {name:"Iced Bridge Round", price:1099, was:1500, iconType:"glasses", sold:640}
+  ],
+  Accessories: [
+    {name:"Cuban Link Chain", price:1200, was:1600, iconType:"chain", sold:540, sub:"Chain-Necklaces"},
+    {name:"Stainless Ring Set", price:450, was:600, iconType:"cross", sold:890, sub:"Rings"},
+    {name:"Skull Bracelet", price:399, was:550, iconType:"chain", sold:1120, sub:"Bracelets"},
+    {name:"Fake Septum Ring", price:250, was:350, iconType:"cross", sold:670, sub:"Fake Piercings"},
+    {name:"Card Holder Wallet", price:699, was:900, iconType:"chain", sold:310, sub:"Wallet"},
+    {name:"Iced Keychain Charm", price:349, was:450, iconType:"cross", sold:220, sub:"Keychains"},
+    {name:"Silver Watch Ring", price:899, was:1200, iconType:"chain", sold:150, sub:"Ring Watch"},
+    {name:"Bandana Print Scarf", price:299, was:400, iconType:"cross", sold:410, sub:"Bandana"}
   ]
 };
 function iconFor(type){
@@ -408,7 +526,7 @@ function renderCards(id, items){
       : `<button class="order add-cart-btn" data-id="${pid}" data-name="${p.name}" data-price="${p.price}" data-image="${p.imageUrl||''}">Add to Cart</button>
          <button class="order buy-now-btn" data-id="${pid}" data-name="${p.name}" data-price="${p.price}" data-image="${p.imageUrl||''}">Buy Now</button>`;
     grid.innerHTML += `
-      <div class="card reveal ${dir}" style="transition-delay:${delay}s">
+      <div class="card reveal ${dir}" style="transition-delay:${delay}s" data-sub="${p.sub||''}" data-price-val="${p.price}">
         <a href="product.html?id=${encodeURIComponent(pid)}" class="card-link">
           <div class="frame">
             ${discount>0 && !outOfStock ? `<span class="discount-badge">-${discount}%</span>` : ''}
@@ -431,12 +549,15 @@ async function initProducts(){
   if(all === null){
     renderCards('arrivalsGrid', seedProducts.arrivals);
     renderCards('glassesGrid', seedProducts.Glasses);
+    renderCards('accessoriesGrid', seedProducts.Accessories);
     renderCards('newInRow', [...seedProducts.arrivals, ...seedProducts.Glasses]);
     return;
   }
   const featured = all.filter(p=>p.featured).slice(0,4);
   renderCards('arrivalsGrid', featured.length ? featured : seedProducts.arrivals);
   renderCards('glassesGrid', all.filter(p=>p.category==="Glasses").slice(0,4));
+  const accessoryItems = all.filter(p=>p.category==="Accessories").slice(0,8);
+  renderCards('accessoriesGrid', accessoryItems.length ? accessoryItems : seedProducts.Accessories);
   renderCards('newInRow', all.length ? all.slice(0,8) : [...seedProducts.arrivals, ...seedProducts.Glasses]);
 }
 /* ---------- Scroll reveal — watches .reveal elements, slides them into place ---------- */
@@ -453,8 +574,8 @@ function initScrollReveal(){
 }
 Promise.all([initHero(), initProducts()]).then(()=>{
   initScrollReveal();
-  ['arrivalsGrid','glassesGrid','newInRow'].forEach(wireAddToCart);
-  ['arrivalsGrid','glassesGrid','newInRow'].forEach(id=>{ wireFavButtons(id); refreshFavButtons(id); });
+  ['arrivalsGrid','glassesGrid','accessoriesGrid','newInRow'].forEach(wireAddToCart);
+  ['arrivalsGrid','glassesGrid','accessoriesGrid','newInRow'].forEach(id=>{ wireFavButtons(id); refreshFavButtons(id); });
 }).catch(e=>console.error('Homepage failed to load:', e));
 updateCartBadge();
 renderCartDrawer();
