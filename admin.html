@@ -166,7 +166,7 @@
         <div class="field"><label>Stock quantity (leave blank = unlimited)</label><input id="pStock" type="number" placeholder="e.g. 10"></div>
       </div>
       <div class="field"><label><input type="checkbox" id="pFeatured" style="width:auto;margin-right:6px;">Show in "New In"</label></div>
-      <div class="field"><label>Product image</label><input id="pImage" type="file" accept="image/*"></div>
+      <div class="field"><label>Product images (select multiple — first one becomes the main photo)</label><input id="pImage" type="file" accept="image/*" multiple></div>
       <button class="save-btn" id="pSaveBtn" onclick="addProduct()">Save product</button>
       <p class="status-msg" id="pStatus"></p>
     </div>
@@ -330,9 +330,14 @@ window.addProduct = async function(){
   if(!name || !price){ status.textContent = 'Name and price are required.'; return; }
   btn.disabled = true; status.textContent = 'Saving...';
   try{
-    let imageUrl = null;
-    const file = document.getElementById('pImage').files[0];
-    if(file){ status.textContent = 'Uploading image...'; imageUrl = await uploadToImgbb(file); }
+    let images = [];
+    const files = Array.from(document.getElementById('pImage').files);
+    for(let i=0;i<files.length;i++){
+      status.textContent = `Uploading image ${i+1} of ${files.length}...`;
+      const url = await uploadToImgbb(files[i]);
+      if(url) images.push(url);
+    }
+    const imageUrl = images[0] || null;
     const stockRaw = document.getElementById('pStock').value;
     await addDoc(collection(db,'products'), {
       name, price,
@@ -344,6 +349,7 @@ window.addProduct = async function(){
       stock: stockRaw === '' ? null : Number(stockRaw),
       featured: document.getElementById('pFeatured').checked,
       imageUrl,
+      images,
       createdAt: serverTimestamp()
     });
     status.textContent = 'Saved.';
@@ -368,9 +374,10 @@ async function loadProductsList(){
     const el = document.createElement('div');
     el.className = 'item';
     const stockText = p.stock === 0 ? ' · Out of stock' : (typeof p.stock === 'number' ? ` · ${p.stock} in stock` : '');
+    const imgCount = p.images && p.images.length > 1 ? ` · ${p.images.length} photos` : '';
     el.innerHTML = `
       ${p.imageUrl ? `<img src="${p.imageUrl}">` : '<div style="width:48px;height:48px;background:var(--bg-alt);border-radius:4px;"></div>'}
-      <div class="info"><h4>${p.name}${p.featured?' ★':''}</h4><p>${p.category} · BDT ${p.price}${stockText}</p></div>
+      <div class="info"><h4>${p.name}${p.featured?' ★':''}</h4><p>${p.category} · BDT ${p.price}${stockText}${imgCount}</p></div>
       <button class="del" data-id="${d.id}">Delete</button>`;
     el.querySelector('.del').addEventListener('click', async ()=>{
       await deleteDoc(doc(db,'products',d.id));
