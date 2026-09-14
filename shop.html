@@ -276,27 +276,16 @@ function iconFor(type){
   return crossSVG();
 }
 
-const seedAll = [
-  {id:"tennis-chain-bracelet", name:"Tennis Chain Bracelet", price:599, was:800, category:"Accessories", iconType:"chain", sold:1240},
-  {id:"vampire-fang-grillz", name:"Vampire Fang Grillz", price:799, was:1200, category:"Accessories", iconType:"cross", sold:860},
-  {id:"dragon-flame-belt", name:"Dragon Flame Belt", price:990, was:1500, category:"Accessories", iconType:"chain", sold:430},
-  {id:"gothic-cross-pendant", name:"Gothic Cross Pendant", price:650, was:900, category:"Accessories", iconType:"cross", sold:990},
-  {id:"gothic-cross-rimless", name:"Gothic Cross Rimless", price:990, was:1300, category:"Glasses", iconType:"glasses", sold:2100},
-  {id:"vintage-sun-frame", name:"Vintage Sun Frame", price:850, was:1100, category:"Glasses", iconType:"glasses", sold:1560},
-  {id:"neon-aviator-link", name:"Neon Aviator Link", price:750, was:1000, category:"Glasses", iconType:"glasses", sold:980},
-  {id:"iced-bridge-round", name:"Iced Bridge Round", price:1099, was:1500, category:"Glasses", iconType:"glasses", sold:640}
-];
-
 async function loadAllProducts(){
   try{
     const fetchPromise = getDocs(collection(db,'products'));
     const timeout = new Promise(resolve => setTimeout(()=>resolve(null), 6000));
     const snap = await Promise.race([fetchPromise, timeout]);
-    if(!snap || snap.empty) return seedAll;
+    if(!snap || snap.empty) return [];
     return snap.docs.map(d=>({id:d.id, ...d.data()}));
   }catch(e){
-    console.error('Products load failed, using seed data:', e);
-    return seedAll;
+    console.error('Products load failed:', e);
+    return [];
   }
 }
 
@@ -449,10 +438,16 @@ async function init(){
   // "You might also like" — a handful of products outside the current filter
   const pool = activeCategory ? all.filter(p=>p.category!==activeCategory) : all;
   const similar = pool.sort(()=>Math.random()-0.5).slice(0,4);
-  document.getElementById('similarGrid').innerHTML = similar.map((p,i)=>cardHTML(p,i)).join('');
-  wireAddToCart('similarGrid');
-  wireFavButtons('similarGrid');
-  refreshFavButtons('similarGrid');
+  const similarSection = document.getElementById('similarGrid').closest('section');
+  if(!similar.length){
+    similarSection.style.display = 'none';
+  } else {
+    similarSection.style.display = '';
+    document.getElementById('similarGrid').innerHTML = similar.map((p,i)=>cardHTML(p,i)).join('');
+    wireAddToCart('similarGrid');
+    wireFavButtons('similarGrid');
+    refreshFavButtons('similarGrid');
+  }
 
   updateCartBadge();
   renderCartDrawer();
