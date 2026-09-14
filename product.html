@@ -300,28 +300,17 @@ function iconFor(type){
   return crossSVG();
 }
 
-const seedAll = [
-  {id:"tennis-chain-bracelet", name:"Tennis Chain Bracelet", price:599, was:800, category:"Accessories", iconType:"chain", sold:1240},
-  {id:"vampire-fang-grillz", name:"Vampire Fang Grillz", price:799, was:1200, category:"Accessories", iconType:"cross", sold:860},
-  {id:"dragon-flame-belt", name:"Dragon Flame Belt", price:990, was:1500, category:"Accessories", iconType:"chain", sold:430},
-  {id:"gothic-cross-pendant", name:"Gothic Cross Pendant", price:650, was:900, category:"Accessories", iconType:"cross", sold:990},
-  {id:"gothic-cross-rimless", name:"Gothic Cross Rimless", price:990, was:1300, category:"Glasses", iconType:"glasses", sold:2100},
-  {id:"vintage-sun-frame", name:"Vintage Sun Frame", price:850, was:1100, category:"Glasses", iconType:"glasses", sold:1560},
-  {id:"neon-aviator-link", name:"Neon Aviator Link", price:750, was:1000, category:"Glasses", iconType:"glasses", sold:980},
-  {id:"iced-bridge-round", name:"Iced Bridge Round", price:1099, was:1500, category:"Glasses", iconType:"glasses", sold:640}
-];
-
 async function loadAllProducts(){
-  if(!fbApi) return seedAll;
+  if(!fbApi) return [];
   try{
     const fetchPromise = fbApi.getDocs(fbApi.collection(fbApi.db,'products'));
     const timeout = new Promise(resolve => setTimeout(()=>resolve(null), 6000));
     const snap = await Promise.race([fetchPromise, timeout]);
-    if(!snap || snap.empty) return seedAll;
+    if(!snap || snap.empty) return [];
     return snap.docs.map(d=>({id:d.id, ...d.data()}));
   }catch(e){
-    console.error('Products load failed, using seed data:', e);
-    return seedAll;
+    console.error('Products load failed:', e);
+    return [];
   }
 }
 
@@ -341,7 +330,7 @@ function miniCard(p,i){
 
 let qty = 1;
 let currentProduct = null;
-let currentAll = seedAll;
+let currentAll = [];
 
 function renderProduct(product, all){
   currentProduct = product;
@@ -473,24 +462,12 @@ async function init(){
   const id = params.get('id');
   const root = document.getElementById('productRoot');
 
-  // Step 1: render immediately from built-in demo data — the page is
-  // never stuck on "Loading" regardless of what happens with Firebase.
-  const seedMatch = seedAll.find(p=>p.id===id);
-  if(seedMatch){
-    renderProduct(seedMatch, seedAll);
-  } else {
-    root.innerHTML = `<p class="not-found">Looking for this product…</p>`;
-  }
-
   try{
     favApi = await import('./js/favorites.js');
-    updateFavButton();
   }catch(e){
     console.error('Favorites module failed to load:', e);
   }
 
-  // Step 2: try to load Firebase + cart in the background. If this fails
-  // for any reason, the page above still works with demo data.
   try{
     const [fb, cart] = await Promise.all([
       import('./js/firebase-config.js'),
@@ -501,15 +478,14 @@ async function init(){
     cartApi.updateCartBadge();
     cartApi.renderCartDrawer();
   }catch(e){
-    console.error('Firebase/cart modules failed to load — continuing with demo data only:', e);
+    console.error('Firebase/cart modules failed to load:', e);
   }
 
-  // Step 3: if Firebase came up, check for real product data and upgrade.
   const all = await loadAllProducts();
   const product = all.find(p=>p.id===id);
   if(product){
     renderProduct(product, all);
-  } else if(!seedMatch){
+  } else {
     root.innerHTML = `<p class="not-found">Product not found. <a href="shop.html" style="color:var(--silver-bright);">Back to shop →</a></p>`;
   }
 }
