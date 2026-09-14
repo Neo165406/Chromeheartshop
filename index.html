@@ -325,22 +325,17 @@ categoryTree.forEach((cat,i)=>{
   }
 });
 
-/* ---------- Hero slider — loads from Firestore "slides" collection, falls back to seed data ---------- */
-const heroSlidesSeed = [
-  {title:"Neon silver, made for the dark", text:"Dhaka's gothic-luxury streetwear house — eyewear and accessories.", cta:"Shop Glasses", href:"#glasses", icon:"cross"},
-  {title:"Fresh weekly drops", text:"New accessories added every week — cash on delivery nationwide.", cta:"Shop Accessories", href:"shop.html?category=Accessories", icon:"chain"},
-  {title:"Cash on delivery, everywhere", text:"Order from anywhere in Bangladesh, pay when it arrives at your door.", cta:"Explore All", href:"#glasses", icon:"chain"}
-];
+/* ---------- Hero slider — loads from Firestore "slides" collection (admin-managed only, no placeholder fallback) ---------- */
 async function loadSlides(){
   try{
     const fetchPromise = getDocs(collection(db,'slides'));
     const timeout = new Promise(resolve => setTimeout(()=>resolve(null), 6000));
     const snap = await Promise.race([fetchPromise, timeout]);
-    if(!snap || snap.empty) return heroSlidesSeed;
+    if(!snap || snap.empty) return [];
     return snap.docs.map(d=>d.data()).sort((a,b)=>(a.order||0)-(b.order||0));
   }catch(e){
-    console.error('Slides load failed, using seed data:', e);
-    return heroSlidesSeed;
+    console.error('Slides load failed:', e);
+    return [];
   }
 }
 function slideIcon(type){
@@ -360,6 +355,10 @@ function goTo(i){
 }
 async function initHero(){
   heroSlides = await loadSlides();
+  if(!heroSlides.length){
+    document.querySelector('.hero-slider').style.display = 'none';
+    return;
+  }
   heroSlides.forEach((s,i)=>{
     const bg = s.imageUrl ? `style="background-image:url('${s.imageUrl}');background-size:cover;background-position:center;"` : '';
     slidesEl.innerHTML += `
@@ -384,20 +383,6 @@ function glassesSVG(){return `<svg viewBox="0 0 100 46" fill="none"><circle cx="
 function crossSVG(){return `<svg viewBox="0 0 60 60" fill="none"><path d="M30 6 L30 54 M12 24 L48 24" stroke="url(#cardg3)" stroke-width="4" stroke-linecap="round"/><defs><linearGradient id="cardg3" x1="0" y1="0" x2="60" y2="60"><stop offset="0%" stop-color="#6b6f76"/><stop offset="55%" stop-color="#f2f4f7"/><stop offset="100%" stop-color="#b8bcc4"/></linearGradient></defs></svg>`;}
 function chainSVG(){return `<svg viewBox="0 0 90 50" fill="none"><ellipse cx="22" cy="25" rx="14" ry="9" stroke="url(#cardg4)" stroke-width="2.2"/><ellipse cx="46" cy="25" rx="14" ry="9" stroke="url(#cardg4)" stroke-width="2.2"/><ellipse cx="70" cy="25" rx="14" ry="9" stroke="url(#cardg4)" stroke-width="2.2"/><defs><linearGradient id="cardg4" x1="0" y1="0" x2="90" y2="50"><stop offset="0%" stop-color="#6b6f76"/><stop offset="55%" stop-color="#f2f4f7"/><stop offset="100%" stop-color="#b8bcc4"/></linearGradient></defs></svg>`;}
 
-const seedProducts = {
-  arrivals: [
-    {name:"Tennis Chain Bracelet", price:599, was:800, iconType:"chain", sold:1240},
-    {name:"Vampire Fang Grillz", price:799, was:1200, iconType:"cross", sold:860},
-    {name:"Dragon Flame Belt", price:990, was:1500, iconType:"chain", sold:430},
-    {name:"Gothic Cross Pendant", price:650, was:900, iconType:"cross", sold:990}
-  ],
-  Glasses: [
-    {name:"Gothic Cross Rimless", price:990, was:1300, iconType:"glasses", sold:2100},
-    {name:"Vintage Sun Frame", price:850, was:1100, iconType:"glasses", sold:1560},
-    {name:"Neon Aviator Link", price:750, was:1000, iconType:"glasses", sold:980},
-    {name:"Iced Bridge Round", price:1099, was:1500, iconType:"glasses", sold:640}
-  ]
-};
 function iconFor(type){
   if(type==="glasses") return glassesSVG();
   if(type==="chain") return chainSVG();
@@ -408,15 +393,19 @@ async function loadProducts(){
     const fetchPromise = getDocs(collection(db,'products'));
     const timeout = new Promise(resolve => setTimeout(()=>resolve(null), 6000));
     const snap = await Promise.race([fetchPromise, timeout]);
-    if(!snap || snap.empty) return null; // signal caller to use seed data
+    if(!snap || snap.empty) return [];
     return snap.docs.map(d=>({id:d.id, ...d.data()}));
   }catch(e){
-    console.error('Products load failed, using seed data:', e);
-    return null;
+    console.error('Products load failed:', e);
+    return [];
   }
 }
 function renderCards(id, items){
   const grid = document.getElementById(id);
+  if(!items.length){
+    grid.innerHTML = '<p style="grid-column:1/-1;font-size:12.5px;color:var(--text-dim);padding:20px 0;">No products here yet — check back soon.</p>';
+    return;
+  }
   items.forEach((p,i)=>{
     const pid = p.id || p.name.toLowerCase().replace(/[^a-z0-9]+/g,'-');
     const outOfStock = p.stock === 0;
@@ -452,16 +441,13 @@ function renderCards(id, items){
 }
 async function initProducts(){
   const all = await loadProducts();
-  if(all === null){
-    renderCards('arrivalsGrid', seedProducts.arrivals);
-    renderCards('glassesGrid', seedProducts.Glasses);
-    renderCards('newInRow', [...seedProducts.arrivals, ...seedProducts.Glasses]);
-    return;
-  }
+  // Featured Pieces: admin-selected via the "Show in Featured Pieces" checkbox.
+  // Falls back to the first few real products if none are marked featured yet —
+  // never to placeholder/demo items.
   const featured = all.filter(p=>p.featured).slice(0,4);
-  renderCards('arrivalsGrid', featured.length ? featured : seedProducts.arrivals);
+  renderCards('arrivalsGrid', featured.length ? featured : all.slice(0,4));
   renderCards('glassesGrid', all.filter(p=>p.category==="Glasses").slice(0,4));
-  renderCards('newInRow', all.length ? all.slice(0,8) : [...seedProducts.arrivals, ...seedProducts.Glasses]);
+  renderCards('newInRow', all.slice(0,8));
 }
 /* ---------- Scroll reveal — watches .reveal elements, slides them into place ---------- */
 function initScrollReveal(){
