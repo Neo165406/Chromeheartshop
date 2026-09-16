@@ -53,7 +53,12 @@
   .announce b{color:var(--silver-bright);}
   header{position:sticky;top:0;z-index:40;display:flex;align-items:center;justify-content:space-between;padding:16px 22px;background:rgba(10,11,13,0.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
   .navicon{width:20px;height:20px;opacity:0.85;}
-  .logo{font-family:'Fraunces',serif;font-size:21px;letter-spacing:0.14em;font-weight:600;background:linear-gradient(120deg,var(--silver-deep),var(--silver-bright) 45%,var(--silver));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .logo{font-family:'Fraunces',serif;font-size:21px;letter-spacing:0.14em;font-weight:600;background:linear-gradient(100deg,var(--silver-deep) 0%,var(--silver-deep) 35%,var(--silver-bright) 50%,var(--silver-deep) 65%,var(--silver-deep) 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:logoShine 3.2s ease-in-out infinite;}
+  @keyframes logoShine{
+    0%{background-position:200% 0;}
+    100%{background-position:-50% 0;}
+  }
+  @media (prefers-reduced-motion: reduce){ .logo{animation:none;} }
   .burger{width:34px;height:34px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;border-radius:var(--radius);cursor:pointer;background:none;}
   .burger span{display:block;width:16px;height:1px;background:var(--silver);position:relative;}
   .burger span::before,.burger span::after{content:"";position:absolute;left:0;width:16px;height:1px;background:var(--silver);}
