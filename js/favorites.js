@@ -1,8 +1,8 @@
  // js/favorites.js
-// Shared favorites (wishlist) logic for fashion1sta — localStorage-backed
+// Shared favorites (wishlist) logic for FASHIONISTA — localStorage-backed
 // so it persists across pages without a backend.
 
-const FAV_KEY = 'fashion1sta_favorites';
+const FAV_KEY = 'FASHIONISTA_favorites';
 
 export function getFavorites(){
   try{ return JSON.parse(localStorage.getItem(FAV_KEY)) || []; }
