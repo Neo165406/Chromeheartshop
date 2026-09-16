@@ -3,3 +3,5 @@ Allow: /
 Disallow: /admin.html
 Disallow: /checkout.html
 Disallow: /saved.html
+
+Sitemap: https://fashion1sta.com/sitemap.xml
