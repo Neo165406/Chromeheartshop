@@ -62,6 +62,20 @@
   .existing-img-thumb{position:relative;width:56px;height:56px;flex-shrink:0;}
   .existing-img-thumb img{width:100%;height:100%;object-fit:cover;border-radius:4px;border:1px solid var(--line);}
   .existing-img-thumb .rm{position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;background:#e08a8a;color:var(--bg);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;line-height:1;}
+
+  /* ---------- ORDER INVOICE ---------- */
+  .order-card{align-items:flex-start;flex-wrap:wrap;}
+  .order-date{font-size:11px;letter-spacing:0.04em;color:var(--text-dim);margin-bottom:6px;}
+  .order-items-list{display:flex;flex-direction:column;gap:8px;margin:10px 0;}
+  .order-item-row{display:flex;align-items:center;gap:10px;}
+  .order-item-row img, .order-item-row .oi-noimg{width:40px;height:40px;object-fit:cover;border-radius:4px;background:var(--bg-alt);flex-shrink:0;}
+  .order-item-row .oi-info{flex:1;min-width:0;font-size:12.5px;}
+  .order-item-row .oi-name{font-weight:600;}
+  .order-item-row .oi-meta{color:var(--text-dim);font-size:11.5px;}
+  .order-item-row .oi-total{font-size:12.5px;font-weight:600;color:var(--silver-bright);white-space:nowrap;}
+  .order-totals{border-top:1px solid var(--line);margin-top:4px;padding-top:10px;display:flex;flex-direction:column;gap:4px;font-size:12.5px;}
+  .order-totals .row{display:flex;justify-content:space-between;color:var(--text-dim);}
+  .order-totals .row.grand{color:var(--silver-bright);font-weight:700;font-size:13.5px;padding-top:6px;margin-top:2px;border-top:1px solid var(--line);}
 </style>
 </head>
 <body>
@@ -520,6 +534,14 @@ async function loadDashboardStats(){
 }
 
 // ---------- Orders ----------
+function formatOrderDate(ts){
+  if(!ts) return 'Date unavailable';
+  try{
+    const d = typeof ts.toDate === 'function' ? ts.toDate() : new Date(ts.seconds ? ts.seconds*1000 : ts);
+    return d.toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+  }catch(e){ return ''; }
+}
+
 async function loadOrdersList(){
   const list = document.getElementById('ordersList');
   list.innerHTML = 'Loading...';
@@ -533,19 +555,38 @@ async function loadOrdersList(){
       .sort((a,b)=>(b.createdAt?.seconds||0) - (a.createdAt?.seconds||0));
     list.innerHTML = '';
     orders.forEach(o=>{
-      const itemsText = (o.items||[]).map(i=>`${i.name} x${i.qty}`).join(', ');
+      const items = o.items || [];
+      const subtotal = (typeof o.subtotal === 'number') ? o.subtotal : items.reduce((s,i)=>s+(i.price||0)*(i.qty||0),0);
+      const deliveryCharge = o.deliveryCharge || 0;
+      const itemsHtml = items.map(i=>`
+        <div class="order-item-row">
+          ${i.imageUrl ? `<img src="${i.imageUrl}" alt="${i.name}">` : `<div class="oi-noimg"></div>`}
+          <div class="oi-info">
+            <div class="oi-name">${i.name}</div>
+            <div class="oi-meta">Qty ${i.qty} × BDT ${i.price}</div>
+          </div>
+          <div class="oi-total">BDT ${(i.price||0)*(i.qty||0)}</div>
+        </div>`).join('');
+      const totalsHtml = `
+        <div class="order-totals">
+          <div class="row"><span>Subtotal</span><span>BDT ${subtotal}</span></div>
+          <div class="row"><span>Delivery${o.deliveryZone ? ` (${o.deliveryZone})` : ''}</span><span>BDT ${deliveryCharge}</span></div>
+          ${o.discount ? `<div class="row"><span>Discount${o.couponCode ? ` (${o.couponCode})` : ''}</span><span>-BDT ${o.discount}</span></div>` : ''}
+          <div class="row grand"><span>Total</span><span>BDT ${o.total}</span></div>
+        </div>`;
       const el = document.createElement('div');
-      el.className = 'item';
-      el.style.alignItems = 'flex-start';
+      el.className = 'item order-card';
       el.innerHTML = `
-        <div class="info">
-          <h4>${o.customerName || 'Unnamed'} · BDT ${o.total}</h4>
+        <div class="info" style="width:100%;">
+          <div class="order-date">${formatOrderDate(o.createdAt)}</div>
+          <h4>${o.customerName || 'Unnamed'}</h4>
           <p>${o.phone || ''}</p>
           <p>${o.address || ''}</p>
-          <p>${itemsText}</p>
           ${o.note ? `<p>Note: ${o.note}</p>` : ''}
+          <div class="order-items-list">${itemsHtml}</div>
+          ${totalsHtml}
         </div>
-        <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+        <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0;">
           <span style="font-size:10.5px;padding:3px 8px;border-radius:10px;border:1px solid var(--line);color:${o.status==='fulfilled'?'var(--silver-bright)':'var(--text-dim)'};">${o.status||'pending'}</span>
           <button class="toggle-status" data-id="${o.id}" data-status="${o.status||'pending'}">${o.status==='fulfilled' ? 'Mark pending' : 'Mark fulfilled'}</button>
         </div>`;
