@@ -1,5 +1,5 @@
 // js/firebase-config.js
-// Shared Firebase/Firestore/Auth setup for fashion1sta. Imported as an ES
+// Shared Firebase/Firestore/Auth setup for FASHIONISTA. Imported as an ES
 // module by index.html and admin.html — no build step required.
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
