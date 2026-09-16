@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>Shop — fashion1sta</title>
+<title>Shop — FASHIONISTA</title>
 <meta name="theme-color" content="#0a0b0d">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -136,11 +136,11 @@
 </head>
 <body>
 
-<div class="announce">WELCOME TO fashion1sta · <b>5000+ HAPPY CUSTOMERS</b> · 10% OFF CODE "SILVER10"</div>
+<div class="announce">WELCOME TO FASHIONISTA · <b>5000+ HAPPY CUSTOMERS</b> · 10% OFF CODE "SILVER10"</div>
 
 <header>
   <a href="index.html"><svg class="navicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 6l-6 6 6 6"/></svg></a>
-  <a href="index.html" class="logo">fashion1sta</a>
+  <a href="index.html" class="logo">FASHIONISTA</a>
   <div style="display:flex;align-items:center;gap:10px;">
     <button class="cart-btn" onclick="toggleCart(true)" aria-label="Cart">
       <svg class="navicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="21" r="1.3"/><circle cx="18" cy="21" r="1.3"/><path d="M2 3h3l2.6 12.4a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L22 7H6"/></svg>
@@ -205,7 +205,7 @@
 
 <div class="page-head">
   <h1 class="display" id="pageTitle">Shop All</h1>
-  <p id="pageSub">Every fashion1sta piece in one place</p>
+  <p id="pageSub">Every FASHIONISTA piece in one place</p>
 </div>
 
 <div class="cats" id="catFilters"></div>
@@ -221,8 +221,8 @@
 </section>
 
 <footer>
-  <div class="flogo">fashion1sta</div>
-  <div class="copyright">© 2026 fashion1sta. ALL RIGHTS RESERVED.</div>
+  <div class="flogo">FASHIONISTA</div>
+  <div class="copyright">© 2026 FASHIONISTA. ALL RIGHTS RESERVED.</div>
 </footer>
 
 <script type="module">
@@ -382,7 +382,7 @@ function applyDrawerFilters(){
 
   renderShopGrid(result);
   document.getElementById('pageTitle').textContent = checkedCats.length===1 ? checkedCats[0] : 'Shop All';
-  document.getElementById('pageSub').textContent = (checkedCats.length||checkedSubs.length||checkedPrices.length) ? 'Filtered results' : 'Every fashion1sta piece in one place';
+  document.getElementById('pageSub').textContent = (checkedCats.length||checkedSubs.length||checkedPrices.length) ? 'Filtered results' : 'Every FASHIONISTA piece in one place';
   toggleFilter(false);
 }
 
@@ -391,7 +391,7 @@ function clearDrawerFilters(){
   updateSubcategoryList();
   renderShopGrid(baseFiltered);
   document.getElementById('pageTitle').textContent = 'Shop All';
-  document.getElementById('pageSub').textContent = 'Every fashion1sta piece in one place';
+  document.getElementById('pageSub').textContent = 'Every FASHIONISTA piece in one place';
   toggleFilter(false);
 }
 
@@ -418,7 +418,7 @@ async function init(){
   document.getElementById('pageTitle').textContent = activeCategory || 'Shop All';
   document.getElementById('pageSub').textContent = activeCategory
     ? `Everything in ${activeCategory}`
-    : 'Every fashion1sta piece in one place';
+    : 'Every FASHIONISTA piece in one place';
 
   const all = await loadAllProducts();
   allProducts = all;
