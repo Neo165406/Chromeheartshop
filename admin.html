@@ -76,6 +76,8 @@
   .order-totals{border-top:1px solid var(--line);margin-top:4px;padding-top:10px;display:flex;flex-direction:column;gap:4px;font-size:12.5px;}
   .order-totals .row{display:flex;justify-content:space-between;color:var(--text-dim);}
   .order-totals .row.grand{color:var(--silver-bright);font-weight:700;font-size:13.5px;padding-top:6px;margin-top:2px;border-top:1px solid var(--line);}
+  .order-status-badge{font-weight:600;text-transform:capitalize;}
+  .status-select{padding:6px 10px;font-size:11.5px;border:1px solid var(--line);border-radius:14px;background:var(--bg);color:var(--text);cursor:pointer;}
 </style>
 </head>
 <body>
@@ -534,6 +536,10 @@ async function loadDashboardStats(){
 }
 
 // ---------- Orders ----------
+const ORDER_STATUSES = ['pending', 'confirmed', 'shipped', 'delivered'];
+const ORDER_STATUS_LABELS = { pending: 'Pending', confirmed: 'Confirmed', shipped: 'Shipped', delivered: 'Delivered' };
+const ORDER_STATUS_COLORS = { pending: 'var(--text-dim)', confirmed: '#8fb8e0', shipped: '#e0c98a', delivered: 'var(--silver-bright)' };
+
 function formatOrderDate(ts){
   if(!ts) return 'Date unavailable';
   try{
@@ -574,6 +580,8 @@ async function loadOrdersList(){
           ${o.discount ? `<div class="row"><span>Discount${o.couponCode ? ` (${o.couponCode})` : ''}</span><span>-BDT ${o.discount}</span></div>` : ''}
           <div class="row grand"><span>Total</span><span>BDT ${o.total}</span></div>
         </div>`;
+      const currentStatus = ORDER_STATUSES.includes(o.status) ? o.status : 'pending';
+      const optionsHtml = ORDER_STATUSES.map(s=>`<option value="${s}" ${s===currentStatus?'selected':''}>${ORDER_STATUS_LABELS[s]}</option>`).join('');
       const el = document.createElement('div');
       el.className = 'item order-card';
       el.innerHTML = `
@@ -587,11 +595,11 @@ async function loadOrdersList(){
           ${totalsHtml}
         </div>
         <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0;">
-          <span style="font-size:10.5px;padding:3px 8px;border-radius:10px;border:1px solid var(--line);color:${o.status==='fulfilled'?'var(--silver-bright)':'var(--text-dim)'};">${o.status||'pending'}</span>
-          <button class="toggle-status" data-id="${o.id}" data-status="${o.status||'pending'}">${o.status==='fulfilled' ? 'Mark pending' : 'Mark fulfilled'}</button>
+          <span class="order-status-badge" style="font-size:10.5px;padding:3px 8px;border-radius:10px;border:1px solid var(--line);color:${ORDER_STATUS_COLORS[currentStatus]};">${ORDER_STATUS_LABELS[currentStatus]}</span>
+          <select class="status-select" data-id="${o.id}">${optionsHtml}</select>
         </div>`;
-      el.querySelector('button[data-id]').addEventListener('click', async (e)=>{
-        const newStatus = e.target.dataset.status === 'fulfilled' ? 'pending' : 'fulfilled';
+      el.querySelector('.status-select').addEventListener('change', async (e)=>{
+        const newStatus = e.target.value;
         await updateDoc(doc(db,'orders',o.id), { status: newStatus });
         loadOrdersList();
       });
