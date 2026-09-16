@@ -1,5 +1,5 @@
 // js/cart.js
-// Shared cart logic for fashion1sta — localStorage-backed so it persists
+// Shared cart logic for FASHIONISTA — localStorage-backed so it persists
 // across index.html and shop.html without a backend. Import the pieces
 // you need; renderCartDrawer()/updateCartBadge() expect the drawer
 // markup (#cartItems, #cartTotal, #cartCheckoutBtn, #cartBadge) to
