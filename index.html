@@ -125,6 +125,16 @@
   .cat-filter-btn svg{width:16px;height:16px;}
 
   /* ---------- SECTIONS ---------- */
+
+  /* ---------- REELS ---------- */
+  .reels-row{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;-webkit-overflow-scrolling:touch;}
+  .reels-row::-webkit-scrollbar{display:none;}
+  .reel-card{position:relative;flex:0 0 auto;width:190px;aspect-ratio:9/16;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--bg-alt);scroll-snap-align:start;cursor:pointer;}
+  .reel-card video,.reel-card img{width:100%;height:100%;object-fit:cover;display:block;}
+  .reel-card .reel-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.72) 0%,rgba(0,0,0,0) 55%);pointer-events:none;}
+  .reel-card .reel-caption{position:absolute;left:10px;right:10px;bottom:9px;font-size:12px;line-height:1.35;color:#f2f3f5;pointer-events:none;}
+  .reel-card .reel-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:44px;height:44px;border-radius:50%;background:rgba(10,11,13,0.55);border:1px solid rgba(242,244,247,0.5);display:flex;align-items:center;justify-content:center;color:#f2f4f7;font-size:15px;pointer-events:none;}
+  .reel-card .reel-sound{position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:50%;background:rgba(10,11,13,0.6);border:1px solid rgba(242,244,247,0.35);color:#f2f4f7;font-size:11px;display:flex;align-items:center;justify-content:center;}
   section.collection{padding:6px 22px 48px;}
   .section-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:20px;border-bottom:1px solid var(--line);padding-bottom:13px;}
   .section-head h2{font-family:'Fraunces',serif;font-weight:500;font-size:21px;}
@@ -258,6 +268,11 @@
 <section class="collection">
   <div class="section-head"><h2 class="display reveal from-left">New In</h2><a class="viewall" href="shop.html?category=New">View all →</a></div>
   <div class="swipe-row" id="newInRow"></div>
+</section>
+
+<section class="collection" id="reels" style="display:none;">
+  <div class="section-head"><h2 class="display reveal from-right">Reels</h2></div>
+  <div class="reels-row" id="reelsRow"></div>
 </section>
 
 <div class="notice">
@@ -449,6 +464,69 @@ async function initProducts(){
   renderCards('glassesGrid', all.filter(p=>p.category==="Glasses").slice(0,4));
   renderCards('newInRow', all.slice(0,8));
 }
+
+/* ---------- Reels — managed from the admin dashboard (Reels tab) ---------- */
+function isDirectVideo(url){
+  return /\.(mp4|webm|mov|m4v)(\?|$)/i.test(url) || /firebasestorage\.googleapis\.com|firebasestorage\.app/i.test(url);
+}
+async function initReels(){
+  const section = document.getElementById('reels');
+  const row = document.getElementById('reelsRow');
+  if(!section || !row) return;
+  let reels = [];
+  try{
+    const snap = await getDocs(collection(db,'reels'));
+    reels = snap.docs.map(d=>({id:d.id, ...d.data()}));
+  }catch(e){ console.error('Reels failed to load:', e); }
+  if(!reels.length) return;
+  reels.sort((a,b)=>(a.order||0)-(b.order||0));
+  section.style.display = 'block';
+  row.innerHTML = reels.map(r=>{
+    const cap = r.caption ? `<div class="reel-caption">${r.caption}</div>` : '';
+    if(isDirectVideo(r.videoUrl||'')){
+      return `<div class="reel-card" data-href="${r.href||''}">
+        <video src="${r.videoUrl}" muted loop playsinline preload="metadata" ${r.thumbUrl?`poster="${r.thumbUrl}"`:''}></video>
+        <div class="reel-overlay"></div>
+        <button class="reel-sound" aria-label="Toggle sound">&#128263;</button>
+        ${cap}
+      </div>`;
+    }
+    const cover = r.thumbUrl
+      ? `<img src="${r.thumbUrl}" alt="${r.caption||'Reel'}" loading="lazy">`
+      : `<div style="width:100%;height:100%;background:var(--bg-alt);"></div>`;
+    return `<a class="reel-card" href="${r.videoUrl}" target="_blank" rel="noopener">
+      ${cover}<div class="reel-overlay"></div><div class="reel-play">&#9654;</div>${cap}
+    </a>`;
+  }).join('');
+
+  // Tap a video reel to open its link (if set); the speaker button toggles sound.
+  row.querySelectorAll('.reel-card[data-href]').forEach(card=>{
+    const video = card.querySelector('video');
+    const soundBtn = card.querySelector('.reel-sound');
+    if(soundBtn && video){
+      soundBtn.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        video.muted = !video.muted;
+        soundBtn.innerHTML = video.muted ? '&#128263;' : '&#128266;';
+        if(!video.muted) video.play().catch(()=>{});
+      });
+    }
+    const href = card.dataset.href;
+    if(href) card.addEventListener('click', ()=>{ window.location.href = href; });
+  });
+
+  // Play only while visible, so the page stays light on mobile data.
+  const vids = row.querySelectorAll('video');
+  if(vids.length){
+    const io = new IntersectionObserver(entries=>{
+      entries.forEach(en=>{
+        if(en.isIntersecting) en.target.play().catch(()=>{});
+        else en.target.pause();
+      });
+    }, {threshold:0.6});
+    vids.forEach(v=>io.observe(v));
+  }
+}
 /* ---------- Scroll reveal — watches .reveal elements, slides them into place ---------- */
 function initScrollReveal(){
   const observer = new IntersectionObserver((entries)=>{
@@ -461,7 +539,7 @@ function initScrollReveal(){
   }, {threshold:0.15, rootMargin:'0px 0px -40px 0px'});
   document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
 }
-Promise.all([initHero(), initProducts()]).then(()=>{
+Promise.all([initHero(), initProducts(), initReels()]).then(()=>{
   initScrollReveal();
   ['arrivalsGrid','glassesGrid','newInRow'].forEach(wireAddToCart);
   ['arrivalsGrid','glassesGrid','newInRow'].forEach(id=>{ wireFavButtons(id); refreshFavButtons(id); });
