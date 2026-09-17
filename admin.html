@@ -87,6 +87,7 @@
   <div class="tabs">
     <div class="tab active" data-panel="dashPanel">Dashboard</div>
     <div class="tab" data-panel="slidesPanel">Slides</div>
+    <div class="tab" data-panel="collagePanel">Collage</div>
     <div class="tab" data-panel="productsPanel">Products</div>
     <div class="tab" data-panel="ordersPanel">Orders</div>
     <div class="tab" data-panel="settingsPanel">Settings</div>
@@ -133,6 +134,30 @@
       <p class="status-msg" id="sStatus"></p>
     </div>
     <div class="list" id="slidesList"></div>
+  </div>
+
+  <!-- ---------- MODEL COLLAGE ---------- -->
+  <div class="panel" id="collagePanel">
+    <div class="card-form">
+      <h3>Add model photo</h3>
+      <p style="font-size:12px;color:var(--text-dim);margin:-4px 0 12px;">The collage appears in the middle of the homepage. It stays hidden until you add at least one photo.</p>
+      <div class="field"><label>Photo</label><input id="cgImage" type="file" accept="image/*"></div>
+      <div class="field"><label>Caption (optional)</label><input id="cgCaption" placeholder="e.g. Silver chain, worn in Dhaka"></div>
+      <div class="row2">
+        <div class="field"><label>Link (optional — product or page)</label><input id="cgHref" placeholder="product.html?id=..."></div>
+        <div class="field"><label>Order (lower shows first)</label><input id="cgOrder" type="number" value="0"></div>
+      </div>
+      <div class="field"><label>Tile size</label>
+        <select id="cgSize">
+          <option value="square">Square</option>
+          <option value="tall">Tall</option>
+          <option value="wide">Wide</option>
+        </select>
+      </div>
+      <button class="save-btn" id="cgSaveBtn" onclick="addCollagePhoto()">Save photo</button>
+      <p class="status-msg" id="cgStatus"></p>
+    </div>
+    <div class="list" id="collageList"></div>
   </div>
 
   <!-- ---------- PRODUCTS ---------- -->
@@ -254,6 +279,7 @@ function showDash(){
   document.getElementById('gate').style.display = 'none';
   document.getElementById('dash').style.display = 'block';
   loadSlidesList();
+  loadCollageList();
   loadProductsList();
   loadDashboardStats();
 }
@@ -274,6 +300,7 @@ document.querySelectorAll('.tab').forEach(t=>{
     document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
     t.classList.add('active');
     document.getElementById(t.dataset.panel).classList.add('active');
+    if(t.dataset.panel === 'collagePanel') loadCollageList();
     if(t.dataset.panel === 'ordersPanel') loadOrdersList();
     if(t.dataset.panel === 'settingsPanel'){ loadDeliverySettings(); loadCouponsList(); }
   });
@@ -330,6 +357,59 @@ async function loadSlidesList(){
     });
     list.appendChild(el);
   });
+}
+
+// ---------- Model collage ----------
+window.addCollagePhoto = async function(){
+  const btn = document.getElementById('cgSaveBtn');
+  const status = document.getElementById('cgStatus');
+  const file = document.getElementById('cgImage').files[0];
+  if(!file){ status.textContent = 'Please choose a photo.'; return; }
+  btn.disabled = true; status.textContent = 'Uploading photo...';
+  try{
+    const imageUrl = await uploadToImgbb(file);
+    await addDoc(collection(db,'collage'), {
+      imageUrl,
+      caption: document.getElementById('cgCaption').value.trim(),
+      href: document.getElementById('cgHref').value.trim(),
+      size: document.getElementById('cgSize').value,
+      order: Number(document.getElementById('cgOrder').value) || 0,
+      createdAt: serverTimestamp()
+    });
+    status.textContent = 'Saved.';
+    ['cgCaption','cgHref','cgOrder'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('cgImage').value='';
+    loadCollageList();
+  }catch(e){
+    console.error(e); status.textContent = 'Failed: ' + e.message;
+  }
+  btn.disabled = false;
+};
+async function loadCollageList(){
+  const list = document.getElementById('collageList');
+  if(!list) return;
+  list.innerHTML = 'Loading...';
+  try{
+    const snap = await getDocs(collection(db,'collage'));
+    if(snap.empty){ list.innerHTML = '<p style="color:var(--text-dim);font-size:12.5px;">No photos yet — the collage section is hidden on the site until you add one.</p>'; return; }
+    const items = snap.docs.map(d=>({id:d.id, ...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));
+    list.innerHTML = '';
+    items.forEach(c=>{
+      const el = document.createElement('div');
+      el.className = 'item';
+      el.innerHTML = `
+        <img src="${c.imageUrl}">
+        <div class="info"><h4>${c.caption || 'Model photo'}</h4><p>order: ${c.order||0} · ${c.size||'square'}</p></div>
+        <button class="del" data-id="${c.id}">Delete</button>`;
+      el.querySelector('.del').addEventListener('click', async ()=>{
+        await deleteDoc(doc(db,'collage',c.id));
+        loadCollageList();
+      });
+      list.appendChild(el);
+    });
+  }catch(e){
+    console.error(e); list.innerHTML = 'Failed to load: ' + e.message;
+  }
 }
 
 // ---------- Products ----------
