@@ -3,9 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>fashion1sta — Neon Silver Accessories | Dhaka</title>
-<meta name="description" content="fashion1sta — Dhaka's neon silver streetwear house. Eyewear and accessories. Cash on delivery across Bangladesh.">
+<title>FASHIONISTA — Neon Silver Accessories | Dhaka</title>
+<meta name="description" content="FASHIONISTA — Dhaka's neon silver streetwear house. Eyewear and accessories. Cash on delivery across Bangladesh.">
 <meta name="theme-color" content="#0a0b0d">
+<link rel="canonical" href="https://fashion1sta.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="FASHIONISTA">
+<meta property="og:title" content="FASHIONISTA — Neon Silver Accessories | Dhaka">
+<meta property="og:description" content="FASHIONISTA — Dhaka's neon silver streetwear house. Eyewear and accessories. Cash on delivery across Bangladesh.">
+<meta property="og:url" content="https://fashion1sta.com/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="FASHIONISTA — Neon Silver Accessories | Dhaka">
+<meta name="twitter:description" content="FASHIONISTA — Dhaka's neon silver streetwear house. Eyewear and accessories. Cash on delivery across Bangladesh.">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "OnlineStore",
+  "name": "FASHIONISTA",
+  "url": "https://fashion1sta.com/",
+  "description": "Dhaka's neon silver streetwear house. Eyewear and accessories, cash on delivery across Bangladesh.",
+  "areaServed": "BD",
+  "sameAs": [
+    "https://www.instagram.com/FASHIONISTA_bd",
+    "https://www.facebook.com/share/19EjoiggcT/"
+  ]
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -23,13 +46,27 @@
   a{color:inherit;text-decoration:none;}
   img,svg{display:block;max-width:100%;}
   button{font-family:inherit;}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
 
   /* ---------- ANNOUNCE / NAV ---------- */
   .announce{background:var(--bg-alt);text-align:center;padding:8px 12px;font-size:11.5px;letter-spacing:0.06em;color:var(--silver);border-bottom:1px solid var(--line);}
   .announce b{color:var(--silver-bright);}
   header{position:sticky;top:0;z-index:40;display:flex;align-items:center;justify-content:space-between;padding:16px 22px;background:rgba(10,11,13,0.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
   .navicon{width:20px;height:20px;opacity:0.85;}
-  .logo{font-family:'Fraunces',serif;font-size:21px;letter-spacing:0.14em;font-weight:600;background:linear-gradient(120deg,var(--silver-deep),var(--silver-bright) 45%,var(--silver));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .logo{font-family:'Fraunces',serif;font-size:21px;letter-spacing:0.14em;font-weight:600;display:inline-flex;}
+  .logo .seg{background:linear-gradient(100deg,var(--silver-deep) 0%,var(--silver-deep) 35%,var(--silver-bright) 50%,var(--silver-deep) 65%,var(--silver-deep) 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:logoShine 3.2s ease-in-out infinite, logoSegIn 0.6s cubic-bezier(0.2,0.7,0.2,1) both;}
+  .logo .seg:nth-child(1){animation-delay:0s,0s;}
+  .logo .seg:nth-child(2){animation-delay:0s,0.15s;}
+  .logo .seg:nth-child(3){animation-delay:0s,0.3s;}
+  @keyframes logoShine{
+    0%{background-position:200% 0;}
+    100%{background-position:-50% 0;}
+  }
+  @keyframes logoSegIn{
+    0%{opacity:0;transform:translateY(14px);}
+    100%{opacity:1;transform:translateY(0);}
+  }
+  @media (prefers-reduced-motion: reduce){ .logo .seg{animation:none;opacity:1;transform:none;} }
   .burger{width:34px;height:34px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;border-radius:var(--radius);cursor:pointer;background:none;}
   .burger span{display:block;width:16px;height:1px;background:var(--silver);position:relative;}
   .burger span::before,.burger span::after{content:"";position:absolute;left:0;width:16px;height:1px;background:var(--silver);}
@@ -83,10 +120,27 @@
   .subs a:last-child{border-bottom:none;}
 
   /* ---------- HERO SLIDER ---------- */
-  .hero-slider{position:relative;overflow:hidden;}
+  .hero-slider{position:relative;overflow:hidden;background:#000;}
   .slides{display:flex;transition:transform 0.5s ease;}
-  .slide{flex:0 0 100%;position:relative;padding:64px 26px 56px;text-align:center;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .slide{flex:0 0 100%;position:relative;padding:64px 26px 56px;text-align:center;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;}
   .slide .sglow{position:absolute;left:50%;top:40%;width:260px;height:260px;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(242,244,247,0.16) 0%,rgba(184,188,196,0.06) 45%,transparent 72%);filter:blur(6px);z-index:0;}
+  .stage-lights{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0;mix-blend-mode:screen;}
+  .beam{position:absolute;top:-30%;width:110px;height:170%;transform-origin:top center;filter:blur(7px);opacity:0.65;animation:beamSweep 5.5s ease-in-out infinite;}
+  .beam:nth-child(1){left:2%;background:linear-gradient(180deg,rgba(255,255,255,0.55),rgba(255,255,255,0) 70%);animation-delay:0s;}
+  .beam:nth-child(2){left:26%;background:linear-gradient(180deg,rgba(184,188,196,0.5),rgba(184,188,196,0) 70%);animation-delay:-1.4s;animation-duration:6.5s;}
+  .beam:nth-child(3){left:50%;background:linear-gradient(180deg,rgba(200,180,255,0.4),rgba(200,180,255,0) 70%);animation-delay:-3s;animation-duration:5s;}
+  .beam:nth-child(4){left:72%;background:linear-gradient(180deg,rgba(255,220,235,0.35),rgba(255,220,235,0) 70%);animation-delay:-2s;animation-duration:7s;}
+  .beam:nth-child(5){left:92%;background:linear-gradient(180deg,rgba(255,255,255,0.45),rgba(255,255,255,0) 70%);animation-delay:-4.2s;animation-duration:6s;}
+  @keyframes beamSweep{
+    0%,100%{transform:rotate(-24deg) scaleY(0.96);opacity:0.35;}
+    50%{transform:rotate(22deg) scaleY(1.05);opacity:0.75;}
+  }
+  .stage-haze{position:absolute;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse at 50% 20%, rgba(255,255,255,0.14), transparent 62%);animation:hazePulse 3.6s ease-in-out infinite;mix-blend-mode:screen;}
+  @keyframes hazePulse{
+    0%,100%{opacity:0.4;}
+    50%{opacity:0.85;}
+  }
+  @media (prefers-reduced-motion: reduce){ .beam, .stage-haze{animation:none;opacity:0.4;} }
   .slide-icon{position:relative;z-index:1;width:56px;height:56px;margin-bottom:18px;}
   .slide h1{position:relative;z-index:1;font-size:clamp(24px,6.2vw,36px);font-weight:500;letter-spacing:0.01em;margin-bottom:12px;}
   .slide p{position:relative;z-index:1;max-width:34ch;margin:0 auto 24px;color:var(--text-dim);font-size:14px;}
@@ -98,14 +152,26 @@
   .dot.active{background:var(--silver-bright);width:18px;border-radius:3px;}
 
   /* ---------- CATEGORY STRIP ---------- */
-  .cats{display:flex;gap:10px;overflow-x:auto;padding:0 22px 32px;scrollbar-width:none;}
+  .cats{display:flex;gap:10px;overflow-x:auto;padding:0 22px 32px;scrollbar-width:none;align-items:center;}
   .cats::-webkit-scrollbar{display:none;}
   .cat{flex:0 0 auto;padding:9px 16px;font-size:12.5px;border:1px solid var(--line);border-radius:20px;color:var(--text-dim);white-space:nowrap;}
   .cat.active{color:var(--bg);background:var(--silver-bright);border-color:var(--silver-bright);font-weight:600;}
   .cat.soon{opacity:0.45;}
   .cat .tag{font-size:9.5px;margin-left:4px;}
+  .cat-filter-btn{flex:0 0 auto;width:34px;height:34px;border:1px solid var(--line);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--silver);}
+  .cat-filter-btn svg{width:16px;height:16px;}
 
   /* ---------- SECTIONS ---------- */
+
+  /* ---------- REELS ---------- */
+  .reels-row{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;-webkit-overflow-scrolling:touch;}
+  .reels-row::-webkit-scrollbar{display:none;}
+  .reel-card{position:relative;flex:0 0 auto;width:190px;aspect-ratio:9/16;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--bg-alt);scroll-snap-align:start;cursor:pointer;}
+  .reel-card video,.reel-card img{width:100%;height:100%;object-fit:cover;display:block;}
+  .reel-card .reel-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.72) 0%,rgba(0,0,0,0) 55%);pointer-events:none;}
+  .reel-card .reel-caption{position:absolute;left:10px;right:10px;bottom:9px;font-size:12px;line-height:1.35;color:#f2f3f5;pointer-events:none;}
+  .reel-card .reel-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:44px;height:44px;border-radius:50%;background:rgba(10,11,13,0.55);border:1px solid rgba(242,244,247,0.5);display:flex;align-items:center;justify-content:center;color:#f2f4f7;font-size:15px;pointer-events:none;}
+  .reel-card .reel-sound{position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:50%;background:rgba(10,11,13,0.6);border:1px solid rgba(242,244,247,0.35);color:#f2f4f7;font-size:11px;display:flex;align-items:center;justify-content:center;}
   section.collection{padding:6px 22px 48px;}
   .section-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:20px;border-bottom:1px solid var(--line);padding-bottom:13px;}
   .section-head h2{font-family:'Fraunces',serif;font-weight:500;font-size:21px;}
@@ -148,18 +214,6 @@
     .reveal{opacity:1;transform:none;transition:none;}
   }
 
-  /* ---------- MODEL GALLERY / LOOKBOOK ---------- */
-  .gallery-row{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin:0 -22px;padding:0 22px 4px;}
-  .gallery-row::-webkit-scrollbar{display:none;}
-  .gallery-card{position:relative;flex:0 0 76%;scroll-snap-align:start;aspect-ratio:3/4;border-radius:6px;overflow:hidden;background:var(--card);border:1px solid var(--line);}
-  @media(min-width:640px){.gallery-row{overflow:visible;display:grid;grid-template-columns:repeat(3,1fr);margin:0;padding:0;}.gallery-card{flex:auto;}}
-  .gallery-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
-  .gallery-card .g-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,11,13,0) 38%,rgba(10,11,13,0.92) 100%);}
-  .gallery-card .g-content{position:absolute;left:0;right:0;bottom:0;padding:22px 20px;}
-  .gallery-card .g-content h3{font-family:'Fraunces',serif;font-weight:500;font-size:18px;line-height:1.32;margin-bottom:6px;color:var(--silver-bright);}
-  .gallery-card .g-content p{font-size:12px;color:var(--silver);line-height:1.5;margin-bottom:16px;max-width:26ch;}
-  .gallery-card .g-cta{display:inline-flex;align-items:center;padding:10px 18px;background:linear-gradient(120deg,var(--silver),var(--silver-bright));color:var(--bg);font-size:12px;font-weight:700;border-radius:var(--radius);}
-
   footer{padding:40px 24px 44px;border-top:1px solid var(--line);text-align:center;}
   footer .flogo{font-family:'Fraunces',serif;font-size:18px;letter-spacing:0.14em;color:var(--silver);margin-bottom:12px;}
   footer .tagline{font-size:12.5px;color:var(--text-dim);max-width:32ch;margin:0 auto 20px;}
@@ -175,11 +229,13 @@
 </head>
 <body>
 
-<div class="announce">WELCOME TO fashion1sta · <b>5000+ HAPPY CUSTOMERS</b> · 10% OFF CODE "SILVER10"</div>
+<h1 id="staticH1" class="sr-only">FASHIONISTA — Neon Silver Accessories &amp; Eyewear in Dhaka, Bangladesh</h1>
+
+<div class="announce">WELCOME TO FASHIONISTA · <b>5000+ HAPPY CUSTOMERS</b> · 10% OFF CODE "SILVER10"</div>
 
 <header>
-  <svg class="navicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
-  <span class="logo">fashion1sta</span>
+  <span style="width:20px;"></span>
+  <span class="logo"><span class="seg">FASH</span><span class="seg">ION</span><span class="seg">ISTA</span></span>
   <div style="display:flex;align-items:center;gap:10px;">
     <button class="cart-btn" onclick="toggleCart(true)" aria-label="Cart">
       <svg class="navicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="21" r="1.3"/><circle cx="18" cy="21" r="1.3"/><path d="M2 3h3l2.6 12.4a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L22 7H6"/></svg>
@@ -233,6 +289,9 @@
   <a class="cat active" href="shop.html?category=New">New In</a>
   <a class="cat active" href="shop.html?category=Glasses">Glasses</a>
   <a class="cat" href="shop.html?category=Accessories">Accessories</a>
+  <a class="cat-filter-btn" href="shop.html?filter=1" aria-label="Filter">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="4" y1="7" x2="20" y2="7"/><circle cx="9" cy="7" r="2" fill="var(--bg)"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="15" cy="17" r="2" fill="var(--bg)"/></svg>
+  </a>
 </div>
 
 <section class="collection">
@@ -245,14 +304,14 @@
   <div class="grid" id="glassesGrid"></div>
 </section>
 
-<section class="collection" id="gallerySection" style="display:none;">
-  <div class="section-head"><h2 class="display reveal from-right">The Lookbook</h2></div>
-  <div class="gallery-row" id="galleryRow"></div>
-</section>
-
 <section class="collection">
   <div class="section-head"><h2 class="display reveal from-left">New In</h2><a class="viewall" href="shop.html?category=New">View all →</a></div>
   <div class="swipe-row" id="newInRow"></div>
+</section>
+
+<section class="collection" id="reels" style="display:none;">
+  <div class="section-head"><h2 class="display reveal from-right">Reels</h2></div>
+  <div class="reels-row" id="reelsRow"></div>
 </section>
 
 <div class="notice">
@@ -260,10 +319,10 @@
 </div>
 
 <footer>
-  <div class="flogo">fashion1sta</div>
+  <div class="flogo">FASHIONISTA</div>
   <p class="tagline">Gothic-luxury accessories and eyewear for the after-dark wardrobe. Follow us on Instagram.</p>
   <div class="socials">
-    <a href="https://www.instagram.com/fashion1sta_bd?stkn=OWJlYzFmOWoyZnlr" target="_blank" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="var(--silver)" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.8" fill="var(--silver)"/></svg></a>
+    <a href="https://www.instagram.com/FASHIONISTA_bd?stkn=OWJlYzFmOWoyZnlr" target="_blank" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="var(--silver)" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.8" fill="var(--silver)"/></svg></a>
     <a href="https://www.facebook.com/share/19EjoiggcT/" target="_blank" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="var(--silver)" stroke-width="1.6"><path d="M14 9h3V6h-3c-2 0-3 1-3 3v2H8v3h3v6h3v-6h3l1-3h-4V9c0-.6.4-1 1-1z"/></svg></a>
     <a href="https://wa.me/8801759406602" target="_blank" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="var(--silver)" stroke-width="1.6"><path d="M20 12a8 8 0 1 1-3.7-6.7L20 4l-1 4.3A8 8 0 0 1 20 12z"/><path d="M9 10.5c.3 1.8 2.2 3.7 4 4"/></svg></a>
     <a href="#" aria-label="TikTok"><svg viewBox="0 0 24 24" fill="none" stroke="var(--silver)" stroke-width="1.6"><path d="M15 4v10.5a3.5 3.5 0 1 1-3.5-3.5"/><path d="M15 4c0 2.5 2 4.5 4.5 4.5"/></svg></a>
@@ -276,7 +335,7 @@
     <p>Email: <a href="mailto:fashionistabd.ceo@gmail.com">fashionistabd.ceo@gmail.com</a></p>
     <p>Phone: <a href="https://wa.me/8801759406602">+880 1759-406602</a></p>
   </div>
-  <div class="copyright">© 2026 fashion1sta. ALL RIGHTS RESERVED.</div>
+  <div class="copyright">© 2026 FASHIONISTA. ALL RIGHTS RESERVED.</div>
 </footer>
 
 <script type="module">
@@ -320,22 +379,17 @@ categoryTree.forEach((cat,i)=>{
   }
 });
 
-/* ---------- Hero slider — loads from Firestore "slides" collection, falls back to seed data ---------- */
-const heroSlidesSeed = [
-  {title:"Neon silver, made for the dark", text:"Dhaka's gothic-luxury streetwear house — eyewear and accessories.", cta:"Shop Glasses", href:"#glasses", icon:"cross"},
-  {title:"Fresh weekly drops", text:"New accessories added every week — cash on delivery nationwide.", cta:"Shop Accessories", href:"shop.html?category=Accessories", icon:"chain"},
-  {title:"Cash on delivery, everywhere", text:"Order from anywhere in Bangladesh, pay when it arrives at your door.", cta:"Explore All", href:"#glasses", icon:"chain"}
-];
+/* ---------- Hero slider — loads from Firestore "slides" collection (admin-managed only, no placeholder fallback) ---------- */
 async function loadSlides(){
   try{
     const fetchPromise = getDocs(collection(db,'slides'));
     const timeout = new Promise(resolve => setTimeout(()=>resolve(null), 6000));
     const snap = await Promise.race([fetchPromise, timeout]);
-    if(!snap || snap.empty) return heroSlidesSeed;
+    if(!snap || snap.empty) return [];
     return snap.docs.map(d=>d.data()).sort((a,b)=>(a.order||0)-(b.order||0));
   }catch(e){
-    console.error('Slides load failed, using seed data:', e);
-    return heroSlidesSeed;
+    console.error('Slides load failed:', e);
+    return [];
   }
 }
 function slideIcon(type){
@@ -355,15 +409,22 @@ function goTo(i){
 }
 async function initHero(){
   heroSlides = await loadSlides();
+  if(!heroSlides.length){
+    document.querySelector('.hero-slider').style.display = 'none';
+    return;
+  }
   heroSlides.forEach((s,i)=>{
     const bg = s.imageUrl ? `style="background-image:url('${s.imageUrl}');background-size:cover;background-position:center;"` : '';
     slidesEl.innerHTML += `
       <div class="slide" ${bg}>
+        <div class="stage-lights">
+          <div class="beam"></div><div class="beam"></div><div class="beam"></div><div class="beam"></div><div class="beam"></div>
+        </div>
+        <div class="stage-haze"></div>
         <div class="sglow"></div>
         <div class="slide-icon">${s.imageUrl ? '' : slideIcon(s.icon||'cross')}</div>
         <h1 class="display">${s.title}</h1>
         <p>${s.text}</p>
-        <a href="${s.href||'#'}" class="btn">${s.cta||'Shop Now'}</a>
       </div>`;
     dotsEl.innerHTML += `<span class="dot${i===0?' active':''}" data-i="${i}"></span>`;
   });
@@ -376,20 +437,6 @@ function glassesSVG(){return `<svg viewBox="0 0 100 46" fill="none"><circle cx="
 function crossSVG(){return `<svg viewBox="0 0 60 60" fill="none"><path d="M30 6 L30 54 M12 24 L48 24" stroke="url(#cardg3)" stroke-width="4" stroke-linecap="round"/><defs><linearGradient id="cardg3" x1="0" y1="0" x2="60" y2="60"><stop offset="0%" stop-color="#6b6f76"/><stop offset="55%" stop-color="#f2f4f7"/><stop offset="100%" stop-color="#b8bcc4"/></linearGradient></defs></svg>`;}
 function chainSVG(){return `<svg viewBox="0 0 90 50" fill="none"><ellipse cx="22" cy="25" rx="14" ry="9" stroke="url(#cardg4)" stroke-width="2.2"/><ellipse cx="46" cy="25" rx="14" ry="9" stroke="url(#cardg4)" stroke-width="2.2"/><ellipse cx="70" cy="25" rx="14" ry="9" stroke="url(#cardg4)" stroke-width="2.2"/><defs><linearGradient id="cardg4" x1="0" y1="0" x2="90" y2="50"><stop offset="0%" stop-color="#6b6f76"/><stop offset="55%" stop-color="#f2f4f7"/><stop offset="100%" stop-color="#b8bcc4"/></linearGradient></defs></svg>`;}
 
-const seedProducts = {
-  arrivals: [
-    {name:"Tennis Chain Bracelet", price:599, was:800, iconType:"chain", sold:1240},
-    {name:"Vampire Fang Grillz", price:799, was:1200, iconType:"cross", sold:860},
-    {name:"Dragon Flame Belt", price:990, was:1500, iconType:"chain", sold:430},
-    {name:"Gothic Cross Pendant", price:650, was:900, iconType:"cross", sold:990}
-  ],
-  Glasses: [
-    {name:"Gothic Cross Rimless", price:990, was:1300, iconType:"glasses", sold:2100},
-    {name:"Vintage Sun Frame", price:850, was:1100, iconType:"glasses", sold:1560},
-    {name:"Neon Aviator Link", price:750, was:1000, iconType:"glasses", sold:980},
-    {name:"Iced Bridge Round", price:1099, was:1500, iconType:"glasses", sold:640}
-  ]
-};
 function iconFor(type){
   if(type==="glasses") return glassesSVG();
   if(type==="chain") return chainSVG();
@@ -400,15 +447,19 @@ async function loadProducts(){
     const fetchPromise = getDocs(collection(db,'products'));
     const timeout = new Promise(resolve => setTimeout(()=>resolve(null), 6000));
     const snap = await Promise.race([fetchPromise, timeout]);
-    if(!snap || snap.empty) return null; // signal caller to use seed data
+    if(!snap || snap.empty) return [];
     return snap.docs.map(d=>({id:d.id, ...d.data()}));
   }catch(e){
-    console.error('Products load failed, using seed data:', e);
-    return null;
+    console.error('Products load failed:', e);
+    return [];
   }
 }
 function renderCards(id, items){
   const grid = document.getElementById(id);
+  if(!items.length){
+    grid.innerHTML = '<p style="grid-column:1/-1;font-size:12.5px;color:var(--text-dim);padding:20px 0;">No products here yet — check back soon.</p>';
+    return;
+  }
   items.forEach((p,i)=>{
     const pid = p.id || p.name.toLowerCase().replace(/[^a-z0-9]+/g,'-');
     const outOfStock = p.stock === 0;
@@ -444,50 +495,77 @@ function renderCards(id, items){
 }
 async function initProducts(){
   const all = await loadProducts();
-  if(all === null){
-    renderCards('arrivalsGrid', seedProducts.arrivals);
-    renderCards('glassesGrid', seedProducts.Glasses);
-    renderCards('newInRow', [...seedProducts.arrivals, ...seedProducts.Glasses]);
-    return;
-  }
+  // Featured Pieces: admin-selected via the "Show in Featured Pieces" checkbox.
+  // Falls back to the first few real products if none are marked featured yet —
+  // never to placeholder/demo items.
   const featured = all.filter(p=>p.featured).slice(0,4);
-  renderCards('arrivalsGrid', featured.length ? featured : seedProducts.arrivals);
+  renderCards('arrivalsGrid', featured.length ? featured : all.slice(0,4));
   renderCards('glassesGrid', all.filter(p=>p.category==="Glasses").slice(0,4));
-  renderCards('newInRow', all.length ? all.slice(0,8) : [...seedProducts.arrivals, ...seedProducts.Glasses]);
-}
-/* ---------- Model gallery / lookbook — loads from Firestore "gallery" collection, admin-managed. Hidden entirely when the collection is empty. ---------- */
-async function loadGallery(){
-  try{
-    const fetchPromise = getDocs(collection(db,'gallery'));
-    const timeout = new Promise(resolve => setTimeout(()=>resolve(null), 6000));
-    const snap = await Promise.race([fetchPromise, timeout]);
-    if(!snap || snap.empty) return [];
-    return snap.docs.map(d=>({id:d.id, ...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));
-  }catch(e){
-    console.error('Gallery load failed:', e);
-    return [];
-  }
-}
-function galleryCardHTML(g){
-  return `
-    <div class="gallery-card">
-      ${g.imageUrl ? `<img src="${g.imageUrl}" alt="${g.title||''}">` : ''}
-      <div class="g-overlay"></div>
-      <div class="g-content">
-        ${g.title ? `<h3>${g.title}</h3>` : ''}
-        ${g.text ? `<p>${g.text}</p>` : ''}
-        ${g.cta ? `<a class="g-cta" href="${g.href||'#'}">${g.cta}</a>` : ''}
-      </div>
-    </div>`;
-}
-async function initGallery(){
-  const items = await loadGallery();
-  const section = document.getElementById('gallerySection');
-  if(!items.length){ section.style.display = 'none'; return; }
-  document.getElementById('galleryRow').innerHTML = items.map(galleryCardHTML).join('');
-  section.style.display = 'block';
+  renderCards('newInRow', all.slice(0,8));
 }
 
+/* ---------- Reels — managed from the admin dashboard (Reels tab) ---------- */
+function isDirectVideo(url){
+  return /\.(mp4|webm|mov|m4v)(\?|$)/i.test(url) || /firebasestorage\.googleapis\.com|firebasestorage\.app/i.test(url);
+}
+async function initReels(){
+  const section = document.getElementById('reels');
+  const row = document.getElementById('reelsRow');
+  if(!section || !row) return;
+  let reels = [];
+  try{
+    const snap = await getDocs(collection(db,'reels'));
+    reels = snap.docs.map(d=>({id:d.id, ...d.data()}));
+  }catch(e){ console.error('Reels failed to load:', e); }
+  if(!reels.length) return;
+  reels.sort((a,b)=>(a.order||0)-(b.order||0));
+  section.style.display = 'block';
+  row.innerHTML = reels.map(r=>{
+    const cap = r.caption ? `<div class="reel-caption">${r.caption}</div>` : '';
+    if(isDirectVideo(r.videoUrl||'')){
+      return `<div class="reel-card" data-href="${r.href||''}">
+        <video src="${r.videoUrl}" muted loop playsinline preload="metadata" ${r.thumbUrl?`poster="${r.thumbUrl}"`:''}></video>
+        <div class="reel-overlay"></div>
+        <button class="reel-sound" aria-label="Toggle sound">&#128263;</button>
+        ${cap}
+      </div>`;
+    }
+    const cover = r.thumbUrl
+      ? `<img src="${r.thumbUrl}" alt="${r.caption||'Reel'}" loading="lazy">`
+      : `<div style="width:100%;height:100%;background:var(--bg-alt);"></div>`;
+    return `<a class="reel-card" href="${r.videoUrl}" target="_blank" rel="noopener">
+      ${cover}<div class="reel-overlay"></div><div class="reel-play">&#9654;</div>${cap}
+    </a>`;
+  }).join('');
+
+  // Tap a video reel to open its link (if set); the speaker button toggles sound.
+  row.querySelectorAll('.reel-card[data-href]').forEach(card=>{
+    const video = card.querySelector('video');
+    const soundBtn = card.querySelector('.reel-sound');
+    if(soundBtn && video){
+      soundBtn.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        video.muted = !video.muted;
+        soundBtn.innerHTML = video.muted ? '&#128263;' : '&#128266;';
+        if(!video.muted) video.play().catch(()=>{});
+      });
+    }
+    const href = card.dataset.href;
+    if(href) card.addEventListener('click', ()=>{ window.location.href = href; });
+  });
+
+  // Play only while visible, so the page stays light on mobile data.
+  const vids = row.querySelectorAll('video');
+  if(vids.length){
+    const io = new IntersectionObserver(entries=>{
+      entries.forEach(en=>{
+        if(en.isIntersecting) en.target.play().catch(()=>{});
+        else en.target.pause();
+      });
+    }, {threshold:0.6});
+    vids.forEach(v=>io.observe(v));
+  }
+}
 /* ---------- Scroll reveal — watches .reveal elements, slides them into place ---------- */
 function initScrollReveal(){
   const observer = new IntersectionObserver((entries)=>{
@@ -500,7 +578,7 @@ function initScrollReveal(){
   }, {threshold:0.15, rootMargin:'0px 0px -40px 0px'});
   document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
 }
-Promise.all([initHero(), initProducts(), initGallery()]).then(()=>{
+Promise.all([initHero(), initProducts(), initReels()]).then(()=>{
   initScrollReveal();
   ['arrivalsGrid','glassesGrid','newInRow'].forEach(wireAddToCart);
   ['arrivalsGrid','glassesGrid','newInRow'].forEach(id=>{ wireFavButtons(id); refreshFavButtons(id); });
