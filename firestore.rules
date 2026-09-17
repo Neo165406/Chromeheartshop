@@ -1,0 +1,50 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null;
+    }
+
+    // Storefront content: anyone can read, only signed-in admin can write
+    match /products/{doc} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /slides/{doc} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /reels/{doc} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /collage/{doc} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Delivery settings: checkout reads, admin writes
+    match /settings/{doc} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Coupons: checkout validates codes (read), admin manages (write)
+    match /coupons/{doc} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Orders: customers can place an order; only admin can view/manage
+    match /orders/{doc} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Deny everything else by default
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
