@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>FASHIONISTA Admin</title>
+<title>fashion1sta Admin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -58,33 +58,13 @@
   .item .info p{font-size:11.5px;color:var(--text-dim);}
   .item .del{color:#e08a8a;font-size:12px;border:1px solid rgba(224,138,138,0.3);padding:6px 10px;border-radius:14px;cursor:pointer;background:none;flex-shrink:0;}
   .item .toggle-status{color:var(--silver-bright);font-size:11px;border:1px solid var(--line);padding:6px 10px;border-radius:14px;cursor:pointer;background:none;flex-shrink:0;white-space:nowrap;}
-  .item .edit{color:var(--silver-bright);font-size:12px;border:1px solid var(--line);padding:6px 10px;border-radius:14px;cursor:pointer;background:none;flex-shrink:0;}
-  .existing-img-thumb{position:relative;width:56px;height:56px;flex-shrink:0;}
-  .existing-img-thumb img{width:100%;height:100%;object-fit:cover;border-radius:4px;border:1px solid var(--line);}
-  .existing-img-thumb .rm{position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;background:#e08a8a;color:var(--bg);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;line-height:1;}
-
-  /* ---------- ORDER INVOICE ---------- */
-  .order-card{align-items:flex-start;flex-wrap:wrap;}
-  .order-date{font-size:11px;letter-spacing:0.04em;color:var(--text-dim);margin-bottom:6px;}
-  .order-items-list{display:flex;flex-direction:column;gap:8px;margin:10px 0;}
-  .order-item-row{display:flex;align-items:center;gap:10px;}
-  .order-item-row img, .order-item-row .oi-noimg{width:40px;height:40px;object-fit:cover;border-radius:4px;background:var(--bg-alt);flex-shrink:0;}
-  .order-item-row .oi-info{flex:1;min-width:0;font-size:12.5px;}
-  .order-item-row .oi-name{font-weight:600;}
-  .order-item-row .oi-meta{color:var(--text-dim);font-size:11.5px;}
-  .order-item-row .oi-total{font-size:12.5px;font-weight:600;color:var(--silver-bright);white-space:nowrap;}
-  .order-totals{border-top:1px solid var(--line);margin-top:4px;padding-top:10px;display:flex;flex-direction:column;gap:4px;font-size:12.5px;}
-  .order-totals .row{display:flex;justify-content:space-between;color:var(--text-dim);}
-  .order-totals .row.grand{color:var(--silver-bright);font-weight:700;font-size:13.5px;padding-top:6px;margin-top:2px;border-top:1px solid var(--line);}
-  .order-status-badge{font-weight:600;text-transform:capitalize;}
-  .status-select{padding:6px 10px;font-size:11.5px;border:1px solid var(--line);border-radius:14px;background:var(--bg);color:var(--text);cursor:pointer;}
 </style>
 </head>
 <body>
 
 <div id="gate">
   <div class="gate-box">
-    <h1 class="display">FASHIONISTA ADMIN</h1>
+    <h1 class="display">fashion1sta ADMIN</h1>
     <input type="email" id="emailInput" placeholder="Email" autocomplete="username">
     <input type="password" id="passInput" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter') tryLogin();">
     <button onclick="tryLogin()" id="loginBtn">Sign In</button>
@@ -94,7 +74,7 @@
 
 <div id="dash">
   <div class="topbar">
-    <span class="logo">FASHIONISTA · Admin</span>
+    <span class="logo">fashion1sta · Admin</span>
     <div style="display:flex;align-items:center;gap:10px;">
       <a class="view-site" href="index.html" target="_blank">View site →</a>
       <button class="view-site" style="cursor:pointer;" onclick="doLogout()">Log out</button>
@@ -103,8 +83,8 @@
   <div class="tabs">
     <div class="tab active" data-panel="dashPanel">Dashboard</div>
     <div class="tab" data-panel="slidesPanel">Slides</div>
+    <div class="tab" data-panel="galleryPanel">Gallery</div>
     <div class="tab" data-panel="productsPanel">Products</div>
-    <div class="tab" data-panel="reelsPanel">Reels</div>
     <div class="tab" data-panel="ordersPanel">Orders</div>
     <div class="tab" data-panel="settingsPanel">Settings</div>
   </div>
@@ -130,6 +110,10 @@
           <div style="font-size:22px;font-weight:700;color:var(--silver-bright);" id="statSold">–</div>
           <div style="font-size:11.5px;color:var(--text-dim);">Total units sold</div>
         </div>
+        <div style="background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:14px;">
+          <div style="font-size:22px;font-weight:700;color:var(--silver-bright);" id="statGallery">–</div>
+          <div style="font-size:11.5px;color:var(--text-dim);">Gallery cards</div>
+        </div>
       </div>
     </div>
   </div>
@@ -152,10 +136,28 @@
     <div class="list" id="slidesList"></div>
   </div>
 
+  <!-- ---------- GALLERY (LOOKBOOK) ---------- -->
+  <div class="panel" id="galleryPanel">
+    <div class="card-form">
+      <h3>Add gallery card</h3>
+      <div class="field"><label>Title</label><input id="gTitle" placeholder="e.g. Sneakers That Move With You"></div>
+      <div class="field"><label>Subtext (optional)</label><textarea id="gText" placeholder="One short line under the title"></textarea></div>
+      <div class="row2">
+        <div class="field"><label>Button label</label><input id="gCta" placeholder="Shop Now" value="Shop Now"></div>
+        <div class="field"><label>Button link (#section or URL)</label><input id="gHref" placeholder="shop.html"></div>
+      </div>
+      <div class="field"><label>Order (lower shows first)</label><input id="gOrder" type="number" value="0"></div>
+      <div class="field"><label>Card image</label><input id="gImage" type="file" accept="image/*"></div>
+      <button class="save-btn" id="gSaveBtn" onclick="addGalleryCard()">Save card</button>
+      <p class="status-msg" id="gStatus"></p>
+    </div>
+    <div class="list" id="galleryList"></div>
+  </div>
+
   <!-- ---------- PRODUCTS ---------- -->
   <div class="panel" id="productsPanel">
     <div class="card-form">
-      <h3 id="productFormTitle">Add product</h3>
+      <h3>Add product</h3>
       <div class="field"><label>Name</label><input id="pName" placeholder="e.g. Gothic Cross Rimless"></div>
       <div class="row2">
         <div class="field"><label>Price (BDT)</label><input id="pPrice" type="number"></div>
@@ -187,39 +189,14 @@
         <div class="field"><label>Stock quantity (leave blank = unlimited)</label><input id="pStock" type="number" placeholder="e.g. 10"></div>
       </div>
       <div class="field"><label><input type="checkbox" id="pFeatured" style="width:auto;margin-right:6px;">Show in "New In"</label></div>
-      <div class="field" id="pExistingImagesWrap" style="display:none;">
-        <label>Current images (editing — leave the file field below empty to keep these)</label>
-        <div id="pExistingImages" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;"></div>
-      </div>
-      <div class="field"><label id="pImageLabel">Product images (select multiple — first one becomes the main photo)</label><input id="pImage" type="file" accept="image/*" multiple></div>
-      <div style="display:flex;gap:10px;align-items:center;">
-        <button class="save-btn" id="pSaveBtn" onclick="saveProduct()">Save product</button>
-        <button class="view-site" id="pCancelEditBtn" style="cursor:pointer;display:none;" onclick="cancelEditProduct()">Cancel edit</button>
-      </div>
+      <div class="field"><label>Product image</label><input id="pImage" type="file" accept="image/*"></div>
+      <button class="save-btn" id="pSaveBtn" onclick="addProduct()">Save product</button>
       <p class="status-msg" id="pStatus"></p>
     </div>
     <div class="list" id="productsList"></div>
   </div>
 
   <!-- ---------- ORDERS ---------- -->
-  <!-- ---------- REELS ---------- -->
-  <div class="panel" id="reelsPanel">
-    <div class="card-form">
-      <h3>Add reel</h3>
-      <div class="field"><label>Video file (MP4 — best quality, plays right on the site)</label><input id="rVideoFile" type="file" accept="video/*"></div>
-      <div class="field"><label>Or paste a video link (direct .mp4 link, or an Instagram / TikTok / YouTube link)</label><input id="rVideoUrl" placeholder="https://..."></div>
-      <div class="field"><label>Cover image (optional — shown before the video plays, and for Instagram/TikTok links)</label><input id="rThumb" type="file" accept="image/*"></div>
-      <div class="field"><label>Caption</label><input id="rCaption" placeholder="e.g. Silver cross layering"></div>
-      <div class="row2">
-        <div class="field"><label>Link when tapped (optional)</label><input id="rHref" placeholder="shop.html?category=Glasses"></div>
-        <div class="field"><label>Order (lower shows first)</label><input id="rOrder" type="number" value="0"></div>
-      </div>
-      <button class="save-btn" id="rSaveBtn" onclick="addReel()">Save reel</button>
-      <p class="status-msg" id="rStatus"></p>
-    </div>
-    <div class="list" id="reelsList"></div>
-  </div>
-
   <div class="panel" id="ordersPanel">
     <div class="card-form">
       <h3>Orders</h3>
@@ -260,7 +237,6 @@
 <script type="module">
 import { db, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, getDoc, setDoc, serverTimestamp, auth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from './js/firebase-config.js';
 import { uploadToImgbb } from './js/imgbb.js';
-import { uploadVideo } from './js/video-upload.js';
 
 // ---------- Firebase Auth gate ----------
 window.tryLogin = async function(){
@@ -290,6 +266,7 @@ function showDash(){
   document.getElementById('gate').style.display = 'none';
   document.getElementById('dash').style.display = 'block';
   loadSlidesList();
+  loadGalleryList();
   loadProductsList();
   loadDashboardStats();
 }
@@ -310,7 +287,6 @@ document.querySelectorAll('.tab').forEach(t=>{
     document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
     t.classList.add('active');
     document.getElementById(t.dataset.panel).classList.add('active');
-    if(t.dataset.panel === 'reelsPanel') loadReelsList();
     if(t.dataset.panel === 'ordersPanel') loadOrdersList();
     if(t.dataset.panel === 'settingsPanel'){ loadDeliverySettings(); loadCouponsList(); }
   });
@@ -369,74 +345,63 @@ async function loadSlidesList(){
   });
 }
 
-// ---------- Products ----------
-let editingProductId = null;
-let editingProductExistingImages = [];
-
-function fillProductForm(p){
-  document.getElementById('pName').value = p.name || '';
-  document.getElementById('pPrice').value = p.price || '';
-  document.getElementById('pWas').value = p.was || '';
-  document.getElementById('pCategory').value = p.category || 'Glasses';
-  document.getElementById('pSub').value = p.subcategory || '';
-  document.getElementById('pDescription').value = p.description || '';
-  document.getElementById('pSold').value = p.sold || '';
-  document.getElementById('pStock').value = (typeof p.stock === 'number') ? p.stock : '';
-  document.getElementById('pFeatured').checked = !!p.featured;
-}
-
-function renderExistingImages(){
-  const wrap = document.getElementById('pExistingImagesWrap');
-  const holder = document.getElementById('pExistingImages');
-  if(!editingProductId || !editingProductExistingImages.length){
-    wrap.style.display = 'none';
-    holder.innerHTML = '';
-    return;
-  }
-  wrap.style.display = 'block';
-  holder.innerHTML = editingProductExistingImages.map((url,i)=>`
-    <div class="existing-img-thumb" data-i="${i}">
-      <img src="${url}">
-      <button type="button" class="rm" data-i="${i}">✕</button>
-    </div>`).join('');
-  holder.querySelectorAll('.rm').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const i = Number(btn.dataset.i);
-      editingProductExistingImages.splice(i,1);
-      renderExistingImages();
+// ---------- Gallery (Lookbook) ----------
+window.addGalleryCard = async function(){
+  const btn = document.getElementById('gSaveBtn');
+  const status = document.getElementById('gStatus');
+  const title = document.getElementById('gTitle').value.trim();
+  if(!title){ status.textContent = 'Title is required.'; return; }
+  btn.disabled = true; status.textContent = 'Saving...';
+  try{
+    let imageUrl = null;
+    const file = document.getElementById('gImage').files[0];
+    if(file){ status.textContent = 'Uploading image...'; imageUrl = await uploadToImgbb(file); }
+    await addDoc(collection(db,'gallery'), {
+      title,
+      text: document.getElementById('gText').value.trim(),
+      cta: document.getElementById('gCta').value.trim() || 'Shop Now',
+      href: document.getElementById('gHref').value.trim() || '#',
+      order: Number(document.getElementById('gOrder').value) || 0,
+      imageUrl,
+      createdAt: serverTimestamp()
     });
-  });
+    status.textContent = 'Saved.';
+    ['gTitle','gText','gCta','gHref','gOrder'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('gImage').value='';
+    loadGalleryList();
+    loadDashboardStats();
+  }catch(e){
+    console.error(e); status.textContent = 'Failed: ' + e.message;
+  }
+  btn.disabled = false;
+};
+async function loadGalleryList(){
+  const list = document.getElementById('galleryList');
+  list.innerHTML = 'Loading...';
+  const snap = await getDocs(collection(db,'gallery'));
+  if(snap.empty){ list.innerHTML = '<p style="color:var(--text-dim);font-size:12.5px;">No gallery cards yet — this section stays hidden on the site until you add one.</p>'; return; }
+  list.innerHTML = '';
+  snap.docs
+    .map(d=>({id:d.id, ...d.data()}))
+    .sort((a,b)=>(a.order||0)-(b.order||0))
+    .forEach(g=>{
+      const el = document.createElement('div');
+      el.className = 'item';
+      el.innerHTML = `
+        ${g.imageUrl ? `<img src="${g.imageUrl}">` : '<div style="width:48px;height:48px;background:var(--bg-alt);border-radius:4px;"></div>'}
+        <div class="info"><h4>${g.title}</h4><p>order: ${g.order||0} · ${g.cta||''}</p></div>
+        <button class="del" data-id="${g.id}">Delete</button>`;
+      el.querySelector('.del').addEventListener('click', async ()=>{
+        await deleteDoc(doc(db,'gallery',g.id));
+        loadGalleryList();
+        loadDashboardStats();
+      });
+      list.appendChild(el);
+    });
 }
 
-window.editProduct = function(id, p){
-  editingProductId = id;
-  editingProductExistingImages = p.images && p.images.length ? [...p.images] : (p.imageUrl ? [p.imageUrl] : []);
-  fillProductForm(p);
-  document.getElementById('productFormTitle').textContent = 'Edit product';
-  document.getElementById('pSaveBtn').textContent = 'Update product';
-  document.getElementById('pCancelEditBtn').style.display = 'inline-block';
-  document.getElementById('pImageLabel').textContent = 'Add more images (optional — existing ones above are kept unless removed)';
-  document.getElementById('pImage').value = '';
-  renderExistingImages();
-  document.getElementById('productsPanel').scrollIntoView({behavior:'smooth', block:'start'});
-};
-
-window.cancelEditProduct = function(){
-  editingProductId = null;
-  editingProductExistingImages = [];
-  ['pName','pPrice','pWas','pSub','pSold','pStock','pDescription'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('pCategory').value = 'Glasses';
-  document.getElementById('pFeatured').checked = false;
-  document.getElementById('pImage').value = '';
-  document.getElementById('productFormTitle').textContent = 'Add product';
-  document.getElementById('pSaveBtn').textContent = 'Save product';
-  document.getElementById('pCancelEditBtn').style.display = 'none';
-  document.getElementById('pImageLabel').textContent = 'Product images (select multiple — first one becomes the main photo)';
-  document.getElementById('pStatus').textContent = '';
-  renderExistingImages();
-};
-
-window.saveProduct = async function(){
+// ---------- Products ----------
+window.addProduct = async function(){
   const btn = document.getElementById('pSaveBtn');
   const status = document.getElementById('pStatus');
   const name = document.getElementById('pName').value.trim();
@@ -444,15 +409,11 @@ window.saveProduct = async function(){
   if(!name || !price){ status.textContent = 'Name and price are required.'; return; }
   btn.disabled = true; status.textContent = 'Saving...';
   try{
-    let newImages = [];
-    const files = Array.from(document.getElementById('pImage').files);
-    for(let i=0;i<files.length;i++){
-      status.textContent = `Uploading image ${i+1} of ${files.length}...`;
-      const url = await uploadToImgbb(files[i]);
-      if(url) newImages.push(url);
-    }
+    let imageUrl = null;
+    const file = document.getElementById('pImage').files[0];
+    if(file){ status.textContent = 'Uploading image...'; imageUrl = await uploadToImgbb(file); }
     const stockRaw = document.getElementById('pStock').value;
-    const data = {
+    await addDoc(collection(db,'products'), {
       name, price,
       was: Number(document.getElementById('pWas').value) || null,
       category: document.getElementById('pCategory').value,
@@ -460,26 +421,14 @@ window.saveProduct = async function(){
       description: document.getElementById('pDescription').value.trim(),
       sold: Number(document.getElementById('pSold').value) || 0,
       stock: stockRaw === '' ? null : Number(stockRaw),
-      featured: document.getElementById('pFeatured').checked
-    };
-
-    if(editingProductId){
-      const images = [...editingProductExistingImages, ...newImages];
-      data.images = images;
-      data.imageUrl = images[0] || null;
-      await updateDoc(doc(db,'products',editingProductId), data);
-      status.textContent = 'Updated.';
-      window.cancelEditProduct();
-    } else {
-      data.images = newImages;
-      data.imageUrl = newImages[0] || null;
-      data.createdAt = serverTimestamp();
-      await addDoc(collection(db,'products'), data);
-      status.textContent = 'Saved.';
-      ['pName','pPrice','pWas','pSub','pSold','pStock','pDescription'].forEach(id=>document.getElementById(id).value='');
-      document.getElementById('pFeatured').checked = false;
-      document.getElementById('pImage').value='';
-    }
+      featured: document.getElementById('pFeatured').checked,
+      imageUrl,
+      createdAt: serverTimestamp()
+    });
+    status.textContent = 'Saved.';
+    ['pName','pPrice','pWas','pSub','pSold','pStock','pDescription'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('pFeatured').checked = false;
+    document.getElementById('pImage').value='';
     loadProductsList();
     loadDashboardStats();
   }catch(e){
@@ -498,17 +447,10 @@ async function loadProductsList(){
     const el = document.createElement('div');
     el.className = 'item';
     const stockText = p.stock === 0 ? ' · Out of stock' : (typeof p.stock === 'number' ? ` · ${p.stock} in stock` : '');
-    const imgCount = p.images && p.images.length > 1 ? ` · ${p.images.length} photos` : '';
     el.innerHTML = `
       ${p.imageUrl ? `<img src="${p.imageUrl}">` : '<div style="width:48px;height:48px;background:var(--bg-alt);border-radius:4px;"></div>'}
-      <div class="info"><h4>${p.name}${p.featured?' ★':''}</h4><p>${p.category} · BDT ${p.price}${stockText}${imgCount}</p></div>
-      <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">
-        <button class="edit" data-id="${d.id}">Edit</button>
-        <button class="del" data-id="${d.id}">Delete</button>
-      </div>`;
-    el.querySelector('.edit').addEventListener('click', ()=>{
-      editProduct(d.id, p);
-    });
+      <div class="info"><h4>${p.name}${p.featured?' ★':''}</h4><p>${p.category} · BDT ${p.price}${stockText}</p></div>
+      <button class="del" data-id="${d.id}">Delete</button>`;
     el.querySelector('.del').addEventListener('click', async ()=>{
       await deleteDoc(doc(db,'products',d.id));
       loadProductsList();
@@ -521,33 +463,23 @@ async function loadProductsList(){
 // ---------- Dashboard ----------
 async function loadDashboardStats(){
   try{
-    const [productsSnap, slidesSnap] = await Promise.all([
+    const [productsSnap, slidesSnap, gallerySnap] = await Promise.all([
       getDocs(collection(db,'products')),
-      getDocs(collection(db,'slides'))
+      getDocs(collection(db,'slides')),
+      getDocs(collection(db,'gallery'))
     ]);
     const products = productsSnap.docs.map(d=>d.data());
     document.getElementById('statProducts').textContent = products.length;
     document.getElementById('statSlides').textContent = slidesSnap.size;
     document.getElementById('statFeatured').textContent = products.filter(p=>p.featured).length;
     document.getElementById('statSold').textContent = products.reduce((sum,p)=>sum+(p.sold||0),0);
+    document.getElementById('statGallery').textContent = gallerySnap.size;
   }catch(e){
     console.error('Dashboard stats failed:', e);
   }
 }
 
 // ---------- Orders ----------
-const ORDER_STATUSES = ['pending', 'confirmed', 'shipped', 'delivered'];
-const ORDER_STATUS_LABELS = { pending: 'Pending', confirmed: 'Confirmed', shipped: 'Shipped', delivered: 'Delivered' };
-const ORDER_STATUS_COLORS = { pending: 'var(--text-dim)', confirmed: '#8fb8e0', shipped: '#e0c98a', delivered: 'var(--silver-bright)' };
-
-function formatOrderDate(ts){
-  if(!ts) return 'Date unavailable';
-  try{
-    const d = typeof ts.toDate === 'function' ? ts.toDate() : new Date(ts.seconds ? ts.seconds*1000 : ts);
-    return d.toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
-  }catch(e){ return ''; }
-}
-
 async function loadOrdersList(){
   const list = document.getElementById('ordersList');
   list.innerHTML = 'Loading...';
@@ -561,45 +493,24 @@ async function loadOrdersList(){
       .sort((a,b)=>(b.createdAt?.seconds||0) - (a.createdAt?.seconds||0));
     list.innerHTML = '';
     orders.forEach(o=>{
-      const items = o.items || [];
-      const subtotal = (typeof o.subtotal === 'number') ? o.subtotal : items.reduce((s,i)=>s+(i.price||0)*(i.qty||0),0);
-      const deliveryCharge = o.deliveryCharge || 0;
-      const itemsHtml = items.map(i=>`
-        <div class="order-item-row">
-          ${i.imageUrl ? `<img src="${i.imageUrl}" alt="${i.name}">` : `<div class="oi-noimg"></div>`}
-          <div class="oi-info">
-            <div class="oi-name">${i.name}</div>
-            <div class="oi-meta">Qty ${i.qty} × BDT ${i.price}</div>
-          </div>
-          <div class="oi-total">BDT ${(i.price||0)*(i.qty||0)}</div>
-        </div>`).join('');
-      const totalsHtml = `
-        <div class="order-totals">
-          <div class="row"><span>Subtotal</span><span>BDT ${subtotal}</span></div>
-          <div class="row"><span>Delivery${o.deliveryZone ? ` (${o.deliveryZone})` : ''}</span><span>BDT ${deliveryCharge}</span></div>
-          ${o.discount ? `<div class="row"><span>Discount${o.couponCode ? ` (${o.couponCode})` : ''}</span><span>-BDT ${o.discount}</span></div>` : ''}
-          <div class="row grand"><span>Total</span><span>BDT ${o.total}</span></div>
-        </div>`;
-      const currentStatus = ORDER_STATUSES.includes(o.status) ? o.status : 'pending';
-      const optionsHtml = ORDER_STATUSES.map(s=>`<option value="${s}" ${s===currentStatus?'selected':''}>${ORDER_STATUS_LABELS[s]}</option>`).join('');
+      const itemsText = (o.items||[]).map(i=>`${i.name} x${i.qty}`).join(', ');
       const el = document.createElement('div');
-      el.className = 'item order-card';
+      el.className = 'item';
+      el.style.alignItems = 'flex-start';
       el.innerHTML = `
-        <div class="info" style="width:100%;">
-          <div class="order-date">${formatOrderDate(o.createdAt)}</div>
-          <h4>${o.customerName || 'Unnamed'}</h4>
+        <div class="info">
+          <h4>${o.customerName || 'Unnamed'} · BDT ${o.total}</h4>
           <p>${o.phone || ''}</p>
           <p>${o.address || ''}</p>
+          <p>${itemsText}</p>
           ${o.note ? `<p>Note: ${o.note}</p>` : ''}
-          <div class="order-items-list">${itemsHtml}</div>
-          ${totalsHtml}
         </div>
-        <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0;">
-          <span class="order-status-badge" style="font-size:10.5px;padding:3px 8px;border-radius:10px;border:1px solid var(--line);color:${ORDER_STATUS_COLORS[currentStatus]};">${ORDER_STATUS_LABELS[currentStatus]}</span>
-          <select class="status-select" data-id="${o.id}">${optionsHtml}</select>
+        <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+          <span style="font-size:10.5px;padding:3px 8px;border-radius:10px;border:1px solid var(--line);color:${o.status==='fulfilled'?'var(--silver-bright)':'var(--text-dim)'};">${o.status||'pending'}</span>
+          <button class="toggle-status" data-id="${o.id}" data-status="${o.status||'pending'}">${o.status==='fulfilled' ? 'Mark pending' : 'Mark fulfilled'}</button>
         </div>`;
-      el.querySelector('.status-select').addEventListener('change', async (e)=>{
-        const newStatus = e.target.value;
+      el.querySelector('button[data-id]').addEventListener('click', async (e)=>{
+        const newStatus = e.target.dataset.status === 'fulfilled' ? 'pending' : 'fulfilled';
         await updateDoc(doc(db,'orders',o.id), { status: newStatus });
         loadOrdersList();
       });
@@ -688,75 +599,6 @@ async function loadCouponsList(){
   }catch(e){
     console.error('Coupons load failed:', e);
     list.innerHTML = '<p style="color:var(--text-dim);font-size:12.5px;">Could not load coupons.</p>';
-  }
-}
-
-// ---------- Reels ----------
-window.addReel = async function(){
-  const btn = document.getElementById('rSaveBtn');
-  const status = document.getElementById('rStatus');
-  const file = document.getElementById('rVideoFile').files[0];
-  const pastedUrl = document.getElementById('rVideoUrl').value.trim();
-  if(!file && !pastedUrl){ status.textContent = 'Upload a video file or paste a video link.'; return; }
-  btn.disabled = true; status.textContent = 'Saving...';
-  try{
-    let videoUrl = pastedUrl;
-    if(file){
-      if(file.size > 60 * 1024 * 1024) throw new Error('Video is larger than 60MB — please upload a shorter or smaller clip.');
-      status.textContent = 'Uploading video...';
-      videoUrl = await uploadVideo(file);
-    }
-    let thumbUrl = null;
-    const thumbFile = document.getElementById('rThumb').files[0];
-    if(thumbFile){ status.textContent = 'Uploading cover image...'; thumbUrl = await uploadToImgbb(thumbFile); }
-    await addDoc(collection(db,'reels'), {
-      videoUrl,
-      thumbUrl,
-      caption: document.getElementById('rCaption').value.trim(),
-      href: document.getElementById('rHref').value.trim() || '',
-      order: Number(document.getElementById('rOrder').value) || 0,
-      createdAt: serverTimestamp()
-    });
-    status.textContent = 'Saved — it is live on the homepage Reels section.';
-    ['rVideoUrl','rCaption','rHref'].forEach(id=>document.getElementById(id).value='');
-    document.getElementById('rOrder').value = '0';
-    document.getElementById('rVideoFile').value = '';
-    document.getElementById('rThumb').value = '';
-    loadReelsList();
-  }catch(e){
-    console.error(e); status.textContent = 'Failed: ' + e.message;
-  }
-  btn.disabled = false;
-};
-
-async function loadReelsList(){
-  const list = document.getElementById('reelsList');
-  list.innerHTML = 'Loading...';
-  try{
-    const snap = await getDocs(collection(db,'reels'));
-    if(snap.empty){ list.innerHTML = '<p style="color:var(--text-dim);font-size:12.5px;">No reels yet — the Reels section stays hidden on the site until you add one.</p>'; return; }
-    const docs = snap.docs.slice().sort((a,b)=>(a.data().order||0)-(b.data().order||0));
-    list.innerHTML = '';
-    docs.forEach(d=>{
-      const r = d.data();
-      const el = document.createElement('div');
-      el.className = 'item';
-      const thumb = r.thumbUrl
-        ? `<img src="${r.thumbUrl}">`
-        : `<div style="width:48px;height:48px;background:var(--bg-alt);border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--silver);font-size:16px;">▶</div>`;
-      el.innerHTML = `
-        ${thumb}
-        <div class="info"><h4>${r.caption || 'Reel'}</h4><p>order: ${r.order||0} · <a href="${r.videoUrl}" target="_blank" style="color:var(--text-dim);">video</a></p></div>
-        <button class="del" data-id="${d.id}">Delete</button>`;
-      el.querySelector('.del').addEventListener('click', async ()=>{
-        await deleteDoc(doc(db,'reels',d.id));
-        loadReelsList();
-      });
-      list.appendChild(el);
-    });
-  }catch(e){
-    console.error('Reels load failed:', e);
-    list.innerHTML = '<p style="color:var(--text-dim);font-size:12.5px;">Could not load reels.</p>';
   }
 }
 </script>
