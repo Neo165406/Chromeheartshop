@@ -38,6 +38,16 @@
   .si-info p{font-size:11.5px;color:var(--text-dim);}
   .si-total{font-size:13px;font-weight:600;color:var(--silver-bright);white-space:nowrap;}
 
+  /* Quantity + remove controls */
+  .si-qty{display:inline-flex;align-items:center;margin-top:8px;border:1px solid var(--line);border-radius:var(--radius);}
+  .si-qty .qty-btn{width:30px;height:28px;background:none;border:none;color:var(--silver-bright);font-size:16px;line-height:1;cursor:pointer;}
+  .si-qty .qty-btn:active{background:rgba(184,188,196,0.15);}
+  .si-qty span{min-width:28px;text-align:center;font-size:13px;font-weight:600;}
+  .si-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px;}
+  .si-remove{background:none;border:none;color:var(--text-dim);font-size:11.5px;text-decoration:underline;cursor:pointer;padding:2px 0;}
+  .si-remove:active{color:#e08a8a;}
+  .add-more{display:inline-block;margin-top:12px;font-size:12.5px;color:var(--silver);}
+
   .total-row{display:flex;justify-content:space-between;padding-top:16px;font-size:16px;font-weight:600;}
   .total-row span:last-child{color:var(--silver-bright);}
 
@@ -116,6 +126,7 @@
 <script type="module">
 let cartApi = null;
 let fbApi = null;
+let currentCart = [];
 
 function money(n){ return `BDT ${n}`; }
 
@@ -141,20 +152,63 @@ let DELIVERY_INSIDE_DHAKA = 70;
 let DELIVERY_OUTSIDE_DHAKA = 130;
 let appliedCoupon = null;
 
-function renderCheckout(cart){
-  const subtotal = cart.reduce((sum,c)=>sum + c.price*c.qty, 0);
-  const itemsHtml = cart.map(c=>`
-    <div class="summary-item">
+function getSubtotal(){
+  return currentCart.reduce((sum,c)=>sum + c.price*c.qty, 0);
+}
+
+function itemsMarkup(cart){
+  return cart.map(c=>`
+    <div class="summary-item" data-id="${c.id}">
       <div class="si-media">${c.imageUrl?`<img src="${c.imageUrl}">`:''}</div>
-      <div class="si-info"><h4>${c.name}</h4><p>Qty ${c.qty} × ${money(c.price)}</p></div>
-      <div class="si-total">${money(c.price*c.qty)}</div>
+      <div class="si-info">
+        <h4>${c.name}</h4>
+        <p>${money(c.price)} each</p>
+        <div class="si-qty">
+          <button type="button" class="qty-btn" data-action="dec" aria-label="Decrease quantity">−</button>
+          <span>${c.qty}</span>
+          <button type="button" class="qty-btn" data-action="inc" aria-label="Increase quantity">+</button>
+        </div>
+      </div>
+      <div class="si-right">
+        <div class="si-total">${money(c.price*c.qty)}</div>
+        <button type="button" class="si-remove" data-action="remove" aria-label="Remove item">Remove</button>
+      </div>
     </div>`).join('');
+}
+
+function changeQty(id, delta){
+  const item = currentCart.find(c=>c.id===id);
+  if(!item) return;
+  const next = item.qty + delta;
+  if(next < 1){ removeItem(id); return; }
+  if(cartApi) cartApi.updateQty(id, next);
+  refreshCart();
+}
+
+function removeItem(id){
+  if(cartApi) cartApi.removeFromCart(id);
+  refreshCart();
+}
+
+// Re-read the cart from storage and update the item list + totals in place,
+// so anything the shopper already typed in the form is kept.
+function refreshCart(){
+  currentCart = cartApi ? cartApi.getCart() : [];
+  if(!currentCart.length){ renderEmpty(); return; }
+  document.getElementById('itemsList').innerHTML = itemsMarkup(currentCart);
+  updateTotals();
+}
+
+function renderCheckout(cart){
+  currentCart = cart;
+  const subtotal = getSubtotal();
 
   document.getElementById('root').innerHTML = `
     <div class="page-title">Checkout</div>
     <div class="section">
       <div class="section-label">Your order</div>
-      ${itemsHtml}
+      <div id="itemsList">${itemsMarkup(cart)}</div>
+      <a class="add-more" href="shop.html">+ Add more items</a>
 
       <div style="display:flex;gap:8px;margin-top:16px;">
         <input type="text" id="couponInput" placeholder="Coupon code" style="flex:1;padding:11px 14px;background:var(--card);border:1px solid var(--line);color:var(--text);border-radius:var(--radius);font-size:13px;text-transform:uppercase;">
@@ -222,22 +276,35 @@ function renderCheckout(cart){
       <p class="status-msg" id="statusMsg"></p>
     </div>`;
 
+  // + / − / Remove on each order item (event delegation, survives re-renders)
+  document.getElementById('itemsList').addEventListener('click', (e)=>{
+    const btn = e.target.closest('button[data-action]');
+    if(!btn) return;
+    const row = btn.closest('.summary-item');
+    if(!row) return;
+    const id = row.dataset.id;
+    const action = btn.dataset.action;
+    if(action === 'inc') changeQty(id, +1);
+    else if(action === 'dec') changeQty(id, -1);
+    else if(action === 'remove') removeItem(id);
+  });
+
   const zoneInputs = document.querySelectorAll('input[name="deliveryZone"]');
   zoneInputs.forEach(input=>{
     input.addEventListener('change', ()=>{
       zoneInputs.forEach(i=>{ i.closest('label').style.borderColor = i.checked ? 'var(--silver)' : 'var(--line)'; });
-      updateTotals(subtotal);
+      updateTotals();
     });
   });
 
   appliedCoupon = null;
-  document.getElementById('couponApplyBtn').addEventListener('click', ()=>applyCoupon(subtotal));
+  document.getElementById('couponApplyBtn').addEventListener('click', ()=>applyCoupon());
   document.getElementById('couponInput').addEventListener('keydown', (e)=>{
-    if(e.key === 'Enter'){ e.preventDefault(); applyCoupon(subtotal); }
+    if(e.key === 'Enter'){ e.preventDefault(); applyCoupon(); }
   });
 
-  updateTotals(subtotal);
-  document.getElementById('placeBtn').addEventListener('click', ()=>placeOrder(cart, subtotal));
+  updateTotals();
+  document.getElementById('placeBtn').addEventListener('click', ()=>placeOrder());
 }
 
 function getDeliveryCharge(){
@@ -251,7 +318,7 @@ function getDiscountAmount(subtotal){
   return Math.min(Math.round(raw), subtotal);
 }
 
-async function applyCoupon(subtotal){
+async function applyCoupon(){
   const input = document.getElementById('couponInput');
   const msg = document.getElementById('couponMsg');
   const code = input.value.trim().toUpperCase();
@@ -281,13 +348,15 @@ async function applyCoupon(subtotal){
     msg.style.color = '#e08a8a';
     msg.textContent = 'Could not check that code — try again.';
   }
-  updateTotals(subtotal);
+  updateTotals();
 }
 
-function updateTotals(subtotal){
+function updateTotals(){
+  const subtotal = getSubtotal();
   const delivery = getDeliveryCharge();
   const discount = getDiscountAmount(subtotal);
   const grand = Math.max(0, subtotal + delivery - discount);
+  document.getElementById('subtotalVal').textContent = money(subtotal);
   document.getElementById('deliveryVal').textContent = money(delivery);
   const discountRow = document.getElementById('discountRow');
   if(discount > 0){
@@ -322,10 +391,12 @@ function validate(){
   return ok ? { name, phone, address, note: document.getElementById('inNote').value.trim() } : null;
 }
 
-async function placeOrder(cart, subtotal){
+async function placeOrder(){
   const details = validate();
   if(!details) return;
 
+  const cart = currentCart;
+  const subtotal = getSubtotal();
   const deliveryCharge = getDeliveryCharge();
   const deliveryZone = document.querySelector('input[name="deliveryZone"]:checked').value === 'outside'
     ? 'Outside Dhaka' : 'Inside Dhaka';
