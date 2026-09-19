@@ -148,7 +148,9 @@ export function wireAddToCart(containerId){
         price: Number(buyBtn.dataset.price),
         imageUrl: buyBtn.dataset.image || null
       });
-      if(typeof window.toggleCart === 'function') window.toggleCart(true);
+      // Buy Now goes straight to checkout — no need to open the cart
+      // drawer and make the shopper click a second "Checkout" button.
+      window.location.href = 'checkout.html';
     }
   });
 }
