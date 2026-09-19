@@ -412,7 +412,9 @@ function renderProduct(product, all){
       for(let i=0;i<qty;i++){
         cartApi.addToCart({ id: product.id, name: product.name, price: product.price, imageUrl: product.imageUrl||null });
       }
-      window.toggleCart(true);
+      // Buy Now goes straight to checkout — no need to open the cart
+      // drawer and make the shopper click a second "Checkout" button.
+      window.location.href = 'checkout.html';
       return;
     }
     alert('Cart is still loading — try again in a moment.');
