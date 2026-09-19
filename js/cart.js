@@ -9,7 +9,12 @@ const CART_KEY = 'argentum_cart';
 const WA_NUMBER = '8801759406602';
 
 export function getCart(){
-  try{ return JSON.parse(localStorage.getItem(CART_KEY)) || []; }
+  try{
+    const raw = JSON.parse(localStorage.getItem(CART_KEY));
+    if(!Array.isArray(raw)) return [];
+    // Ignore broken/leftover entries so they can never inflate the badge count
+    return raw.filter(c=>c && c.id && Number.isFinite(Number(c.qty)) && Number(c.qty) > 0);
+  }
   catch(e){ return []; }
 }
 function saveCart(cart){
@@ -39,7 +44,7 @@ export function cartTotal(){
   return getCart().reduce((sum,c)=>sum + c.price*c.qty, 0);
 }
 export function cartCount(){
-  return getCart().reduce((sum,c)=>sum + c.qty, 0);
+  return getCart().reduce((sum,c)=>sum + Number(c.qty), 0);
 }
 export function updateCartBadge(){
   const badge = document.getElementById('cartBadge');
@@ -154,5 +159,16 @@ export function wireAddToCart(containerId){
     }
   });
 }
+
+// Keep the badge + drawer in sync with the real cart. Without this, a page
+// restored from the browser's back/forward cache (e.g. pressing Back from
+// checkout after removing items) or another open tab keeps showing the old count.
+function syncCartUI(){
+  updateCartBadge();
+  renderCartDrawer();
+}
+window.addEventListener('pageshow', syncCartUI);
+window.addEventListener('storage', (e)=>{ if(e.key === CART_KEY || e.key === null) syncCartUI(); });
+document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) syncCartUI(); });
 
 updateCartBadge();
