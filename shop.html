@@ -342,13 +342,22 @@ function cardHTML(p, i){
     </div>`;
 }
 
+// Slides any not-yet-revealed .reveal element into view once it scrolls on screen.
+// Must be called AFTER new .reveal cards are added to the page, otherwise they
+// stay at opacity:0 (invisible but still tappable).
 function initScrollReveal(){
+  const pending = document.querySelectorAll('.reveal:not(.in-view)');
+  if(!pending.length) return;
+  if(!('IntersectionObserver' in window)){
+    pending.forEach(el=>el.classList.add('in-view'));
+    return;
+  }
   const observer = new IntersectionObserver((entries)=>{
     entries.forEach(entry=>{
       if(entry.isIntersecting){ entry.target.classList.add('in-view'); observer.unobserve(entry.target); }
     });
   }, {threshold:0.15, rootMargin:'0px 0px -40px 0px'});
-  document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+  pending.forEach(el=>observer.observe(el));
 }
 
 let allProducts = [];
@@ -366,8 +375,8 @@ function renderShopGrid(list){
     wireAddToCart('shopGrid');
     wireFavButtons('shopGrid');
     refreshFavButtons('shopGrid');
-    initScrollReveal();
   }
+  initScrollReveal();
 }
 
 // ---------- Filter drawer ----------
@@ -468,6 +477,9 @@ async function init(){
     wireAddToCart('similarGrid');
     wireFavButtons('similarGrid');
     refreshFavButtons('similarGrid');
+    // These cards are added after the first reveal pass, so they must be observed too —
+    // otherwise they stay invisible (opacity:0) even though they can still be tapped.
+    initScrollReveal();
   }
 
   updateCartBadge();
