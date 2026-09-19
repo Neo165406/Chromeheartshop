@@ -186,6 +186,16 @@
     .collage-grid{grid-template-columns:repeat(2,1fr);gap:8px;}
     .collage-item.wide{grid-column:span 2;}
   }
+
+  /* ---------- COLLAGE LIGHTBOX ---------- */
+  .collage-lightbox{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.92);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity 0.25s ease;}
+  .collage-lightbox.open{opacity:1;pointer-events:auto;}
+  .collage-lightbox img{max-width:100%;max-height:85vh;object-fit:contain;border-radius:4px;box-shadow:0 8px 40px rgba(0,0,0,0.5);}
+  .collage-lightbox .lb-close{position:absolute;top:16px;right:16px;width:40px;height:40px;border-radius:50%;border:1px solid rgba(242,244,247,0.35);background:rgba(10,11,13,0.7);color:#f2f4f7;font-size:22px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .collage-lightbox .lb-caption{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);max-width:90%;text-align:center;font-size:13px;color:#f2f3f5;background:rgba(10,11,13,0.65);padding:8px 16px;border-radius:20px;}
+  .collage-lightbox .lb-shop{position:absolute;bottom:70px;left:50%;transform:translateX(-50%);padding:10px 22px;background:linear-gradient(120deg,var(--silver),var(--silver-bright));color:var(--bg);font-size:13px;font-weight:600;border-radius:var(--radius);border:none;cursor:pointer;text-decoration:none;}
+  .collage-item{cursor:pointer;}
+
   section.collection{padding:6px 22px 48px;}
   .section-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:20px;border-bottom:1px solid var(--line);padding-bottom:13px;}
   .section-head h2{font-family:'Fraunces',serif;font-weight:500;font-size:21px;}
@@ -592,6 +602,37 @@ async function initReels(){
 }
 
 /* ---------- Model collage — managed from the admin dashboard (Collage tab) ---------- */
+function openCollageLightbox(imageUrl, caption, href){
+  const lb = document.getElementById('collageLightbox');
+  const img = document.getElementById('lbImage');
+  const capEl = document.getElementById('lbCaption');
+  const shop = document.getElementById('lbShop');
+  if(!lb || !img) return;
+  img.src = imageUrl;
+  img.alt = caption || 'Model wearing our product';
+  if(caption){
+    capEl.textContent = caption;
+    capEl.style.display = 'block';
+  }else{
+    capEl.style.display = 'none';
+  }
+  if(href){
+    shop.href = href;
+    shop.style.display = 'inline-block';
+  }else{
+    shop.style.display = 'none';
+  }
+  lb.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeCollageLightbox(){
+  const lb = document.getElementById('collageLightbox');
+  if(!lb) return;
+  lb.classList.remove('open');
+  document.body.style.overflow = '';
+  const img = document.getElementById('lbImage');
+  if(img) img.src = '';
+}
 async function initCollage(){
   const section = document.getElementById('collage');
   const grid = document.getElementById('collageGrid');
@@ -607,11 +648,26 @@ async function initCollage(){
   grid.innerHTML = photos.map(p=>{
     const cap = p.caption ? `<div class="collage-caption">${p.caption}</div>` : '';
     const size = p.size === 'tall' || p.size === 'wide' ? ' ' + p.size : '';
+    const safeCap = (p.caption||'').replace(/"/g,'&quot;');
+    const safeHref = (p.href||'').replace(/"/g,'&quot;');
     const inner = `<img src="${p.imageUrl}" alt="${p.caption||'Model wearing our product'}" loading="lazy"><div class="collage-overlay"></div>${cap}`;
-    return p.href
-      ? `<a class="collage-item${size}" href="${p.href}">${inner}</a>`
-      : `<div class="collage-item${size}">${inner}</div>`;
+    return `<div class="collage-item${size}" role="button" tabindex="0" data-image="${p.imageUrl}" data-caption="${safeCap}" data-href="${safeHref}">${inner}</div>`;
   }).join('');
+
+  grid.querySelectorAll('.collage-item').forEach(el=>{
+    const open = ()=> openCollageLightbox(el.dataset.image, el.dataset.caption, el.dataset.href || null);
+    el.addEventListener('click', open);
+    el.addEventListener('keydown', e=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); open(); } });
+  });
+
+  const lb = document.getElementById('collageLightbox');
+  const closeBtn = document.getElementById('lbClose');
+  if(lb && !lb.dataset.wired){
+    lb.dataset.wired = '1';
+    closeBtn && closeBtn.addEventListener('click', closeCollageLightbox);
+    lb.addEventListener('click', e=>{ if(e.target === lb) closeCollageLightbox(); });
+    document.addEventListener('keydown', e=>{ if(e.key==='Escape' && lb.classList.contains('open')) closeCollageLightbox(); });
+  }
 }
 /* ---------- Scroll reveal — watches .reveal elements, slides them into place ---------- */
 function initScrollReveal(){
@@ -633,6 +689,14 @@ Promise.all([initHero(), initProducts(), initCollage(), initReels()]).then(()=>{
 updateCartBadge();
 renderCartDrawer();
 </script>
+
+
+<div class="collage-lightbox" id="collageLightbox" role="dialog" aria-modal="true" aria-label="Image preview">
+  <button type="button" class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <img id="lbImage" src="" alt="">
+  <a class="lb-shop" id="lbShop" href="#" style="display:none;">Shop this look →</a>
+  <div class="lb-caption" id="lbCaption" style="display:none;"></div>
+</div>
 
 </body>
 </html>
