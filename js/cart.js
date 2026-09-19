@@ -5,6 +5,9 @@
 // markup (#cartItems, #cartTotal, #cartCheckoutBtn, #cartBadge) to
 // already be on the page.
 
+// Every page that uses the cart also gets the shared site footer (js/footer.js).
+import './footer.js';
+
 const CART_KEY = 'argentum_cart';
 const WA_NUMBER = '8801759406602';
 
