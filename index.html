@@ -252,6 +252,27 @@
   .fcontact p{font-size:12px;color:var(--text-dim);margin-bottom:4px;}
   .fcontact a{color:var(--silver-bright);}
   .copyright{margin-top:20px;font-size:10.5px;letter-spacing:0.08em;color:var(--silver-deep);}
+
+  /* ---------- Interactive glow (Buy Now & other buttons) ---------- */
+  .order,.buy-now-btn,.add-cart-btn,.cart-btn,.qty-btn,.cat-filter-btn,.drawer-close,.burger,.fav-btn,.socials a{
+    transition:box-shadow 0.25s ease, filter 0.25s ease;
+  }
+  .btn:hover,.order:hover,.buy-now-btn:hover,.add-cart-btn:hover,.cart-btn:hover,.qty-btn:hover,.cat-filter-btn:hover,.drawer-close:hover,.burger:hover,.fav-btn:hover,.socials a:hover,
+  .btn:active,.order:active,.buy-now-btn:active,.add-cart-btn:active,.cart-btn:active,.qty-btn:active,.cat-filter-btn:active,.drawer-close:active,.burger:active,.fav-btn:active,.socials a:active{
+    box-shadow:0 0 10px 2px rgba(242,244,247,0.5),0 0 26px 7px rgba(184,188,196,0.32);
+    filter:brightness(1.12);
+    animation:btnGlowPulse 1.1s ease-in-out infinite;
+  }
+  @keyframes btnGlowPulse{
+    0%,100%{box-shadow:0 0 10px 2px rgba(242,244,247,0.45),0 0 22px 5px rgba(184,188,196,0.28);}
+    50%{box-shadow:0 0 18px 5px rgba(242,244,247,0.85),0 0 36px 11px rgba(184,188,196,0.5);}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .btn:hover,.order:hover,.buy-now-btn:hover,.add-cart-btn:hover,.cart-btn:hover,.qty-btn:hover,.cat-filter-btn:hover,.drawer-close:hover,.burger:hover,.fav-btn:hover,.socials a:hover,
+    .btn:active,.order:active,.buy-now-btn:active,.add-cart-btn:active,.cart-btn:active,.qty-btn:active,.cat-filter-btn:active,.drawer-close:active,.burger:active,.fav-btn:active,.socials a:active{
+      animation:none;
+    }
+  }
 </style>
 </head>
 <body>
