@@ -216,7 +216,10 @@
   .buy-now-btn{background:var(--silver-bright);color:var(--bg);border-color:var(--silver-bright);}
   .order:hover{background:var(--silver-bright);color:var(--bg);}
 
-  .notice{margin:0 22px 48px;padding:16px 18px;border:1px dashed var(--line);border-radius:var(--radius);font-size:12.5px;color:var(--text-dim);text-align:center;}
+  /* ---------- BRAND NOTE ---------- */
+  .notice{margin:0 22px 48px;padding:30px 22px;border:1px solid var(--line);border-radius:var(--radius);font-size:13.5px;line-height:1.75;color:var(--text-dim);text-align:center;}
+  .notice h2{font-family:'Fraunces',serif;font-weight:500;font-size:21px;letter-spacing:0.04em;color:var(--silver-bright);margin-bottom:14px;}
+  .notice p + p{margin-top:12px;}
   .notice b{color:var(--silver-bright);}
 
   /* ---------- SCROLL REVEAL ---------- */
@@ -333,9 +336,11 @@
   <div class="reels-row" id="reelsRow"></div>
 </section>
 
-<div class="notice">
-  This demo shows the <b>menu</b> and <b>multi-banner hero</b> structure. In the full Firebase build, hero slides come from a <b>Slides</b> collection and products/categories from a <b>Products</b> collection — both editable from the admin dashboard, same pattern as Velmora.
-</div>
+<section class="notice">
+  <h2 class="display">About FASHIONISTA</h2>
+  <p>FASHIONISTA is a Dhaka-born house of <b>gothic-luxury accessories and eyewear</b>, made for the after-dark wardrobe. Silver-toned chains, rings, bracelets, bandanas and statement glasses — every piece is chosen to be bold, dark and impossible to ignore.</p>
+  <p>We keep it simple: fresh drops, honest prices and <b>cash on delivery</b> anywhere in Bangladesh. Wear it loud.</p>
+</section>
 
 <footer>
   <div class="flogo">FASHIONISTA</div>
