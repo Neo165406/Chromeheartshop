@@ -226,6 +226,10 @@
   .buy-now-btn{background:var(--silver-bright);color:var(--bg);border-color:var(--silver-bright);}
   .order:hover{background:var(--silver-bright);color:var(--bg);}
 
+  /* ---------- SPIN IMAGE (admin-managed; only the image, turns as you scroll) ---------- */
+  .spin-section{display:none;padding:calc(var(--spin-size,300px) * 0.3) 0;text-align:center;overflow:visible;pointer-events:none;}
+  .spin-section img{width:var(--spin-size,300px);max-width:80vw;height:auto;margin:0 auto;display:block;will-change:transform;transform-origin:center center;filter:drop-shadow(0 18px 30px rgba(0,0,0,0.55));}
+
   /* ---------- BRAND NOTE ---------- */
   .notice{margin:0 22px 48px;padding:30px 22px;border:1px solid var(--line);border-radius:var(--radius);font-size:13.5px;line-height:1.75;color:var(--text-dim);text-align:center;}
   .notice h2{font-family:'Fraunces',serif;font-weight:500;font-size:21px;letter-spacing:0.04em;color:var(--silver-bright);margin-bottom:14px;}
@@ -350,6 +354,10 @@
 <section class="collection" id="glasses">
   <div class="section-head"><h2 class="display reveal from-right">Glasses</h2><a class="viewall" href="shop.html?category=Glasses">View all →</a></div>
   <div class="grid" id="glassesGrid"></div>
+</section>
+
+<section class="spin-section" id="spinSection" aria-hidden="true">
+  <img id="spinImg" alt="">
 </section>
 
 <section class="collection" id="collage" style="display:none;">
@@ -710,6 +718,7 @@ Promise.all([initHero(), initProducts(), initCollage(), initReels()]).then(()=>{
 updateCartBadge();
 renderCartDrawer();
 </script>
+<script type="module" src="js/spin-image.js"></script>
 
 
 <div class="collage-lightbox" id="collageLightbox" role="dialog" aria-modal="true" aria-label="Image preview">
