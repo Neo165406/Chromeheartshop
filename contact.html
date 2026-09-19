@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>Contact — FASHIONISTA</title>
+<meta name="description" content="Contact FASHIONISTA — message us on WhatsApp, email us, or follow us on Instagram and Facebook.">
 <meta name="theme-color" content="#0a0b0d">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,36 +20,53 @@
   body{background:var(--bg);color:var(--text);font-family:'Instrument Sans',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
   .display{font-family:'Fraunces',serif;}
   a{color:var(--silver-bright);}
+  button,input,textarea{font-family:inherit;}
   header{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:16px 22px;background:rgba(10,11,13,0.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
   .navicon{width:20px;height:20px;}
   .logo{font-family:'Fraunces',serif;font-size:19px;letter-spacing:0.14em;font-weight:600;background:linear-gradient(120deg,var(--silver-deep),var(--silver-bright) 45%,var(--silver));-webkit-background-clip:text;background-clip:text;color:transparent;text-decoration:none;}
   main{max-width:640px;margin:0 auto;padding:28px 22px 60px;}
   h1{font-family:'Fraunces',serif;font-weight:500;font-size:26px;margin-bottom:6px;}
   .updated{font-size:12px;color:var(--text-dim);margin-bottom:28px;}
-  .contact-card{display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:16px 18px;margin-bottom:12px;}
+  .contact-card{display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:16px 18px;margin-bottom:12px;text-decoration:none;}
   .contact-card svg{width:20px;height:20px;flex-shrink:0;color:var(--silver);}
   .contact-card .label{font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px;}
-  .contact-card .value{font-size:14px;color:var(--silver-bright);font-weight:600;}
+  .contact-card .value{font-size:14px;color:var(--silver-bright);font-weight:600;word-break:break-word;}
   .socials{display:flex;gap:14px;margin-top:26px;}
   .socials a{width:38px;height:38px;border:1px solid var(--line);border-radius:50%;display:flex;align-items:center;justify-content:center;}
   .socials svg{width:16px;height:16px;color:var(--silver);}
   h2{font-family:'Fraunces',serif;font-weight:500;font-size:16px;margin:30px 0 14px;color:var(--silver-bright);}
   p{font-size:13.5px;color:var(--text-dim);}
+
+  /* ---------- MESSAGE FORM ---------- */
+  .form-card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:18px;margin-top:30px;}
+  .form-card h2{margin:0 0 6px;}
+  .form-card .hint{font-size:12.5px;margin-bottom:16px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:12px;color:var(--text-dim);margin-bottom:6px;}
+  .field input,.field textarea{width:100%;padding:12px 14px;background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:var(--radius);font-size:14px;}
+  .field textarea{resize:vertical;min-height:110px;}
+  .field input:focus,.field textarea:focus{outline:none;border-color:var(--silver);}
+  .field .err{color:#e08a8a;font-size:11.5px;margin-top:5px;display:none;}
+  .field.invalid input,.field.invalid textarea{border-color:#e08a8a;}
+  .field.invalid .err{display:block;}
+  .send-btn{width:100%;padding:15px 0;background:linear-gradient(120deg,var(--silver),var(--silver-bright));color:var(--bg);border:none;border-radius:var(--radius);font-size:14px;font-weight:700;letter-spacing:0.02em;cursor:pointer;}
+  .send-btn:active{transform:scale(0.98);}
+  .form-note{text-align:center;font-size:12px;color:var(--text-dim);margin-top:10px;}
 </style>
 </head>
 <body>
 
 <header>
-  <a href="index.html"><svg class="navicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 6l-6 6 6 6"/></svg></a>
+  <a href="index.html" aria-label="Back"><svg class="navicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 6l-6 6 6 6"/></svg></a>
   <a href="index.html" class="logo">FASHIONISTA</a>
   <span style="width:20px;"></span>
 </header>
 
 <main>
   <h1 class="display">Contact Us</h1>
-  <p class="updated">We usually reply within a few hours</p>
+  <p class="updated">Questions about an order, a product or sizing? We usually reply within a few hours.</p>
 
-  <a class="contact-card" href="https://wa.me/8801759406602" target="_blank">
+  <a class="contact-card" href="https://wa.me/8801759406602" target="_blank" rel="noopener">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20 12a8 8 0 1 1-3.7-6.7L20 4l-1 4.3A8 8 0 0 1 20 12z"/><path d="M9 10.5c.3 1.8 2.2 3.7 4 4"/></svg>
     <div><div class="label">WhatsApp</div><div class="value">+880 1759-406602</div></div>
   </a>
@@ -58,16 +76,71 @@
     <div><div class="label">Email</div><div class="value">fashionistabd.ceo@gmail.com</div></div>
   </a>
 
+  <a class="contact-card" href="track-order.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg>
+    <div><div class="label">Already ordered?</div><div class="value">Track your order</div></div>
+  </a>
+
+  <div class="form-card">
+    <h2>Send us a message</h2>
+    <p class="hint">Fill this in and it opens WhatsApp with your message ready to send.</p>
+
+    <div class="field" id="fName">
+      <label for="cName">Your name</label>
+      <input type="text" id="cName" placeholder="Your name" autocomplete="name">
+      <p class="err">Please enter your name.</p>
+    </div>
+    <div class="field" id="fPhone">
+      <label for="cPhone">Phone number (optional)</label>
+      <input type="tel" id="cPhone" placeholder="01XXXXXXXXX" autocomplete="tel">
+      <p class="err">That doesn't look like a valid phone number.</p>
+    </div>
+    <div class="field" id="fMsg">
+      <label for="cMsg">Message</label>
+      <textarea id="cMsg" placeholder="How can we help?"></textarea>
+      <p class="err">Please write a message.</p>
+    </div>
+
+    <button class="send-btn" id="sendBtn" type="button">Send on WhatsApp</button>
+    <p class="form-note">Prefer email? Write to <a href="mailto:fashionistabd.ceo@gmail.com">fashionistabd.ceo@gmail.com</a>.</p>
+  </div>
+
   <h2>Follow Us</h2>
   <div class="socials">
-    <a href="https://www.instagram.com/FASHIONISTA_bd?stkn=OWJlYzFmOWoyZnlr" target="_blank" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.8" fill="currentColor"/></svg></a>
-    <a href="https://www.facebook.com/share/19EjoiggcT/" target="_blank" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 9h3V6h-3c-2 0-3 1-3 3v2H8v3h3v6h3v-6h3l1-3h-4V9c0-.6.4-1 1-1z"/></svg></a>
-    <a href="https://wa.me/8801759406602" target="_blank" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20 12a8 8 0 1 1-3.7-6.7L20 4l-1 4.3A8 8 0 0 1 20 12z"/><path d="M9 10.5c.3 1.8 2.2 3.7 4 4"/></svg></a>
+    <a href="https://www.instagram.com/FASHIONISTA_bd?stkn=OWJlYzFmOWoyZnlr" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.8" fill="currentColor"/></svg></a>
+    <a href="https://www.facebook.com/share/19EjoiggcT/" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 9h3V6h-3c-2 0-3 1-3 3v2H8v3h3v6h3v-6h3l1-3h-4V9c0-.6.4-1 1-1z"/></svg></a>
+    <a href="https://wa.me/8801759406602" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20 12a8 8 0 1 1-3.7-6.7L20 4l-1 4.3A8 8 0 0 1 20 12z"/><path d="M9 10.5c.3 1.8 2.2 3.7 4 4"/></svg></a>
   </div>
 
   <h2>Business Hours</h2>
   <p>Saturday – Thursday, 10 AM – 9 PM (Bangladesh time). Messages sent outside these hours are answered the next business day.</p>
 </main>
+
+<script>
+  document.getElementById('sendBtn').addEventListener('click', function(){
+    var name = document.getElementById('cName').value.trim();
+    var phone = document.getElementById('cPhone').value.trim();
+    var msg = document.getElementById('cMsg').value.trim();
+    var ok = true;
+
+    var nameOk = name.length > 0;
+    document.getElementById('fName').classList.toggle('invalid', !nameOk);
+    if(!nameOk) ok = false;
+
+    var phoneOk = phone === '' || /^[0-9+\-\s]{7,15}$/.test(phone);
+    document.getElementById('fPhone').classList.toggle('invalid', !phoneOk);
+    if(!phoneOk) ok = false;
+
+    var msgOk = msg.length > 0;
+    document.getElementById('fMsg').classList.toggle('invalid', !msgOk);
+    if(!msgOk) ok = false;
+
+    if(!ok) return;
+
+    var text = 'Hi FASHIONISTA! ' + msg + '\n\nName: ' + name + (phone ? '\nPhone: ' + phone : '');
+    window.open('https://wa.me/8801759406602?text=' + encodeURIComponent(text), '_blank');
+  });
+</script>
 
 </body>
 </html>
