@@ -62,6 +62,15 @@
   .existing-img-thumb{position:relative;width:56px;height:56px;flex-shrink:0;}
   .existing-img-thumb img{width:100%;height:100%;object-fit:cover;border-radius:4px;border:1px solid var(--line);}
   .existing-img-thumb .rm{position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;background:#e08a8a;color:var(--bg);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;line-height:1;}
+
+  /* ---------- SALES & STOCK ---------- */
+  .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .stat-box{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:14px;}
+  .stat-box .n{font-size:20px;font-weight:700;color:var(--silver-bright);}
+  .stat-box .l{font-size:11.5px;color:var(--text-dim);}
+  .stock-in{width:100%;padding:7px 8px;background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:var(--radius);font-size:12.5px;text-align:center;}
+  .tag-out{color:#e08a8a;font-weight:600;}
+  .tag-low{color:#e0b65a;font-weight:600;}
 </style>
 </head>
 <body>
@@ -89,6 +98,7 @@
     <div class="tab" data-panel="slidesPanel">Slides</div>
     <div class="tab" data-panel="collagePanel">Collage</div>
     <div class="tab" data-panel="productsPanel">Products</div>
+    <div class="tab" data-panel="salesPanel">Sales &amp; Stock</div>
     <div class="tab" data-panel="ordersPanel">Orders</div>
     <div class="tab" data-panel="settingsPanel">Settings</div>
   </div>
@@ -209,11 +219,36 @@
     <div class="list" id="productsList"></div>
   </div>
 
+  <!-- ---------- SALES & STOCK ---------- -->
+  <div class="panel" id="salesPanel">
+    <div class="card-form">
+      <h3>Sales &amp; stock</h3>
+      <div class="stat-grid" id="salesSummary">
+        <div class="stat-box"><div class="n" id="ssUnits">–</div><div class="l">Units sold (fulfilled orders)</div></div>
+        <div class="stat-box"><div class="n" id="ssRevenue">–</div><div class="l">Revenue (BDT)</div></div>
+        <div class="stat-box"><div class="n" id="ssPending">–</div><div class="l">Units in pending orders</div></div>
+        <div class="stat-box"><div class="n" id="ssLow">–</div><div class="l">Low / out of stock</div></div>
+      </div>
+      <p style="font-size:11.5px;color:var(--text-dim);margin-top:12px;line-height:1.5;">When you mark an order <b>fulfilled</b>, each product's sold count goes up and its stock goes down automatically (products with blank stock stay unlimited). Marking it pending again reverses that. "Low" means 3 or fewer left.</p>
+      <div class="field" style="margin-top:14px;margin-bottom:0;">
+        <label>Sort by</label>
+        <select id="salesSort">
+          <option value="best">Best selling</option>
+          <option value="lowstock">Lowest stock first</option>
+          <option value="name">Name (A–Z)</option>
+        </select>
+      </div>
+      <p class="status-msg" id="salesStatus"></p>
+    </div>
+    <div class="list" id="salesList"></div>
+  </div>
+
   <!-- ---------- ORDERS ---------- -->
   <div class="panel" id="ordersPanel">
     <div class="card-form">
       <h3>Orders</h3>
-      <p style="font-size:12.5px;color:var(--text-dim);">Placed through the checkout form — each order also sends a WhatsApp message, this list is the record.</p>
+      <p style="font-size:12.5px;color:var(--text-dim);">Placed through the checkout form — each order also sends a WhatsApp message, this list is the record. Marking an order fulfilled updates each product's sold count and stock.</p>
+      <p class="status-msg" id="ordersStatus"></p>
     </div>
     <div class="list" id="ordersList"></div>
   </div>
@@ -301,6 +336,7 @@ document.querySelectorAll('.tab').forEach(t=>{
     t.classList.add('active');
     document.getElementById(t.dataset.panel).classList.add('active');
     if(t.dataset.panel === 'collagePanel') loadCollageList();
+    if(t.dataset.panel === 'salesPanel') loadSalesStock();
     if(t.dataset.panel === 'ordersPanel') loadOrdersList();
     if(t.dataset.panel === 'settingsPanel'){ loadDeliverySettings(); loadCouponsList(); }
   });
@@ -578,6 +614,142 @@ async function loadDashboardStats(){
   }
 }
 
+// ---------- Sales & Stock ----------
+const LOW_STOCK_LIMIT = 3;
+let salesRows = [];
+
+function renderSalesList(){
+  const list = document.getElementById('salesList');
+  const sort = document.getElementById('salesSort').value;
+  const rows = [...salesRows];
+  if(sort === 'best'){
+    rows.sort((a,b)=> (b.stats.fulfilled - a.stats.fulfilled) || ((b.p.sold||0) - (a.p.sold||0)));
+  } else if(sort === 'lowstock'){
+    // out of stock first, then lowest number, unlimited last
+    const key = r => typeof r.p.stock === 'number' ? r.p.stock : Infinity;
+    rows.sort((a,b)=> key(a) - key(b));
+  } else {
+    rows.sort((a,b)=> (a.p.name||'').localeCompare(b.p.name||''));
+  }
+
+  if(!rows.length){
+    list.innerHTML = '<p style="color:var(--text-dim);font-size:12.5px;">No products yet.</p>';
+    return;
+  }
+  list.innerHTML = '';
+  rows.forEach(({id, p, stats})=>{
+    let stockLabel;
+    if(p.stock === 0) stockLabel = '<span class="tag-out">Out of stock</span>';
+    else if(typeof p.stock === 'number' && p.stock <= LOW_STOCK_LIMIT) stockLabel = `<span class="tag-low">${p.stock} left (low)</span>`;
+    else if(typeof p.stock === 'number') stockLabel = `${p.stock} in stock`;
+    else stockLabel = 'Unlimited stock';
+
+    const el = document.createElement('div');
+    el.className = 'item';
+    el.innerHTML = `
+      ${p.imageUrl ? `<img src="${p.imageUrl}">` : '<div style="width:48px;height:48px;background:var(--bg-alt);border-radius:4px;flex-shrink:0;"></div>'}
+      <div class="info">
+        <h4>${p.name}</h4>
+        <p>${stockLabel} · ${p.sold||0} sold (shown on site)</p>
+        <p>Orders: ${stats.fulfilled} fulfilled · ${stats.pending} pending · BDT ${stats.revenue}</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;width:78px;">
+        <input type="number" min="0" class="stock-in" placeholder="Stock" title="Blank = unlimited" value="${typeof p.stock==='number' ? p.stock : ''}">
+        <button class="edit">Set stock</button>
+      </div>`;
+    el.querySelector('.edit').addEventListener('click', async (e)=>{
+      const btn = e.currentTarget;
+      const raw = el.querySelector('.stock-in').value.trim();
+      const stock = raw === '' ? null : Math.max(0, Math.floor(Number(raw)));
+      if(stock !== null && Number.isNaN(stock)){ return; }
+      btn.disabled = true;
+      try{
+        await updateDoc(doc(db,'products',id), { stock });
+        loadProductsList();
+        await loadSalesStock();
+      }catch(err){
+        console.error('Stock update failed:', err);
+        document.getElementById('salesStatus').textContent = 'Could not update stock: ' + err.message;
+        btn.disabled = false;
+      }
+    });
+    list.appendChild(el);
+  });
+}
+
+async function loadSalesStock(){
+  const list = document.getElementById('salesList');
+  const status = document.getElementById('salesStatus');
+  status.textContent = '';
+  list.innerHTML = 'Loading...';
+  try{
+    const [pSnap, oSnap] = await Promise.all([
+      getDocs(collection(db,'products')),
+      getDocs(collection(db,'orders'))
+    ]);
+    const products = pSnap.docs.map(d=>({ id:d.id, p:d.data() }));
+    const statsById = {};
+    const idByName = {};
+    products.forEach(({id,p})=>{
+      statsById[id] = { fulfilled:0, pending:0, revenue:0 };
+      idByName[(p.name||'').trim().toLowerCase()] = id;
+    });
+
+    oSnap.docs.forEach(d=>{
+      const o = d.data();
+      const fulfilled = o.status === 'fulfilled';
+      (o.items||[]).forEach(it=>{
+        const pid = statsById[it.id] ? it.id : idByName[(it.name||'').trim().toLowerCase()];
+        if(!pid) return; // product was deleted since the order
+        const qty = Number(it.qty) || 0;
+        if(fulfilled){
+          statsById[pid].fulfilled += qty;
+          statsById[pid].revenue += qty * (Number(it.price) || 0);
+        } else {
+          statsById[pid].pending += qty;
+        }
+      });
+    });
+
+    salesRows = products.map(({id,p})=>({ id, p, stats: statsById[id] }));
+
+    const totals = salesRows.reduce((t,r)=>{
+      t.units += r.stats.fulfilled;
+      t.revenue += r.stats.revenue;
+      t.pending += r.stats.pending;
+      if(typeof r.p.stock === 'number' && r.p.stock <= LOW_STOCK_LIMIT) t.low += 1;
+      return t;
+    }, { units:0, revenue:0, pending:0, low:0 });
+    document.getElementById('ssUnits').textContent = totals.units;
+    document.getElementById('ssRevenue').textContent = totals.revenue;
+    document.getElementById('ssPending').textContent = totals.pending;
+    document.getElementById('ssLow').textContent = totals.low;
+
+    renderSalesList();
+  }catch(e){
+    console.error('Sales & stock load failed:', e);
+    list.innerHTML = '<p style="color:var(--text-dim);font-size:12.5px;">Could not load sales data.</p>';
+  }
+}
+document.getElementById('salesSort').addEventListener('change', renderSalesList);
+
+// Apply (+1) or reverse (-1) an order's effect on each product's sold count and stock.
+// Products with blank stock (unlimited) only get their sold count changed.
+async function applyOrderToProducts(order, direction){
+  for(const it of (order.items||[])){
+    if(!it.id) continue;
+    const ref = doc(db,'products',it.id);
+    const snap = await getDoc(ref);
+    if(!snap.exists()) continue; // product deleted since the order
+    const p = snap.data();
+    const qty = Number(it.qty) || 0;
+    if(!qty) continue;
+    const upd = { sold: Math.max(0, (p.sold||0) + direction*qty) };
+    if(typeof p.stock === 'number') upd.stock = Math.max(0, p.stock - direction*qty);
+    await updateDoc(ref, upd);
+  }
+}
+
 // ---------- Orders ----------
 async function loadOrdersList(){
   const list = document.getElementById('ordersList');
@@ -603,14 +775,35 @@ async function loadOrdersList(){
           <p>${o.address || ''}</p>
           <p>${itemsText}</p>
           ${o.note ? `<p>Note: ${o.note}</p>` : ''}
+          ${o.stockApplied ? '<p style="color:var(--silver);">Counted in sold &amp; stock</p>' : ''}
         </div>
         <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
           <span style="font-size:10.5px;padding:3px 8px;border-radius:10px;border:1px solid var(--line);color:${o.status==='fulfilled'?'var(--silver-bright)':'var(--text-dim)'};">${o.status||'pending'}</span>
           <button class="toggle-status" data-id="${o.id}" data-status="${o.status||'pending'}">${o.status==='fulfilled' ? 'Mark pending' : 'Mark fulfilled'}</button>
         </div>`;
       el.querySelector('button[data-id]').addEventListener('click', async (e)=>{
-        const newStatus = e.target.dataset.status === 'fulfilled' ? 'pending' : 'fulfilled';
-        await updateDoc(doc(db,'orders',o.id), { status: newStatus });
+        const btn = e.currentTarget;
+        const ordersStatus = document.getElementById('ordersStatus');
+        const newStatus = btn.dataset.status === 'fulfilled' ? 'pending' : 'fulfilled';
+        btn.disabled = true;
+        ordersStatus.textContent = 'Updating...';
+        try{
+          const update = { status: newStatus };
+          if(newStatus === 'fulfilled' && !o.stockApplied){
+            await applyOrderToProducts(o, +1);
+            update.stockApplied = true;
+          } else if(newStatus === 'pending' && o.stockApplied){
+            await applyOrderToProducts(o, -1);
+            update.stockApplied = false;
+          }
+          await updateDoc(doc(db,'orders',o.id), update);
+          ordersStatus.textContent = '';
+          loadProductsList();
+          loadDashboardStats();
+        }catch(err){
+          console.error('Order update failed:', err);
+          ordersStatus.textContent = 'Could not update the order: ' + err.message;
+        }
         loadOrdersList();
       });
       list.appendChild(el);
