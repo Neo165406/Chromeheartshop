@@ -7,7 +7,11 @@
 // Environment Variables, then redeploy). Set either channel, or both:
 //
 //   Email  (Resend):   RESEND_API_KEY, NOTIFY_EMAIL   (optional: NOTIFY_FROM)
-//   WhatsApp (CallMeBot): CALLMEBOT_PHONE, CALLMEBOT_APIKEY
+//   WhatsApp (CallMeBot), up to 3 numbers. Each number must be registered with
+//   CallMeBot on its own and has its own API key:
+//     CALLMEBOT_PHONE,   CALLMEBOT_APIKEY     (1st number)
+//     CALLMEBOT_PHONE_2, CALLMEBOT_APIKEY_2   (2nd number, optional)
+//     CALLMEBOT_PHONE_3, CALLMEBOT_APIKEY_3   (3rd number, optional)
 //
 // The order itself is always saved to Firestore by the checkout page first — this
 // function is only the "ping the owner" step, so if it fails no order is lost.
@@ -104,15 +108,29 @@ async function sendEmail(o, text){
   return { channel: 'email', ok: true };
 }
 
+// Every WhatsApp number that has both a phone and an API key set in Vercel.
+function waRecipients(){
+  const list = [];
+  ['', '_2', '_3'].forEach(sfx => {
+    const phone = String(process.env['CALLMEBOT_PHONE' + sfx] || '').replace(/\D/g, '');
+    const apikey = process.env['CALLMEBOT_APIKEY' + sfx];
+    if(phone && apikey) list.push({ phone, apikey });
+  });
+  return list;
+}
+
 async function sendWhatsApp(text){
-  const phone = String(process.env.CALLMEBOT_PHONE || '').replace(/\D/g, '');
-  const apikey = process.env.CALLMEBOT_APIKEY;
-  if(!phone || !apikey) return { channel: 'whatsapp', skipped: true };
-  const url = 'https://api.callmebot.com/whatsapp.php?phone=' + phone +
-    '&text=' + encodeURIComponent(text) + '&apikey=' + encodeURIComponent(apikey);
-  const r = await fetch(url, { signal: AbortSignal.timeout(8000) });
-  if(!r.ok) throw new Error('WhatsApp failed (' + r.status + ')');
-  return { channel: 'whatsapp', ok: true };
+  const recipients = waRecipients();
+  if(!recipients.length) return { channel: 'whatsapp', skipped: true };
+  const settled = await Promise.allSettled(recipients.map(async ({ phone, apikey }) => {
+    const url = 'https://api.callmebot.com/whatsapp.php?phone=' + phone +
+      '&text=' + encodeURIComponent(text) + '&apikey=' + encodeURIComponent(apikey);
+    const r = await fetch(url, { signal: AbortSignal.timeout(8000) });
+    if(!r.ok) throw new Error('WhatsApp failed (' + r.status + ')');
+  }));
+  const sent = settled.filter(s => s.status === 'fulfilled').length;
+  if(!sent) throw new Error('WhatsApp failed for all ' + recipients.length + ' number(s)');
+  return { channel: 'whatsapp', ok: true, sent, total: recipients.length };
 }
 
 module.exports = async function handler(req, res){
@@ -120,7 +138,7 @@ module.exports = async function handler(req, res){
   if(req.method !== 'POST') return res.status(405).json({ error: 'Use POST.' });
 
   const emailReady = !!(process.env.RESEND_API_KEY && process.env.NOTIFY_EMAIL);
-  const waReady = !!(process.env.CALLMEBOT_PHONE && process.env.CALLMEBOT_APIKEY);
+  const waReady = waRecipients().length > 0;
   if(!emailReady && !waReady){
     return res.status(500).json({ error: 'No notification channel is set up. Add RESEND_API_KEY + NOTIFY_EMAIL (email) and/or CALLMEBOT_PHONE + CALLMEBOT_APIKEY (WhatsApp) in Vercel → Settings → Environment Variables, then redeploy.' });
   }
