@@ -138,12 +138,15 @@ function renderEmpty(){
     </div>`;
 }
 
-function renderConfirm(){
+// fallbackUrl is only passed if the automatic owner notification failed;
+// then the buyer gets a one-tap WhatsApp link so the order is never missed.
+function renderConfirm(fallbackUrl){
   document.getElementById('root').innerHTML = `
     <div class="confirm-state">
       <div class="confirm-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></div>
       <h2 class="display">Order placed</h2>
-      <p>We've opened WhatsApp with your order details — send the message to confirm with us. Cash on delivery.</p>
+      <p>Thank you! We've received your order and will contact you shortly to confirm. Cash on delivery.</p>
+      ${fallbackUrl ? `<div style="margin-bottom:14px;"><a class="link-btn" href="${fallbackUrl}" target="_blank" rel="noopener">Confirm on WhatsApp →</a></div>` : ''}
       <a class="link-btn" href="shop.html">Continue shopping →</a>
     </div>`;
 }
@@ -409,7 +412,7 @@ async function placeOrder(){
   status.textContent = 'Placing your order...';
 
   // Try to log the order to Firestore. If this fails for any reason, we
-  // still proceed to WhatsApp so the order is never lost.
+  // still notify the owner so the order is never lost.
   let orderId = '';
   try{
     if(!fbApi){
@@ -433,13 +436,14 @@ async function placeOrder(){
     });
     orderId = orderRef.id;
   }catch(e){
-    console.error('Order logging failed (continuing to WhatsApp anyway):', e);
+    console.error('Order logging failed (continuing to notify owner anyway):', e);
   }
 
-  // Instantly ping the shop owner (email / WhatsApp) with the order details.
-  // Fire-and-forget: it never blocks or breaks the customer's order.
+  // Automatically ping the shop owner (WhatsApp / email) with the full order
+  // details via the serverless function. The buyer does not have to send anything.
+  let notified = false;
   try{
-    fetch('/api/notify-order', {
+    const r = await fetch('/api/notify-order', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       keepalive: true,
@@ -456,17 +460,24 @@ async function placeOrder(){
         couponCode: appliedCoupon ? appliedCoupon.code : null,
         discount,
         total: grandTotal
-      })
-    }).catch(e=>console.warn('Owner notification failed:', e));
+      }),
+      signal: AbortSignal.timeout(9000)
+    });
+    notified = r.ok;
   }catch(e){ console.warn('Owner notification failed:', e); }
 
-  const lines = cart.map(c=>`• ${c.name} x${c.qty} — BDT ${c.price*c.qty}`).join('\n');
-  const discountLine = discount > 0 ? `\nDiscount (${appliedCoupon.code}): -BDT ${discount}` : '';
-  const msg = `Hi! I'd like to place an order:\n\n${lines}\n\nSubtotal: BDT ${subtotal}\nDelivery (${deliveryZone}): BDT ${deliveryCharge}${discountLine}\nTotal: BDT ${grandTotal}\n\nName: ${details.name}\nPhone: ${details.phone}\nAddress: ${details.address}${details.note ? `\nNote: ${details.note}` : ''}`;
-  window.open(`https://wa.me/8801759406602?text=${encodeURIComponent(msg)}`, '_blank');
+  // Only if the automatic notification failed, offer the buyer a manual
+  // WhatsApp link as a safety net (shown on the confirmation screen).
+  let fallbackUrl = '';
+  if(!notified){
+    const lines = cart.map(c=>`• ${c.name} x${c.qty} — BDT ${c.price*c.qty}`).join('\n');
+    const discountLine = discount > 0 ? `\nDiscount (${appliedCoupon.code}): -BDT ${discount}` : '';
+    const msg = `Hi! I'd like to place an order:\n\n${lines}\n\nSubtotal: BDT ${subtotal}\nDelivery (${deliveryZone}): BDT ${deliveryCharge}${discountLine}\nTotal: BDT ${grandTotal}\n\nName: ${details.name}\nPhone: ${details.phone}\nAddress: ${details.address}${details.note ? `\nNote: ${details.note}` : ''}`;
+    fallbackUrl = `https://wa.me/8801759406602?text=${encodeURIComponent(msg)}`;
+  }
 
   if(cartApi) cartApi.clearCart();
-  renderConfirm();
+  renderConfirm(fallbackUrl);
 }
 
 async function loadDeliverySettings(){
