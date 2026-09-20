@@ -53,6 +53,7 @@
   .list{display:flex;flex-direction:column;gap:10px;}
   .item{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px;}
   .item img{width:48px;height:48px;object-fit:cover;border-radius:4px;background:var(--bg-alt);}
+  .item video{width:48px;height:64px;object-fit:cover;border-radius:4px;background:var(--bg-alt);flex-shrink:0;}
   .item .info{flex:1;min-width:0;}
   .item .info h4{font-size:13.5px;margin-bottom:3px;}
   .item .info p{font-size:11.5px;color:var(--text-dim);}
@@ -97,6 +98,7 @@
     <div class="tab active" data-panel="dashPanel">Dashboard</div>
     <div class="tab" data-panel="slidesPanel">Slides</div>
     <div class="tab" data-panel="collagePanel">Collage</div>
+    <div class="tab" data-panel="reelsPanel">Reels</div>
     <div class="tab" data-panel="productsPanel">Products</div>
     <div class="tab" data-panel="salesPanel">Sales &amp; Stock</div>
     <div class="tab" data-panel="ordersPanel">Orders</div>
@@ -168,6 +170,31 @@
       <p class="status-msg" id="cgStatus"></p>
     </div>
     <div class="list" id="collageList"></div>
+  </div>
+
+  <!-- ---------- REELS ---------- -->
+  <div class="panel" id="reelsPanel">
+    <div class="card-form">
+      <h3>Add reel</h3>
+      <p style="font-size:12px;color:var(--text-dim);margin:-4px 0 12px;line-height:1.5;">Reels show as a swipeable row of vertical videos on the homepage. The section stays hidden until you add at least one.</p>
+      <div class="field"><label>Video source</label>
+        <select id="rMode">
+          <option value="file">Upload a video file</option>
+          <option value="link">Paste a video link</option>
+        </select>
+      </div>
+      <div class="field" id="rFileWrap"><label>Video file (vertical 9:16 MP4 works best, max 100 MB)</label><input id="rFile" type="file" accept="video/*"></div>
+      <div class="field" id="rLinkWrap" style="display:none;"><label>Video link — a direct .mp4 link plays right on the site; Instagram / TikTok / YouTube links open when tapped</label><input id="rLink" type="url" placeholder="https://..."></div>
+      <div class="field"><label>Cover image (optional — recommended for links; YouTube covers are added automatically)</label><input id="rThumb" type="file" accept="image/*"></div>
+      <div class="field"><label>Caption (optional)</label><input id="rCaption" placeholder="e.g. Styling our silver chain"></div>
+      <div class="row2">
+        <div class="field"><label>Tap-through link (optional — product or page)</label><input id="rHref" placeholder="product.html?id=..."></div>
+        <div class="field"><label>Order (lower shows first)</label><input id="rOrder" type="number" value="0"></div>
+      </div>
+      <button class="save-btn" id="rSaveBtn">Save reel</button>
+      <p class="status-msg" id="rStatus"></p>
+    </div>
+    <div class="list" id="reelsList"></div>
   </div>
 
   <!-- ---------- PRODUCTS ---------- -->
@@ -894,5 +921,8 @@ async function loadCouponsList(){
   }
 }
 </script>
+
+<!-- Reels tab logic lives in its own module so it can never break the rest of the admin. -->
+<script type="module" src="./js/admin-reels.js"></script>
 </body>
 </html>
