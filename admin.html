@@ -274,7 +274,7 @@
   <div class="panel" id="ordersPanel">
     <div class="card-form">
       <h3>Orders</h3>
-      <p style="font-size:12.5px;color:var(--text-dim);">Placed through the checkout form — each order also sends a WhatsApp message, this list is the record. Marking an order fulfilled updates each product's sold count and stock.</p>
+      <p style="font-size:12.5px;color:var(--text-dim);line-height:1.5;">Placed through the checkout form — each new order also pings you by email / WhatsApp, and this list is the record. Marking an order fulfilled updates each product's sold count and stock. Tap <b>Send confirmation</b> to message the buyer on WhatsApp with their order details (you can edit the message before sending).</p>
       <p class="status-msg" id="ordersStatus"></p>
     </div>
     <div class="list" id="ordersList"></div>
@@ -777,6 +777,36 @@ async function applyOrderToProducts(order, direction){
   }
 }
 
+// ---------- Buyer confirmation (WhatsApp) ----------
+// Turns the phone number the buyer typed at checkout into wa.me format (Bangladesh: 880 + number).
+function toWaNumber(raw){
+  const d = String(raw || '').replace(/\D/g, '');
+  if(d.startsWith('880')) return d;
+  if(d.startsWith('0')) return '88' + d;
+  if(d.length === 10 && d.startsWith('1')) return '880' + d;
+  return d;
+}
+
+function buildConfirmationMessage(o){
+  const items = o.items || [];
+  const lines = items.map(i=>`• ${i.name} x${i.qty} — BDT ${(Number(i.price)||0) * (Number(i.qty)||0)}`).join('\n');
+  const subtotal = (typeof o.subtotal === 'number') ? o.subtotal : items.reduce((s,i)=>s + (Number(i.price)||0) * (Number(i.qty)||0), 0);
+  const totalsLines = [
+    `Subtotal: BDT ${subtotal}`,
+    (typeof o.deliveryCharge === 'number') ? `Delivery${o.deliveryZone ? ' (' + o.deliveryZone + ')' : ''}: BDT ${o.deliveryCharge}` : '',
+    o.discount > 0 ? `Discount${o.couponCode ? ' (' + o.couponCode + ')' : ''}: -BDT ${o.discount}` : '',
+    `Total (Cash on delivery): BDT ${o.total}`
+  ].filter(Boolean).join('\n');
+  return [
+    `Hi ${o.customerName || ''}! 👋`,
+    'Thank you for shopping with FASHIONISTA. Your order is confirmed ✅',
+    `Your order:\n${lines}`,
+    totalsLines,
+    o.address ? `Delivery address: ${o.address}` : '',
+    'We will deliver it soon. If you have any question, just reply to this message.'
+  ].filter(Boolean).join('\n\n');
+}
+
 // ---------- Orders ----------
 async function loadOrdersList(){
   const list = document.getElementById('ordersList');
@@ -803,11 +833,31 @@ async function loadOrdersList(){
           <p>${itemsText}</p>
           ${o.note ? `<p>Note: ${o.note}</p>` : ''}
           ${o.stockApplied ? '<p style="color:var(--silver);">Counted in sold &amp; stock</p>' : ''}
+          ${o.confirmationSentAt ? '<p style="color:var(--silver);">Confirmation sent to buyer ✓</p>' : ''}
         </div>
         <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
           <span style="font-size:10.5px;padding:3px 8px;border-radius:10px;border:1px solid var(--line);color:${o.status==='fulfilled'?'var(--silver-bright)':'var(--text-dim)'};">${o.status||'pending'}</span>
           <button class="toggle-status" data-id="${o.id}" data-status="${o.status||'pending'}">${o.status==='fulfilled' ? 'Mark pending' : 'Mark fulfilled'}</button>
+          <button class="toggle-status confirm-btn">${o.confirmationSentAt ? 'Resend confirmation' : 'Send confirmation'}</button>
         </div>`;
+      el.querySelector('.confirm-btn').addEventListener('click', async (e)=>{
+        const btn = e.currentTarget;
+        const ordersStatus = document.getElementById('ordersStatus');
+        const number = toWaNumber(o.phone);
+        if(!number){ ordersStatus.textContent = 'This order has no valid phone number.'; return; }
+        // Open WhatsApp first (inside the tap) so the browser doesn't block the popup.
+        window.open(`https://wa.me/${number}?text=${encodeURIComponent(buildConfirmationMessage(o))}`, '_blank');
+        btn.disabled = true;
+        try{
+          await updateDoc(doc(db,'orders',o.id), { confirmationSentAt: serverTimestamp() });
+          ordersStatus.textContent = '';
+          loadOrdersList();
+        }catch(err){
+          console.error('Could not mark confirmation as sent:', err);
+          ordersStatus.textContent = 'WhatsApp opened, but could not save "confirmation sent": ' + err.message;
+          btn.disabled = false;
+        }
+      });
       el.querySelector('button[data-id]').addEventListener('click', async (e)=>{
         const btn = e.currentTarget;
         const ordersStatus = document.getElementById('ordersStatus');

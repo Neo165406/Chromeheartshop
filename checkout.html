@@ -410,12 +410,13 @@ async function placeOrder(){
 
   // Try to log the order to Firestore. If this fails for any reason, we
   // still proceed to WhatsApp so the order is never lost.
+  let orderId = '';
   try{
     if(!fbApi){
       const fb = await import('./js/firebase-config.js');
       fbApi = { db: fb.db, collection: fb.collection, addDoc: fb.addDoc, serverTimestamp: fb.serverTimestamp };
     }
-    await fbApi.addDoc(fbApi.collection(fbApi.db,'orders'), {
+    const orderRef = await fbApi.addDoc(fbApi.collection(fbApi.db,'orders'), {
       customerName: details.name,
       phone: details.phone,
       address: details.address,
@@ -430,9 +431,34 @@ async function placeOrder(){
       status: 'pending',
       createdAt: fbApi.serverTimestamp()
     });
+    orderId = orderRef.id;
   }catch(e){
     console.error('Order logging failed (continuing to WhatsApp anyway):', e);
   }
+
+  // Instantly ping the shop owner (email / WhatsApp) with the order details.
+  // Fire-and-forget: it never blocks or breaks the customer's order.
+  try{
+    fetch('/api/notify-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      keepalive: true,
+      body: JSON.stringify({
+        orderId,
+        customerName: details.name,
+        phone: details.phone,
+        address: details.address,
+        note: details.note,
+        items: cart.map(c=>({ name:c.name, price:c.price, qty:c.qty })),
+        subtotal,
+        deliveryZone,
+        deliveryCharge,
+        couponCode: appliedCoupon ? appliedCoupon.code : null,
+        discount,
+        total: grandTotal
+      })
+    }).catch(e=>console.warn('Owner notification failed:', e));
+  }catch(e){ console.warn('Owner notification failed:', e); }
 
   const lines = cart.map(c=>`• ${c.name} x${c.qty} — BDT ${c.price*c.qty}`).join('\n');
   const discountLine = discount > 0 ? `\nDiscount (${appliedCoupon.code}): -BDT ${discount}` : '';
