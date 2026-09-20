@@ -138,15 +138,15 @@ function renderEmpty(){
     </div>`;
 }
 
-// fallbackUrl is only passed if the automatic owner notification failed;
-// then the buyer gets a one-tap WhatsApp link so the order is never missed.
-function renderConfirm(fallbackUrl){
+// waUrl opens WhatsApp with the order details pre-filled, so the buyer
+// only has to tap "Send" to message the shop.
+function renderConfirm(waUrl){
   document.getElementById('root').innerHTML = `
     <div class="confirm-state">
       <div class="confirm-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></div>
       <h2 class="display">Order placed</h2>
-      <p>Thank you! We've received your order and will contact you shortly to confirm. Cash on delivery.</p>
-      ${fallbackUrl ? `<div style="margin-bottom:14px;"><a class="link-btn" href="${fallbackUrl}" target="_blank" rel="noopener">Confirm on WhatsApp →</a></div>` : ''}
+      <p>Thank you! Please tap the button below and send your order on WhatsApp so we can confirm it. Cash on delivery.</p>
+      ${waUrl ? `<a class="place-btn" href="${waUrl}" target="_blank" rel="noopener" style="display:block;text-decoration:none;margin-bottom:16px;">Send order on WhatsApp</a>` : ''}
       <a class="link-btn" href="shop.html">Continue shopping →</a>
     </div>`;
 }
@@ -412,7 +412,7 @@ async function placeOrder(){
   status.textContent = 'Placing your order...';
 
   // Try to log the order to Firestore. If this fails for any reason, we
-  // still notify the owner so the order is never lost.
+  // still continue so the buyer can send the order on WhatsApp.
   let orderId = '';
   try{
     if(!fbApi){
@@ -436,14 +436,13 @@ async function placeOrder(){
     });
     orderId = orderRef.id;
   }catch(e){
-    console.error('Order logging failed (continuing to notify owner anyway):', e);
+    console.error('Order logging failed (continuing anyway):', e);
   }
 
-  // Automatically ping the shop owner (WhatsApp / email) with the full order
-  // details via the serverless function. The buyer does not have to send anything.
-  let notified = false;
+  // Background ping to the owner (email, plus WhatsApp if it is configured on
+  // the server). Fire-and-forget: it never blocks or breaks the checkout.
   try{
-    const r = await fetch('/api/notify-order', {
+    fetch('/api/notify-order', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       keepalive: true,
@@ -460,24 +459,21 @@ async function placeOrder(){
         couponCode: appliedCoupon ? appliedCoupon.code : null,
         discount,
         total: grandTotal
-      }),
-      signal: AbortSignal.timeout(9000)
-    });
-    notified = r.ok;
+      })
+    }).catch(e=>console.warn('Owner notification failed:', e));
   }catch(e){ console.warn('Owner notification failed:', e); }
 
-  // Only if the automatic notification failed, offer the buyer a manual
-  // WhatsApp link as a safety net (shown on the confirmation screen).
-  let fallbackUrl = '';
-  if(!notified){
-    const lines = cart.map(c=>`• ${c.name} x${c.qty} — BDT ${c.price*c.qty}`).join('\n');
-    const discountLine = discount > 0 ? `\nDiscount (${appliedCoupon.code}): -BDT ${discount}` : '';
-    const msg = `Hi! I'd like to place an order:\n\n${lines}\n\nSubtotal: BDT ${subtotal}\nDelivery (${deliveryZone}): BDT ${deliveryCharge}${discountLine}\nTotal: BDT ${grandTotal}\n\nName: ${details.name}\nPhone: ${details.phone}\nAddress: ${details.address}${details.note ? `\nNote: ${details.note}` : ''}`;
-    fallbackUrl = `https://wa.me/8801759406602?text=${encodeURIComponent(msg)}`;
-  }
+  // WhatsApp message for the buyer to send to the shop.
+  const lines = cart.map(c=>`• ${c.name} x${c.qty} — BDT ${c.price*c.qty}`).join('\n');
+  const discountLine = discount > 0 ? `\nDiscount (${appliedCoupon.code}): -BDT ${discount}` : '';
+  const msg = `Hi! I'd like to place an order:\n\n${orderId ? `Order ID: ${orderId}\n\n` : ''}${lines}\n\nSubtotal: BDT ${subtotal}\nDelivery (${deliveryZone}): BDT ${deliveryCharge}${discountLine}\nTotal: BDT ${grandTotal}\n\nName: ${details.name}\nPhone: ${details.phone}\nAddress: ${details.address}${details.note ? `\nNote: ${details.note}` : ''}`;
+  const waUrl = `https://wa.me/8801759406602?text=${encodeURIComponent(msg)}`;
 
   if(cartApi) cartApi.clearCart();
-  renderConfirm(fallbackUrl);
+  renderConfirm(waUrl);
+  // Try to open WhatsApp right away. If the browser blocks the popup, the
+  // "Send order on WhatsApp" button on the confirmation screen does the same.
+  try{ window.open(waUrl, '_blank'); }catch(e){}
 }
 
 async function loadDeliverySettings(){
