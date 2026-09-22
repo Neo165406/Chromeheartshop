@@ -4,7 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>FASHIONISTA</title>
+<meta name="description" content="Shop neon silver accessories and eyewear at FASHIONISTA. Cash on delivery across Bangladesh.">
 <meta name="theme-color" content="#0a0b0d">
+<link rel="canonical" id="canonicalLink" href="https://fashion1sta.com/shop.html">
+<meta property="og:type" content="product">
+<meta property="og:site_name" content="FASHIONISTA">
+<meta id="ogTitle" property="og:title" content="FASHIONISTA">
+<meta id="ogDescription" property="og:description" content="Shop neon silver accessories and eyewear at FASHIONISTA.">
+<meta id="ogUrl" property="og:url" content="https://fashion1sta.com/shop.html">
+<meta id="ogImage" property="og:image" content="">
+<meta name="twitter:card" content="summary_large_image">
+<meta id="twitterTitle" name="twitter:title" content="FASHIONISTA">
+<meta id="twitterDescription" name="twitter:description" content="Shop neon silver accessories and eyewear at FASHIONISTA.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -172,6 +183,51 @@ let cartApi = null; // { addToCart, buyNowWhatsApp, renderCartDrawer, updateCart
 let favApi = null;  // { isFavorite, toggleFavorite }
 let galleryImages = [];
 let galleryIndex = 0;
+
+// ---------- SEO: per-product <head> tags + JSON-LD, filled in once the
+// product loads from Firestore. There's no static per-product URL to
+// prerender, so this is the best available signal for crawlers that
+// execute JS (and it's what social-media unfurlers will read too). ----------
+function updateSEOTags(product){
+  const url = `https://fashion1sta.com/product.html?id=${encodeURIComponent(product.id)}`;
+  const desc = product.description
+    ? product.description.replace(/\s+/g,' ').trim().slice(0,155)
+    : `${product.name} — BDT ${product.price}. Neon silver accessories and eyewear from FASHIONISTA, cash on delivery across Bangladesh.`;
+  const image = (product.images && product.images[0]) || product.imageUrl || '';
+
+  document.title = `${product.name} — FASHIONISTA`;
+  document.getElementById('canonicalLink').setAttribute('href', url);
+  const descMeta = document.querySelector('meta[name="description"]');
+  if(descMeta) descMeta.setAttribute('content', desc);
+  document.getElementById('ogTitle').setAttribute('content', `${product.name} — FASHIONISTA`);
+  document.getElementById('ogDescription').setAttribute('content', desc);
+  document.getElementById('ogUrl').setAttribute('content', url);
+  document.getElementById('ogImage').setAttribute('content', image);
+  document.getElementById('twitterTitle').setAttribute('content', `${product.name} — FASHIONISTA`);
+  document.getElementById('twitterDescription').setAttribute('content', desc);
+
+  const existingLd = document.getElementById('productLd');
+  if(existingLd) existingLd.remove();
+  const ld = document.createElement('script');
+  ld.type = 'application/ld+json';
+  ld.id = 'productLd';
+  ld.textContent = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": product.name,
+    "image": image ? [image] : undefined,
+    "description": desc,
+    "category": product.category || undefined,
+    "offers": {
+      "@type": "Offer",
+      "url": url,
+      "priceCurrency": "BDT",
+      "price": product.price,
+      "availability": product.stock === 0 ? "https://schema.org/OutOfStock" : "https://schema.org/InStock"
+    }
+  });
+  document.head.appendChild(ld);
+}
 
 // ---------- Lightbox zoom state ----------
 let zoomScale = 1, zoomX = 0, zoomY = 0;
@@ -357,6 +413,8 @@ function renderProduct(product, all){
   currentProduct = product;
   currentAll = all;
   const root = document.getElementById('productRoot');
+
+  updateSEOTags(product);
 
   const outOfStock = product.stock === 0;
   const discount = product.was ? Math.round((1 - product.price/product.was) * 100) : 0;
