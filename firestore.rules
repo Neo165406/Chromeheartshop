@@ -2,8 +2,13 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // Only a UID listed in /admins is treated as admin — being merely
+    // signed in is NOT enough. (Previously this was `request.auth != null`,
+    // which meant every signed-in customer had full admin access. See the
+    // /admins collection below for how to add your admin account.)
     function isAdmin() {
-      return request.auth != null;
+      return request.auth != null
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
 
     // Storefront content: anyone can read, only signed-in admin can write
@@ -40,6 +45,21 @@ service cloud.firestore {
     match /orders/{doc} {
       allow create: if true;
       allow read, update, delete: if isAdmin();
+    }
+
+    // Customer accounts: a signed-in customer can manage only their own profile
+    match /customers/{uid} {
+      allow read, update, delete: if request.auth != null && request.auth.uid == uid;
+      allow create: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // Admin allowlist — add your admin account's UID here as a document
+    // (Firebase console → Firestore → create collection "admins" → document
+    // ID = your admin user's UID from Authentication → any field). No client,
+    // including a signed-in admin, can read or write this collection directly;
+    // it is only ever checked via exists() in isAdmin() above.
+    match /admins/{uid} {
+      allow read, write: if false;
     }
 
     // Deny everything else by default

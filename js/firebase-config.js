@@ -1,6 +1,7 @@
 // js/firebase-config.js
 // Shared Firebase/Firestore/Auth setup for FASHIONISTA. Imported as an ES
-// module by index.html and admin.html — no build step required.
+// module by index.html, shop.html, admin.html and account.html — no build
+// step required.
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
 import {
@@ -8,7 +9,8 @@ import {
   doc, query, orderBy, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 import {
-  getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut
+  getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile,
+  onAuthStateChanged, signOut
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -28,5 +30,6 @@ const auth = getAuth(app);
 export {
   app, db, collection, getDocs, getDoc, addDoc, updateDoc, deleteDoc, setDoc,
   doc, query, orderBy, serverTimestamp,
-  auth, signInWithEmailAndPassword, onAuthStateChanged, signOut
+  auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile,
+  onAuthStateChanged, signOut
 };

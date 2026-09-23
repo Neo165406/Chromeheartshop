@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Account — FASHIONISTA</title>
+<meta name="description" content="Sign in or create your FASHIONISTA account to save favourites and track orders faster.">
+<meta name="theme-color" content="#0a0b0d">
+<link rel="canonical" href="https://fashion1sta.com/account.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="FASHIONISTA">
+<meta property="og:title" content="Account — FASHIONISTA">
+<meta property="og:description" content="Sign in or create your FASHIONISTA account.">
+<meta property="og:url" content="https://fashion1sta.com/account.html">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Account — FASHIONISTA">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0b0d;--card:#17191c;
+    --silver:#b8bcc4;--silver-bright:#f2f4f7;--silver-deep:#6b6f76;
+    --text:#f2f3f5;--text-dim:#9195a0;--line:rgba(184,188,196,0.22);
+    --radius:2px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Instrument Sans',sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;}
+  .display{font-family:'Fraunces',serif;}
+  a{color:var(--silver-bright);}
+  button{font-family:inherit;}
+  header{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:16px 22px;background:rgba(10,11,13,0.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+  .navicon{width:20px;height:20px;}
+  .logo{font-family:'Fraunces',serif;font-size:19px;letter-spacing:0.14em;font-weight:600;background:linear-gradient(120deg,var(--silver-deep),var(--silver-bright) 45%,var(--silver));-webkit-background-clip:text;background-clip:text;color:transparent;text-decoration:none;}
+  main{max-width:420px;margin:0 auto;padding:34px 22px 60px;}
+  h1{font-family:'Fraunces',serif;font-weight:500;font-size:26px;margin-bottom:6px;text-align:center;}
+  .sub{font-size:13px;color:var(--text-dim);text-align:center;margin-bottom:26px;}
+
+  .tabs{display:flex;border:1px solid var(--line);border-radius:20px;padding:4px;margin-bottom:24px;}
+  .tab{flex:1;text-align:center;padding:9px 0;font-size:12.5px;font-weight:600;color:var(--text-dim);border-radius:16px;cursor:pointer;}
+  .tab.active{background:var(--silver-bright);color:var(--bg);}
+
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:12px;color:var(--text-dim);margin-bottom:6px;}
+  .field input{width:100%;padding:12px 14px;background:var(--card);border:1px solid var(--line);color:var(--text);border-radius:var(--radius);font-size:14px;font-family:inherit;}
+  .field input:focus{outline:none;border-color:var(--silver);}
+
+  .submit-btn{width:100%;padding:14px 0;text-align:center;background:linear-gradient(120deg,var(--silver),var(--silver-bright));color:var(--bg);border:none;border-radius:var(--radius);font-size:14px;font-weight:700;cursor:pointer;margin-top:4px;}
+  .submit-btn:disabled{opacity:0.55;cursor:default;}
+  .form-err{color:#e08a8a;font-size:12.5px;margin-top:10px;display:none;text-align:center;}
+
+  .panel{display:none;}
+  .panel.active{display:block;}
+
+  /* ---------- Logged-in view ---------- */
+  #accountView{display:none;text-align:center;}
+  .avatar{width:64px;height:64px;border-radius:50%;background:var(--card);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:24px;color:var(--silver-bright);margin:0 auto 16px;}
+  #accountName{font-size:17px;font-weight:600;margin-bottom:2px;}
+  #accountEmail{font-size:12.5px;color:var(--text-dim);margin-bottom:26px;}
+  .quick-links{display:flex;flex-direction:column;gap:10px;margin-bottom:22px;}
+  .quick-links a{display:block;padding:13px 16px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);font-size:13.5px;text-align:left;color:var(--text);text-decoration:none;}
+  .logout-btn{width:100%;padding:13px 0;background:none;border:1px solid var(--line);color:var(--text-dim);border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;}
+</style>
+</head>
+<body>
+
+<header>
+  <a href="index.html"><svg class="navicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 6l-6 6 6 6"/></svg></a>
+  <a href="index.html" class="logo">FASHIONISTA</a>
+  <span style="width:20px;"></span>
+</header>
+
+<main>
+
+  <!-- ---------- LOGGED OUT: sign in / create account ---------- -->
+  <div id="authView">
+    <h1 class="display">Account</h1>
+    <p class="sub">Sign in to save your favourites and track orders faster.</p>
+
+    <div class="tabs">
+      <div class="tab active" data-panel="signinPanel">Sign In</div>
+      <div class="tab" data-panel="signupPanel">Create Account</div>
+    </div>
+
+    <div class="panel active" id="signinPanel">
+      <div class="field"><label>Email</label><input type="email" id="siEmail" autocomplete="username"></div>
+      <div class="field"><label>Password</label><input type="password" id="siPass" autocomplete="current-password"></div>
+      <button class="submit-btn" id="siBtn">Sign In</button>
+      <p class="form-err" id="siErr"></p>
+    </div>
+
+    <div class="panel" id="signupPanel">
+      <div class="field"><label>Name</label><input type="text" id="suName" autocomplete="name"></div>
+      <div class="field"><label>Email</label><input type="email" id="suEmail" autocomplete="username"></div>
+      <div class="field"><label>Password (min. 6 characters)</label><input type="password" id="suPass" autocomplete="new-password"></div>
+      <button class="submit-btn" id="suBtn">Create Account</button>
+      <p class="form-err" id="suErr"></p>
+    </div>
+  </div>
+
+  <!-- ---------- LOGGED IN ---------- -->
+  <div id="accountView">
+    <div class="avatar" id="accountAvatar">•</div>
+    <div id="accountName"></div>
+    <div id="accountEmail"></div>
+    <div class="quick-links">
+      <a href="saved.html">♡ Saved items</a>
+      <a href="track-order.html">Track an order</a>
+    </div>
+    <button class="logout-btn" id="logoutBtn">Log out</button>
+  </div>
+
+</main>
+
+<script type="module">
+import {
+  db, doc, getDoc, setDoc, serverTimestamp,
+  auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile,
+  onAuthStateChanged, signOut
+} from './js/firebase-config.js';
+
+// ---------- Tabs ----------
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById(t.dataset.panel).classList.add('active');
+  });
+});
+
+// ---------- Sign in ----------
+async function signIn(){
+  const btn = document.getElementById('siBtn');
+  const err = document.getElementById('siErr');
+  const email = document.getElementById('siEmail').value.trim();
+  const pass = document.getElementById('siPass').value;
+  err.style.display = 'none';
+  if(!email || !pass){ err.textContent = 'Enter your email and password.'; err.style.display='block'; return; }
+  btn.disabled = true; btn.textContent = 'Signing in...';
+  try{
+    await signInWithEmailAndPassword(auth, email, pass);
+    // onAuthStateChanged below shows the account view.
+  }catch(e){
+    console.error('Sign in failed:', e);
+    err.textContent = 'Wrong email or password — try again.';
+    err.style.display = 'block';
+  }
+  btn.disabled = false; btn.textContent = 'Sign In';
+}
+document.getElementById('siBtn').addEventListener('click', signIn);
+document.getElementById('siPass').addEventListener('keydown', e=>{ if(e.key==='Enter') signIn(); });
+
+// ---------- Create account ----------
+async function signUp(){
+  const btn = document.getElementById('suBtn');
+  const err = document.getElementById('suErr');
+  const name = document.getElementById('suName').value.trim();
+  const email = document.getElementById('suEmail').value.trim();
+  const pass = document.getElementById('suPass').value;
+  err.style.display = 'none';
+  if(!name || !email || !pass){ err.textContent = 'Please fill in every field.'; err.style.display='block'; return; }
+  if(pass.length < 6){ err.textContent = 'Password must be at least 6 characters.'; err.style.display='block'; return; }
+  btn.disabled = true; btn.textContent = 'Creating account...';
+  try{
+    const cred = await createUserWithEmailAndPassword(auth, email, pass);
+    await updateProfile(cred.user, { displayName: name });
+    await setDoc(doc(db,'customers',cred.user.uid), {
+      name, email, createdAt: serverTimestamp()
+    });
+    // onAuthStateChanged below shows the account view.
+  }catch(e){
+    console.error('Sign up failed:', e);
+    err.textContent = e.code === 'auth/email-already-in-use'
+      ? 'An account with this email already exists — try signing in instead.'
+      : 'Could not create your account — please try again.';
+    err.style.display = 'block';
+  }
+  btn.disabled = false; btn.textContent = 'Create Account';
+}
+document.getElementById('suBtn').addEventListener('click', signUp);
+document.getElementById('suPass').addEventListener('keydown', e=>{ if(e.key==='Enter') signUp(); });
+
+// ---------- Logout ----------
+document.getElementById('logoutBtn').addEventListener('click', ()=>signOut(auth));
+
+// ---------- Auth state ----------
+onAuthStateChanged(auth, async (user)=>{
+  const authView = document.getElementById('authView');
+  const accountView = document.getElementById('accountView');
+  if(user){
+    authView.style.display = 'none';
+    accountView.style.display = 'block';
+    let name = user.displayName || '';
+    if(!name){
+      try{
+        const snap = await getDoc(doc(db,'customers',user.uid));
+        if(snap.exists()) name = snap.data().name || '';
+      }catch(e){ /* not fatal — the email still shows */ }
+    }
+    document.getElementById('accountName').textContent = name || 'Welcome back';
+    document.getElementById('accountEmail').textContent = user.email || '';
+    document.getElementById('accountAvatar').textContent = (name || user.email || '?').trim()[0].toUpperCase();
+  } else {
+    authView.style.display = 'block';
+    accountView.style.display = 'none';
+  }
+});
+</script>
+<script src="js/footer.js" defer></script>
+</body>
+</html>
