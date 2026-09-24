@@ -160,3 +160,7 @@ updateMode();
 const reelsTab = document.querySelector('.tab[data-panel="reelsPanel"]');
 if (reelsTab) reelsTab.addEventListener('click', loadReelsList);
 onAuthStateChanged(auth, (user) => { if (user) loadReelsList(); });
+
+// Load the Customers tab (js/admin-customers.js). Dynamic import so a problem
+// there can never break the Reels tab.
+import('./admin-customers.js').catch((e) => console.warn('Customers tab failed to load:', e));
