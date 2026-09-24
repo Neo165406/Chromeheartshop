@@ -119,6 +119,42 @@ import {
   onAuthStateChanged, signOut
 } from './js/firebase-config.js';
 
+// ---------- Friendly Firebase error messages ----------
+// Previously EVERY sign-in failure showed "Wrong email or password", which hid
+// real problems (provider disabled, unauthorized domain, network, rate limit).
+function authMessage(e, mode){
+  const code = (e && e.code) || '';
+  switch(code){
+    case 'auth/invalid-credential':
+    case 'auth/wrong-password':
+    case 'auth/user-not-found':
+    case 'auth/invalid-login-credentials':
+      return 'Wrong email or password — try again.';
+    case 'auth/invalid-email':
+      return 'That email address doesn\'t look right.';
+    case 'auth/user-disabled':
+      return 'This account has been disabled. Please contact us.';
+    case 'auth/too-many-requests':
+      return 'Too many attempts — please wait a few minutes and try again.';
+    case 'auth/network-request-failed':
+      return 'Network problem — check your connection and try again.';
+    case 'auth/email-already-in-use':
+      return 'An account with this email already exists — try signing in instead.';
+    case 'auth/weak-password':
+      return 'Password must be at least 6 characters.';
+    case 'auth/operation-not-allowed':
+      return 'Email/password sign-in is not enabled for this store yet. (Enable it in Firebase → Authentication → Sign-in method.)';
+    case 'auth/unauthorized-domain':
+      return 'This website\'s domain is not authorised for sign-in. (Add it in Firebase → Authentication → Settings → Authorized domains.)';
+    case 'auth/api-key-not-valid.-please-pass-a-valid-api-key.':
+    case 'auth/invalid-api-key':
+      return 'Sign-in is misconfigured (invalid API key).';
+    default:
+      return (mode === 'signup' ? 'Could not create your account' : 'Could not sign you in')
+        + (code ? ' (' + code + ')' : '') + ' — please try again.';
+  }
+}
+
 // ---------- Tabs ----------
 document.querySelectorAll('.tab').forEach(t=>{
   t.addEventListener('click', ()=>{
@@ -142,14 +178,15 @@ async function signIn(){
     await signInWithEmailAndPassword(auth, email, pass);
     // onAuthStateChanged below shows the account view.
   }catch(e){
-    console.error('Sign in failed:', e);
-    err.textContent = 'Wrong email or password — try again.';
+    console.error('Sign in failed:', e.code, e);
+    err.textContent = authMessage(e, 'signin');
     err.style.display = 'block';
   }
   btn.disabled = false; btn.textContent = 'Sign In';
 }
 document.getElementById('siBtn').addEventListener('click', signIn);
 document.getElementById('siPass').addEventListener('keydown', e=>{ if(e.key==='Enter') signIn(); });
+document.getElementById('siEmail').addEventListener('keydown', e=>{ if(e.key==='Enter') signIn(); });
 
 // ---------- Create account ----------
 async function signUp(){
@@ -164,16 +201,21 @@ async function signUp(){
   btn.disabled = true; btn.textContent = 'Creating account...';
   try{
     const cred = await createUserWithEmailAndPassword(auth, email, pass);
-    await updateProfile(cred.user, { displayName: name });
-    await setDoc(doc(db,'customers',cred.user.uid), {
-      name, email, createdAt: serverTimestamp()
-    });
-    // onAuthStateChanged below shows the account view.
+    // The account now exists. Profile/doc writes are best-effort so a failure
+    // here can't make a successfully created account look like it failed.
+    try{ await updateProfile(cred.user, { displayName: name }); }
+    catch(e){ console.warn('updateProfile failed:', e); }
+    try{
+      await setDoc(doc(db,'customers',cred.user.uid), {
+        name, email, createdAt: serverTimestamp()
+      });
+    }catch(e){ console.warn('Saving customer profile failed:', e); }
+    // Reflect the name immediately (onAuthStateChanged may have fired before updateProfile finished).
+    document.getElementById('accountName').textContent = name;
+    document.getElementById('accountAvatar').textContent = name.trim()[0].toUpperCase();
   }catch(e){
-    console.error('Sign up failed:', e);
-    err.textContent = e.code === 'auth/email-already-in-use'
-      ? 'An account with this email already exists — try signing in instead.'
-      : 'Could not create your account — please try again.';
+    console.error('Sign up failed:', e.code, e);
+    err.textContent = authMessage(e, 'signup');
     err.style.display = 'block';
   }
   btn.disabled = false; btn.textContent = 'Create Account';
