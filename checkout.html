@@ -86,6 +86,38 @@
   .confirm-icon svg{width:26px;height:26px;color:var(--silver-bright);}
   .link-btn{display:inline-block;padding:13px 26px;border:1px solid var(--silver-deep);color:var(--silver-bright);border-radius:var(--radius);font-size:13px;font-weight:600;}
 
+  /* ---------- Invoice (shown after an order is placed) ---------- */
+  .invoice{
+    text-align:left;max-width:420px;margin:26px auto 0;padding:22px;
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  }
+  .inv-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--line);}
+  .inv-logo{font-family:'Fraunces',serif;font-size:16px;letter-spacing:0.1em;color:var(--silver-bright);}
+  .inv-sub{font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.1em;margin-top:2px;}
+  .inv-meta{text-align:right;font-size:12px;color:var(--text-dim);}
+  .inv-meta b{color:var(--silver-bright);}
+  .inv-customer{font-size:12.5px;color:var(--text-dim);margin-bottom:16px;line-height:1.6;}
+  .inv-customer b{color:var(--text);}
+  .inv-table{width:100%;border-collapse:collapse;font-size:12.5px;margin-bottom:14px;}
+  .inv-table th{text-align:left;font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);padding-bottom:8px;border-bottom:1px solid var(--line);}
+  .inv-table td{padding:8px 0;border-bottom:1px solid var(--line);color:var(--text);}
+  .inv-totals{font-size:12.5px;color:var(--text-dim);}
+  .inv-totals div{display:flex;justify-content:space-between;padding:4px 0;}
+  .inv-grand{font-size:14px;font-weight:700;color:var(--silver-bright);padding-top:8px;margin-top:6px;border-top:1px solid var(--line);}
+  .inv-note{font-size:11.5px;color:var(--text-dim);margin-top:14px;}
+  #printInvoiceBtn{width:100%;margin-top:16px;padding:12px 0;text-align:center;font-size:12.5px;font-weight:600;color:var(--silver-bright);background:none;border:1px solid var(--silver-deep);border-radius:var(--radius);cursor:pointer;}
+
+  @media print{
+    body *{visibility:hidden;}
+    .invoice, .invoice *{visibility:visible;}
+    .invoice{position:absolute;left:0;top:0;width:100%;max-width:none;margin:0;border:none;background:#fff;color:#111;padding:24px;}
+    .inv-logo, .inv-meta b, .inv-table td{color:#111;}
+    .inv-sub, .inv-meta, .inv-customer, .inv-totals, .inv-table th, .inv-note{color:#444;}
+    .inv-table th, .inv-table td{border-color:#ccc;}
+    .inv-grand{color:#111;border-color:#999;}
+    #printInvoiceBtn{display:none;}
+  }
+
   /* ---------- Interactive glow (Buy Now & other buttons) ---------- */
   .place-btn,.link-btn,#couponApplyBtn{
     transition:box-shadow 0.25s ease, filter 0.25s ease;
@@ -124,8 +156,8 @@
 </div>
 
 <script type="module">
-let cartApi = null;
 let fbApi = null;
+let cartApi = null;
 let currentCart = [];
 
 function money(n){ return `BDT ${n}`; }
@@ -138,9 +170,87 @@ function renderEmpty(){
     </div>`;
 }
 
+// Lazily imports firebase-config.js once and reuses the same handle for
+// every Firestore call on this page (coupons, delivery settings, order
+// number, order logging).
+async function ensureFbApi(){
+  if(!fbApi){
+    const fb = await import('./js/firebase-config.js');
+    fbApi = {
+      db: fb.db, collection: fb.collection, addDoc: fb.addDoc, serverTimestamp: fb.serverTimestamp,
+      doc: fb.doc, getDoc: fb.getDoc, setDoc: fb.setDoc, runTransaction: fb.runTransaction
+    };
+  }
+  return fbApi;
+}
+
+// Mints the next friendly, sequential invoice number (FN1000, FN1001, ...)
+// from a shared Firestore counter. If that fails for any reason (offline,
+// rules not yet updated, etc.) we fall back to a still-numeric FN + timestamp
+// code so an order is never blocked on this.
+async function generateOrderNumber(){
+  try{
+    const fb = await ensureFbApi();
+    if(!fb.runTransaction) throw new Error('runTransaction unavailable');
+    const counterRef = fb.doc(fb.db, 'counters', 'orderNumber');
+    const next = await fb.runTransaction(fb.db, async (tx)=>{
+      const snap = await tx.get(counterRef);
+      const n = (snap.exists && snap.exists() && Number(snap.data().next)) ? Number(snap.data().next) : 1000;
+      tx.set(counterRef, { next: n + 1 }, { merge: true });
+      return n;
+    });
+    return 'FN' + next;
+  }catch(e){
+    console.warn('Sequential order number unavailable, using fallback:', e);
+    return 'FN' + Date.now().toString().slice(-8);
+  }
+}
+
+function invoiceMarkup(inv){
+  const itemsRows = inv.items.map(c=>`
+    <tr>
+      <td>${c.name}</td>
+      <td style="text-align:center;">${c.qty}</td>
+      <td style="text-align:right;">${money(c.price)}</td>
+      <td style="text-align:right;">${money(c.price*c.qty)}</td>
+    </tr>`).join('');
+  return `
+    <div class="invoice" id="invoiceBlock">
+      <div class="inv-head">
+        <div>
+          <div class="inv-logo">FASHIONISTA</div>
+          <div class="inv-sub">Invoice</div>
+        </div>
+        <div class="inv-meta">
+          <div><b>Order #${inv.orderNumber}</b></div>
+          <div>${inv.date}</div>
+        </div>
+      </div>
+      <div class="inv-customer">
+        <div><b>${inv.name}</b></div>
+        <div>${inv.phone}</div>
+        <div>${inv.address}</div>
+        ${inv.note ? `<div>Note: ${inv.note}</div>` : ''}
+      </div>
+      <table class="inv-table">
+        <thead><tr><th>Item</th><th style="text-align:center;">Qty</th><th style="text-align:right;">Price</th><th style="text-align:right;">Total</th></tr></thead>
+        <tbody>${itemsRows}</tbody>
+      </table>
+      <div class="inv-totals">
+        <div><span>Subtotal</span><span>${money(inv.subtotal)}</span></div>
+        <div><span>Delivery (${inv.deliveryZone})</span><span>${money(inv.deliveryCharge)}</span></div>
+        ${inv.discount > 0 ? `<div><span>Discount${inv.couponCode?` (${inv.couponCode})`:''}</span><span>-${money(inv.discount)}</span></div>` : ''}
+        <div class="inv-grand"><span>Total</span><span>${money(inv.total)}</span></div>
+      </div>
+      <p class="inv-note">Cash on delivery — pay when your order arrives.</p>
+      <button type="button" id="printInvoiceBtn">🖨 Print / save invoice</button>
+    </div>`;
+}
+
 // waUrl opens WhatsApp with the order details pre-filled, so the buyer
-// only has to tap "Send" to message the shop.
-function renderConfirm(waUrl){
+// only has to tap "Send" to message the shop. inv (optional) is the invoice
+// to render below the confirmation message.
+function renderConfirm(waUrl, inv){
   document.getElementById('root').innerHTML = `
     <div class="confirm-state">
       <div class="confirm-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></div>
@@ -148,7 +258,10 @@ function renderConfirm(waUrl){
       <p>Thank you! Please tap the button below and send your order on WhatsApp so we can confirm it. Cash on delivery.</p>
       ${waUrl ? `<a class="place-btn" href="${waUrl}" target="_blank" rel="noopener" style="display:block;text-decoration:none;margin-bottom:16px;">Send order on WhatsApp</a>` : ''}
       <a class="link-btn" href="shop.html">Continue shopping →</a>
+      ${inv ? invoiceMarkup(inv) : ''}
     </div>`;
+  const printBtn = document.getElementById('printInvoiceBtn');
+  if(printBtn) printBtn.addEventListener('click', ()=>window.print());
 }
 
 let DELIVERY_INSIDE_DHAKA = 70;
@@ -330,11 +443,8 @@ async function applyCoupon(){
   msg.style.color = 'var(--text-dim)';
   msg.textContent = 'Checking code...';
   try{
-    if(!fbApi){
-      const fb = await import('./js/firebase-config.js');
-      fbApi = { db: fb.db, collection: fb.collection, addDoc: fb.addDoc, serverTimestamp: fb.serverTimestamp, doc: fb.doc, getDoc: fb.getDoc };
-    }
-    const snap = await fbApi.getDoc(fbApi.doc(fbApi.db,'coupons',code));
+    const fb = await ensureFbApi();
+    const snap = await fb.getDoc(fb.doc(fb.db,'coupons',code));
     if(snap.exists && snap.exists()){
       const d = snap.data();
       appliedCoupon = { code, type: d.type, value: d.value };
@@ -411,15 +521,18 @@ async function placeOrder(){
   btn.disabled = true;
   status.textContent = 'Placing your order...';
 
+  // A friendly, sequential invoice number (e.g. FN1000) — minted first so it
+  // can be stored with the order, shown on WhatsApp, and printed on the
+  // invoice below, even if the Firestore order-logging step fails.
+  const orderNumber = await generateOrderNumber();
+
   // Try to log the order to Firestore. If this fails for any reason, we
   // still continue so the buyer can send the order on WhatsApp.
   let orderId = '';
   try{
-    if(!fbApi){
-      const fb = await import('./js/firebase-config.js');
-      fbApi = { db: fb.db, collection: fb.collection, addDoc: fb.addDoc, serverTimestamp: fb.serverTimestamp };
-    }
-    const orderRef = await fbApi.addDoc(fbApi.collection(fbApi.db,'orders'), {
+    const fb = await ensureFbApi();
+    const orderRef = await fb.addDoc(fb.collection(fb.db,'orders'), {
+      orderNumber,
       customerName: details.name,
       phone: details.phone,
       address: details.address,
@@ -432,7 +545,7 @@ async function placeOrder(){
       discount,
       total: grandTotal,
       status: 'pending',
-      createdAt: fbApi.serverTimestamp()
+      createdAt: fb.serverTimestamp()
     });
     orderId = orderRef.id;
   }catch(e){
@@ -448,6 +561,7 @@ async function placeOrder(){
       keepalive: true,
       body: JSON.stringify({
         orderId,
+        orderNumber,
         customerName: details.name,
         phone: details.phone,
         address: details.address,
@@ -466,11 +580,22 @@ async function placeOrder(){
   // WhatsApp message for the buyer to send to the shop.
   const lines = cart.map(c=>`• ${c.name} x${c.qty} — BDT ${c.price*c.qty}`).join('\n');
   const discountLine = discount > 0 ? `\nDiscount (${appliedCoupon.code}): -BDT ${discount}` : '';
-  const msg = `Hi! I'd like to place an order:\n\n${orderId ? `Order ID: ${orderId}\n\n` : ''}${lines}\n\nSubtotal: BDT ${subtotal}\nDelivery (${deliveryZone}): BDT ${deliveryCharge}${discountLine}\nTotal: BDT ${grandTotal}\n\nName: ${details.name}\nPhone: ${details.phone}\nAddress: ${details.address}${details.note ? `\nNote: ${details.note}` : ''}`;
+  const msg = `Hi! I'd like to place an order:\n\nOrder #: ${orderNumber}\n\n${lines}\n\nSubtotal: BDT ${subtotal}\nDelivery (${deliveryZone}): BDT ${deliveryCharge}${discountLine}\nTotal: BDT ${grandTotal}\n\nName: ${details.name}\nPhone: ${details.phone}\nAddress: ${details.address}${details.note ? `\nNote: ${details.note}` : ''}`;
   const waUrl = `https://wa.me/8801759406602?text=${encodeURIComponent(msg)}`;
 
+  const now = new Date();
+  const invoice = {
+    orderNumber,
+    date: now.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }) + ' at ' + now.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' }),
+    items: cart,
+    subtotal, deliveryZone, deliveryCharge, discount,
+    couponCode: appliedCoupon ? appliedCoupon.code : '',
+    total: grandTotal,
+    name: details.name, phone: details.phone, address: details.address, note: details.note
+  };
+
   if(cartApi) cartApi.clearCart();
-  renderConfirm(waUrl);
+  renderConfirm(waUrl, invoice);
   // Try to open WhatsApp right away. If the browser blocks the popup, the
   // "Send order on WhatsApp" button on the confirmation screen does the same.
   try{ window.open(waUrl, '_blank'); }catch(e){}
@@ -478,11 +603,8 @@ async function placeOrder(){
 
 async function loadDeliverySettings(){
   try{
-    if(!fbApi){
-      const fb = await import('./js/firebase-config.js');
-      fbApi = { db: fb.db, collection: fb.collection, addDoc: fb.addDoc, serverTimestamp: fb.serverTimestamp, doc: fb.doc, getDoc: fb.getDoc };
-    }
-    const fetchPromise = fbApi.getDoc(fbApi.doc(fbApi.db,'settings','delivery'));
+    const fb = await ensureFbApi();
+    const fetchPromise = fb.getDoc(fb.doc(fb.db,'settings','delivery'));
     const timeout = new Promise(resolve => setTimeout(()=>resolve(null), 4000));
     const snap = await Promise.race([fetchPromise, timeout]);
     if(snap && snap.exists && snap.exists()){
