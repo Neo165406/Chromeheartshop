@@ -451,7 +451,7 @@ categoryTree.forEach((cat,i)=>{
 async function loadSlides(){
   try{
     const fetchPromise = getDocs(collection(db,'slides'));
-    const timeout = new Promise(resolve => setTimeout(()=>resolve(null), 6000));
+    const timeout = new Promise(resolve => setTimeout(()=>resolve(null), 10000));
     const snap = await Promise.race([fetchPromise, timeout]);
     if(!snap || snap.empty) return [];
     return snap.docs.map(d=>d.data()).sort((a,b)=>(a.order||0)-(b.order||0));
@@ -513,19 +513,20 @@ function iconFor(type){
 async function loadProducts(){
   try{
     const fetchPromise = getDocs(collection(db,'products'));
-    const timeout = new Promise(resolve => setTimeout(()=>resolve(null), 6000));
+    const timeout = new Promise((_, reject) => setTimeout(()=>reject(new Error('Products load timed out')), 10000));
     const snap = await Promise.race([fetchPromise, timeout]);
-    if(!snap || snap.empty) return [];
-    return snap.docs.map(d=>({id:d.id, ...d.data()}));
+    return { items: snap.empty ? [] : snap.docs.map(d=>({id:d.id, ...d.data()})), failed:false };
   }catch(e){
     console.error('Products load failed:', e);
-    return [];
+    return { items: [], failed:true };
   }
 }
-function renderCards(id, items){
+function renderCards(id, items, failed){
   const grid = document.getElementById(id);
   if(!items.length){
-    grid.innerHTML = '<p style="grid-column:1/-1;font-size:12.5px;color:var(--text-dim);padding:20px 0;">No products here yet — check back soon.</p>';
+    grid.innerHTML = failed
+      ? '<p style="grid-column:1/-1;font-size:12.5px;color:var(--text-dim);padding:20px 0;">Having trouble loading products — <a href="javascript:location.reload()" style="color:var(--silver-bright);">refresh</a> to try again.</p>'
+      : '<p style="grid-column:1/-1;font-size:12.5px;color:var(--text-dim);padding:20px 0;">No products here yet — check back soon.</p>';
     return;
   }
   items.forEach((p,i)=>{
@@ -562,14 +563,14 @@ function renderCards(id, items){
   });
 }
 async function initProducts(){
-  const all = await loadProducts();
+  const { items: all, failed } = await loadProducts();
   // Featured Pieces: admin-selected via the "Show in Featured Pieces" checkbox.
   // Falls back to the first few real products if none are marked featured yet —
   // never to placeholder/demo items.
   const featured = all.filter(p=>p.featured).slice(0,4);
-  renderCards('arrivalsGrid', featured.length ? featured : all.slice(0,4));
-  renderCards('glassesGrid', all.filter(p=>p.category==="Glasses").slice(0,4));
-  renderCards('newInRow', all.slice(0,8));
+  renderCards('arrivalsGrid', featured.length ? featured : all.slice(0,4), failed);
+  renderCards('glassesGrid', all.filter(p=>p.category==="Glasses").slice(0,4), failed);
+  renderCards('newInRow', all.slice(0,8), failed);
 }
 
 /* ---------- Reels — managed from the admin dashboard (Reels tab) ---------- */
