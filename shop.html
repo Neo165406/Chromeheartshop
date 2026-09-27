@@ -310,13 +310,12 @@ function iconFor(type){
 async function loadAllProducts(){
   try{
     const fetchPromise = getDocs(collection(db,'products'));
-    const timeout = new Promise(resolve => setTimeout(()=>resolve(null), 6000));
+    const timeout = new Promise((_, reject) => setTimeout(()=>reject(new Error('Products load timed out')), 10000));
     const snap = await Promise.race([fetchPromise, timeout]);
-    if(!snap || snap.empty) return [];
-    return snap.docs.map(d=>({id:d.id, ...d.data()}));
+    return { items: snap.empty ? [] : snap.docs.map(d=>({id:d.id, ...d.data()})), failed:false };
   }catch(e){
     console.error('Products load failed:', e);
-    return [];
+    return { items: [], failed:true };
   }
 }
 
@@ -372,12 +371,16 @@ function initScrollReveal(){
 
 let allProducts = [];
 let baseFiltered = []; // the category-scoped list from ?category= in the URL, before drawer filters
+let shopLoadFailed = false; // true only when the products fetch itself failed/timed out — never for a genuinely empty category
 
 function renderShopGrid(list){
   const grid = document.getElementById('shopGrid');
   const empty = document.getElementById('emptyState');
   if(list.length === 0){
     grid.innerHTML = '';
+    empty.textContent = shopLoadFailed
+      ? 'Having trouble loading products — refresh to try again.'
+      : 'No products in this category yet — check back soon.';
     empty.style.display = 'block';
   } else {
     empty.style.display = 'none';
@@ -460,8 +463,9 @@ async function init(){
     ? `Everything in ${activeCategory}`
     : 'Every FASHIONISTA piece in one place';
 
-  const all = await loadAllProducts();
+  const { items: all, failed } = await loadAllProducts();
   allProducts = all;
+  shopLoadFailed = failed;
   let filtered;
   if(activeCategory === 'New In'){
     filtered = all.filter(p=>p.featured).length ? all.filter(p=>p.featured) : all.slice(0,8);
