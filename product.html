@@ -185,7 +185,7 @@
 // Firebase/cart are loaded dynamically (not as static imports) so that if
 // either module fails to load — wrong path, network hiccup, whatever —
 // it's a catchable error instead of silently killing this entire script.
-let fbApi = null;   // { db, collection, getDocs }
+let fbApi = null;   // { db, collection, getDocs, getDoc, doc, query, where, limit }
 let cartApi = null; // { addToCart, buyNowWhatsApp, renderCartDrawer, updateCartBadge, checkoutWhatsApp, showToast }
 let favApi = null;  // { isFavorite, toggleFavorite }
 let galleryImages = [];
@@ -405,16 +405,45 @@ function iconFor(type){
   return crossSVG();
 }
 
-async function loadAllProducts(){
-  if(!fbApi) return [];
+// ---------- Load ONE product by ID (fast + light — no need to pull the
+// whole catalog just to show one item). Retries once before giving up, so
+// a slow-but-successful Firestore read is never mistaken for a missing
+// product. Returns { product, failed }: failed=true means we genuinely
+// couldn't tell (network/timeout), product=null + failed=false means
+// Firestore positively confirmed there's no such document. ----------
+async function fetchProductOnce(id){
+  const snap = await fbApi.getDoc(fbApi.doc(fbApi.db,'products', id));
+  return snap.exists() ? { id: snap.id, ...snap.data() } : null;
+}
+async function loadProductById(id){
+  if(!fbApi || !id) return { product:null, failed:true };
   try{
-    const fetchPromise = fbApi.getDocs(fbApi.collection(fbApi.db,'products'));
-    const timeout = new Promise(resolve => setTimeout(()=>resolve(null), 6000));
-    const snap = await Promise.race([fetchPromise, timeout]);
-    if(!snap || snap.empty) return [];
-    return snap.docs.map(d=>({id:d.id, ...d.data()}));
+    return { product: await fetchProductOnce(id), failed:false };
   }catch(e){
-    console.error('Products load failed:', e);
+    console.error('Product load failed, retrying once:', e);
+    try{
+      return { product: await fetchProductOnce(id), failed:false };
+    }catch(e2){
+      console.error('Product load failed on retry:', e2);
+      return { product:null, failed:true };
+    }
+  }
+}
+
+// ---------- "Similar products" — a small, targeted query (same category,
+// excludes this product) instead of pulling every product in the store. ----------
+async function loadSimilarProducts(category, excludeId){
+  if(!fbApi || !category) return [];
+  try{
+    const q = fbApi.query(
+      fbApi.collection(fbApi.db,'products'),
+      fbApi.where('category','==',category),
+      fbApi.limit(5)
+    );
+    const snap = await fbApi.getDocs(q);
+    return snap.docs.map(d=>({id:d.id, ...d.data()})).filter(p=>p.id!==excludeId).slice(0,4);
+  }catch(e){
+    console.error('Similar products load failed:', e);
     return [];
   }
 }
@@ -435,11 +464,9 @@ function miniCard(p,i){
 
 let qty = 1;
 let currentProduct = null;
-let currentAll = [];
 
-function renderProduct(product, all){
+function renderProduct(product, similar){
   currentProduct = product;
-  currentAll = all;
   const root = document.getElementById('productRoot');
 
   updateSEOTags(product);
@@ -551,7 +578,6 @@ function renderProduct(product, all){
     }
   }
 
-  const similar = all.filter(p=>p.category===product.category && p.id!==product.id).slice(0,4);
   document.getElementById('similarGrid').innerHTML = similar.map((p,i)=>miniCard(p,i)).join('');
 
   if(cartApi){ cartApi.updateCartBadge(); cartApi.renderCartDrawer(); }
@@ -582,7 +608,10 @@ async function init(){
       import('./js/firebase-config.js'),
       import('./js/cart.js')
     ]);
-    fbApi = { db: fb.db, collection: fb.collection, getDocs: fb.getDocs };
+    fbApi = {
+      db: fb.db, collection: fb.collection, getDocs: fb.getDocs,
+      getDoc: fb.getDoc, doc: fb.doc, query: fb.query, where: fb.where, limit: fb.limit
+    };
     cartApi = cart;
     cartApi.updateCartBadge();
     cartApi.renderCartDrawer();
@@ -590,19 +619,37 @@ async function init(){
     console.error('Firebase/cart modules failed to load:', e);
   }
 
-  const all = await loadAllProducts();
-  const product = all.find(p=>p.id===id);
-  if(product){
-    renderProduct(product, all);
-  } else {
+  if(!id){
     root.innerHTML = `<p class="not-found">Product not found. <a href="shop.html" style="color:var(--silver-bright);">Back to shop →</a></p>`;
+    const robotsMeta = document.querySelector('meta[name="robots"]');
+    if(robotsMeta) robotsMeta.setAttribute('content','noindex, follow');
+    return;
+  }
+
+  const { product, failed } = await loadProductById(id);
+
+  if(product){
+    const similar = await loadSimilarProducts(product.category, product.id);
+    renderProduct(product, similar);
+  } else if(failed){
+    // Couldn't confirm either way (network/Firestore hiccup) — never tell a
+    // visitor or a crawler the product is gone just because a request was
+    // slow. Offer a retry and leave the default "index, follow" alone.
+    root.innerHTML = `<p class="not-found">Having trouble loading this product. <a href="javascript:location.reload()" style="color:var(--silver-bright);">Try again</a>, or <a href="shop.html" style="color:var(--silver-bright);">back to shop →</a></p>`;
+  } else {
+    // Firestore positively confirmed there's no such document — this really
+    // is a dead link, so tell crawlers not to index it instead of leaving
+    // the default "index, follow" on an empty page.
+    root.innerHTML = `<p class="not-found">Product not found. <a href="shop.html" style="color:var(--silver-bright);">Back to shop →</a></p>`;
+    const robotsMeta = document.querySelector('meta[name="robots"]');
+    if(robotsMeta) robotsMeta.setAttribute('content','noindex, follow');
   }
 }
 init().catch(e=>{
   console.error('Product page failed to load:', e);
   const root = document.getElementById('productRoot');
   if(!currentProduct){
-    root.innerHTML = `<p class="not-found">Something went wrong loading this product. <a href="shop.html" style="color:var(--silver-bright);">Back to shop →</a></p>`;
+    root.innerHTML = `<p class="not-found">Something went wrong loading this product. <a href="javascript:location.reload()" style="color:var(--silver-bright);">Try again</a>, or <a href="shop.html" style="color:var(--silver-bright);">back to shop →</a></p>`;
   }
 });
 </script>
