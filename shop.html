@@ -283,7 +283,8 @@ window.toggleFilter = function(open){
 const categoryTree = [
   {name:"New In", subs:[]},
   {name:"Glasses", subs:["Rimless","Aviators","Round"]},
-  {name:"Accessories", subs:["Bandana","Belts","Bracelets","Chain-Necklaces","Earrings","Fake Piercings","Keychains","Ring Watch","Rings","Sunglasses","Tattoo","Teeth-Grillz","Wallet","Wallet Chains","Watches"]}
+  {name:"Accessories", subs:["Bandana","Belts","Bracelets","Chain-Necklaces","Earrings","Fake Piercings","Keychains","Ring Watch","Rings","Sunglasses","Tattoo","Teeth-Grillz","Wallet","Wallet Chains","Watches"]},
+  {name:"Clothing", subs:["T-shirt"]}
 ];
 const catTree = document.getElementById('catTree');
 categoryTree.forEach(cat=>{
@@ -444,7 +445,7 @@ document.getElementById('clearFilterBtn').addEventListener('click', clearDrawerF
 async function init(){
   const params = new URLSearchParams(window.location.search);
   const activeCategory = params.get('category');
-  const categories = ["New In","Glasses","Accessories"];
+  const categories = ["New In","Glasses","Accessories","Clothing"];
 
   const filterBar = document.getElementById('catFilters');
   filterBar.innerHTML = `<button class="cat ${!activeCategory?'active':''}" data-cat="">All</button>` +
