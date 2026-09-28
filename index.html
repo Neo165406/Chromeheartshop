@@ -362,6 +362,11 @@
   <div class="grid" id="glassesGrid"></div>
 </section>
 
+<section class="collection" id="clothing">
+  <div class="section-head"><h2 class="display reveal from-left">Clothing</h2><a class="viewall" href="shop.html?category=Clothing">View all →</a></div>
+  <div class="grid" id="clothingGrid"></div>
+</section>
+
 <section class="spin-section" id="spinSection" aria-hidden="true">
   <img id="spinImg" alt="">
 </section>
@@ -572,6 +577,7 @@ async function initProducts(){
   const featured = all.filter(p=>p.featured).slice(0,4);
   renderCards('arrivalsGrid', featured.length ? featured : all.slice(0,4), failed);
   renderCards('glassesGrid', all.filter(p=>p.category==="Glasses").slice(0,4), failed);
+  renderCards('clothingGrid', all.filter(p=>p.category==="Clothing").slice(0,4), failed);
   renderCards('newInRow', all.slice(0,8), failed);
 }
 
@@ -720,8 +726,8 @@ function initScrollReveal(){
 }
 Promise.all([initHero(), initProducts(), initCollage(), initReels()]).then(()=>{
   initScrollReveal();
-  ['arrivalsGrid','glassesGrid','newInRow'].forEach(wireAddToCart);
-  ['arrivalsGrid','glassesGrid','newInRow'].forEach(id=>{ wireFavButtons(id); refreshFavButtons(id); });
+  ['arrivalsGrid','glassesGrid','clothingGrid','newInRow'].forEach(wireAddToCart);
+  ['arrivalsGrid','glassesGrid','clothingGrid','newInRow'].forEach(id=>{ wireFavButtons(id); refreshFavButtons(id); });
 }).catch(e=>console.error('Homepage failed to load:', e));
 updateCartBadge();
 renderCartDrawer();
