@@ -491,8 +491,8 @@ async function initHero(){
         <div class="stage-haze"></div>
         <div class="sglow"></div>
         <div class="slide-icon">${s.imageUrl ? '' : slideIcon(s.icon||'cross')}</div>
-        <h1 class="display">${s.title}</h1>
-        <p>${s.text}</p>
+        ${s.title ? `<h1 class="display">${s.title}</h1>` : ''}
+        ${s.text ? `<p>${s.text}</p>` : ''}
       </div>`;
     dotsEl.innerHTML += `<span class="dot${i===0?' active':''}" data-i="${i}"></span>`;
   });
