@@ -95,7 +95,9 @@
   .cats::-webkit-scrollbar{display:none;}
   .cat{flex:0 0 auto;padding:9px 16px;font-size:12.5px;border:1px solid var(--line);border-radius:20px;color:var(--text-dim);white-space:nowrap;background:none;cursor:pointer;}
   .cat.active{color:var(--bg);background:var(--silver-bright);border-color:var(--silver-bright);font-weight:600;}
-  .cat-filter-btn{flex:0 0 auto;width:34px;height:34px;border:1px solid var(--line);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--silver);background:none;cursor:pointer;margin-left:auto;}
+  /* Filter button stays pinned to the right edge while the category pills scroll underneath it */
+  .cat-filter-btn{flex:0 0 auto;width:34px;height:34px;border:1px solid var(--line);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--silver);background:var(--bg);cursor:pointer;margin-left:auto;position:sticky;right:22px;z-index:2;}
+  .cat-filter-btn::before{content:"";position:absolute;right:100%;top:-2px;bottom:-2px;width:16px;background:linear-gradient(to left,var(--bg),rgba(10,11,13,0));pointer-events:none;}
   .cat-filter-btn svg{width:16px;height:16px;}
 
   /* ---------- FILTER DRAWER ---------- */
