@@ -342,9 +342,10 @@
   <div class="dots" id="dots"></div>
 </div>
 
-<div class="cats">
-  <a class="cat active" href="shop.html?category=New">New In</a>
-  <a class="cat active" href="shop.html?category=Glasses">Glasses</a>
+<!-- Category buttons: the links below are a fallback; initCategories() replaces them with the categories saved in admin. -->
+<div class="cats" id="homeCats">
+  <a class="cat active" href="shop.html?category=New%20In">New In</a>
+  <a class="cat" href="shop.html?category=Glasses">Glasses</a>
   <a class="cat" href="shop.html?category=Accessories">Accessories</a>
   <a class="cat" href="shop.html?category=Clothing">Clothing</a>
   <a class="cat-filter-btn" href="shop.html?filter=1" aria-label="Filter">
@@ -424,30 +425,30 @@ window.toggleCart = function(open){
 };
 window.checkoutCart = function(){ window.location.href = 'checkout.html'; };
 
-/* ---------- Category tree (will map to admin-managed Categories later) ---------- */
-const categoryTree = [
-  {name:"New In", subs:[]},
-  {name:"Glasses", subs:["Rimless","Aviators","Round"]},
-  {name:"Accessories", subs:["Bandana","Belts","Bracelets","Chain-Necklaces","Earrings","Fake Piercings","Keychains","Ring Watch","Rings","Sunglasses","Tattoo","Teeth-Grillz","Wallet","Wallet Chains","Watches"]},
-  {name:"Clothing", subs:["T-shirt"]}
-];
-const catTree = document.getElementById('catTree');
-categoryTree.forEach((cat,i)=>{
-  const row = document.createElement('div');
-  row.className = 'cat-row';
-  row.style.cursor = 'pointer';
-  row.innerHTML = `<span class="name">${cat.name}</span>${cat.subs.length ? '<span class="chev"></span>' : ''}`;
-  catTree.appendChild(row);
-  const subs = document.createElement('div');
-  subs.className = 'subs';
-  subs.innerHTML = cat.subs.map(s=>`<a href="shop.html?category=${encodeURIComponent(cat.name)}">${s}</a>`).join('');
-  catTree.appendChild(subs);
-  if(cat.subs.length){
-    row.addEventListener('click',()=>row.classList.toggle('open'));
-  } else {
-    row.addEventListener('click',()=>{ window.location.href = `shop.html?category=${encodeURIComponent(cat.name)}`; });
+/* ---------- Categories — managed from the admin dashboard (Categories tab) ----------
+   Fills the slide-out menu (with subcategories) and the category buttons under the hero.
+   Loaded with a dynamic import so a problem here can never stop the rest of the homepage. */
+async function initCategories(){
+  try{
+    const { loadCategories, renderCategoryTree } = await import('./js/categories.js');
+    const cats = await loadCategories();
+    renderCategoryTree(document.getElementById('catTree'), cats);
+
+    const strip = document.getElementById('homeCats');
+    const filterBtn = strip.querySelector('.cat-filter-btn');
+    strip.querySelectorAll('a.cat').forEach(a=>a.remove());
+    ['New In', ...cats.map(c=>c.name)].forEach(name=>{
+      const a = document.createElement('a');
+      a.className = 'cat' + (name === 'New In' ? ' active' : '');
+      a.href = `shop.html?category=${encodeURIComponent(name)}`;
+      a.textContent = name;
+      strip.insertBefore(a, filterBtn);
+    });
+  }catch(e){
+    console.error('Categories failed to load:', e);
   }
-});
+}
+initCategories();
 
 /* ---------- Hero slider — loads from Firestore "slides" collection (admin-managed only, no placeholder fallback) ---------- */
 async function loadSlides(){
