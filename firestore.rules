@@ -29,6 +29,12 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Categories & subcategories (menu, shop filters): anyone can read, admin writes
+    match /categories/{doc} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
     // Delivery settings: checkout reads, admin writes
     match /settings/{doc} {
       allow read: if true;
