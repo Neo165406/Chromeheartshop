@@ -134,7 +134,6 @@
   <div class="panel" id="slidesPanel">
     <div class="card-form">
       <h3>Add hero banner</h3>
-      <div class="field"><label>Title</label><input id="sTitle" placeholder="e.g. Fresh weekly drops"></div>
       <div class="field"><label>Subtext</label><textarea id="sText" placeholder="One or two lines under the title"></textarea></div>
       <div class="row2">
         <div class="field"><label>Button label</label><input id="sCta" placeholder="Shop Now" value="Shop Now"></div>
@@ -373,15 +372,13 @@ document.querySelectorAll('.tab').forEach(t=>{
 window.addSlide = async function(){
   const btn = document.getElementById('sSaveBtn');
   const status = document.getElementById('sStatus');
-  const title = document.getElementById('sTitle').value.trim();
-  if(!title){ status.textContent = 'Title is required.'; return; }
   btn.disabled = true; status.textContent = 'Saving...';
   try{
     let imageUrl = null;
     const file = document.getElementById('sImage').files[0];
     if(file){ status.textContent = 'Uploading image...'; imageUrl = await uploadToImgbb(file); }
     await addDoc(collection(db,'slides'), {
-      title,
+      title: '',
       text: document.getElementById('sText').value.trim(),
       cta: document.getElementById('sCta').value.trim() || 'Shop Now',
       href: document.getElementById('sHref').value.trim() || '#',
@@ -390,7 +387,7 @@ window.addSlide = async function(){
       createdAt: serverTimestamp()
     });
     status.textContent = 'Saved.';
-    ['sTitle','sText','sCta','sHref','sOrder'].forEach(id=>document.getElementById(id).value='');
+    ['sText','sCta','sHref','sOrder'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('sImage').value='';
     loadSlidesList();
     loadDashboardStats();
@@ -411,7 +408,7 @@ async function loadSlidesList(){
     el.className = 'item';
     el.innerHTML = `
       ${s.imageUrl ? `<img src="${s.imageUrl}">` : '<div style="width:48px;height:48px;background:var(--bg-alt);border-radius:4px;"></div>'}
-      <div class="info"><h4>${s.title}</h4><p>order: ${s.order||0} · ${s.cta||''}</p></div>
+      <div class="info"><h4>${s.title || s.text || 'Hero banner'}</h4><p>order: ${s.order||0} · ${s.cta||''}</p></div>
       <button class="del" data-id="${d.id}">Delete</button>`;
     el.querySelector('.del').addEventListener('click', async ()=>{
       await deleteDoc(doc(db,'slides',d.id));
