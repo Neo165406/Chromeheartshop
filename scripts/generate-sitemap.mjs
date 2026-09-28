@@ -31,6 +31,7 @@ const STATIC_PAGES = [
   { loc: "/shop.html", changefreq: "daily", priority: "0.9" },
   { loc: "/shop.html?category=Glasses", changefreq: "daily", priority: "0.7" },
   { loc: "/shop.html?category=Accessories", changefreq: "daily", priority: "0.7" },
+  { loc: "/shop.html?category=Clothing", changefreq: "daily", priority: "0.7" },
   { loc: "/contact.html", changefreq: "monthly", priority: "0.5" },
   { loc: "/shipping.html", changefreq: "monthly", priority: "0.4" },
   { loc: "/return-policy.html", changefreq: "monthly", priority: "0.4" },
