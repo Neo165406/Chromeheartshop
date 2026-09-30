@@ -162,6 +162,9 @@ let currentCart = [];
 
 function money(n){ return `BDT ${n}`; }
 
+// A cart line is identified by product id + size; older entries fall back to id.
+function lineKey(c){ return c.key || c.id; }
+
 function renderEmpty(){
   document.getElementById('root').innerHTML = `
     <div class="empty-state">
@@ -209,7 +212,7 @@ async function generateOrderNumber(){
 function invoiceMarkup(inv){
   const itemsRows = inv.items.map(c=>`
     <tr>
-      <td>${c.name}</td>
+      <td>${c.name}${c.size?` <span style="color:var(--text-dim);">(Size ${c.size})</span>`:''}</td>
       <td style="text-align:center;">${c.qty}</td>
       <td style="text-align:right;">${money(c.price)}</td>
       <td style="text-align:right;">${money(c.price*c.qty)}</td>
@@ -274,11 +277,11 @@ function getSubtotal(){
 
 function itemsMarkup(cart){
   return cart.map(c=>`
-    <div class="summary-item" data-id="${c.id}">
+    <div class="summary-item" data-id="${lineKey(c)}">
       <div class="si-media">${c.imageUrl?`<img src="${c.imageUrl}">`:''}</div>
       <div class="si-info">
         <h4>${c.name}</h4>
-        <p>${money(c.price)} each</p>
+        <p>${money(c.price)} each${c.size?` · Size ${c.size}`:''}</p>
         <div class="si-qty">
           <button type="button" class="qty-btn" data-action="dec" aria-label="Decrease quantity">−</button>
           <span>${c.qty}</span>
@@ -293,7 +296,7 @@ function itemsMarkup(cart){
 }
 
 function changeQty(id, delta){
-  const item = currentCart.find(c=>c.id===id);
+  const item = currentCart.find(c=>lineKey(c)===id);
   if(!item) return;
   const next = item.qty + delta;
   if(next < 1){ removeItem(id); return; }
@@ -537,7 +540,7 @@ async function placeOrder(){
       phone: details.phone,
       address: details.address,
       note: details.note,
-      items: cart.map(c=>({ id:c.id, name:c.name, price:c.price, qty:c.qty })),
+      items: cart.map(c=>({ id:c.id, name:c.name, price:c.price, qty:c.qty, size:c.size||null })),
       subtotal,
       deliveryZone,
       deliveryCharge,
@@ -566,7 +569,7 @@ async function placeOrder(){
         phone: details.phone,
         address: details.address,
         note: details.note,
-        items: cart.map(c=>({ name:c.name, price:c.price, qty:c.qty })),
+        items: cart.map(c=>({ name:c.name, price:c.price, qty:c.qty, size:c.size||null })),
         subtotal,
         deliveryZone,
         deliveryCharge,
@@ -578,7 +581,7 @@ async function placeOrder(){
   }catch(e){ console.warn('Owner notification failed:', e); }
 
   // WhatsApp message for the buyer to send to the shop.
-  const lines = cart.map(c=>`• ${c.name} x${c.qty} — BDT ${c.price*c.qty}`).join('\n');
+  const lines = cart.map(c=>`• ${c.name}${c.size?` (Size ${c.size})`:''} x${c.qty} — BDT ${c.price*c.qty}`).join('\n');
   const discountLine = discount > 0 ? `\nDiscount (${appliedCoupon.code}): -BDT ${discount}` : '';
   const msg = `Hi! I'd like to place an order:\n\nOrder #: ${orderNumber}\n\n${lines}\n\nSubtotal: BDT ${subtotal}\nDelivery (${deliveryZone}): BDT ${deliveryCharge}${discountLine}\nTotal: BDT ${grandTotal}\n\nName: ${details.name}\nPhone: ${details.phone}\nAddress: ${details.address}${details.note ? `\nNote: ${details.note}` : ''}`;
   const waUrl = `https://wa.me/8801759406602?text=${encodeURIComponent(msg)}`;

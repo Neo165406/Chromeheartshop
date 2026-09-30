@@ -82,6 +82,17 @@
   .p-price .was{font-size:14px;color:var(--text-dim);text-decoration:line-through;margin-left:8px;font-weight:400;}
   .p-sold{font-size:12px;color:var(--text-dim);margin-bottom:20px;}
 
+  .size-row{margin-bottom:20px;}
+  .size-row .label{display:block;font-size:12.5px;color:var(--text-dim);margin-bottom:10px;}
+  .size-row .label b{color:var(--silver-bright);font-weight:600;}
+  .size-options{display:flex;gap:10px;flex-wrap:wrap;}
+  .size-btn{min-width:54px;padding:10px 16px;border:1px solid var(--line);background:none;color:var(--silver);border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;transition:border-color 0.2s ease, background 0.2s ease;}
+  .size-btn:hover{border-color:var(--silver);}
+  .size-btn.active{background:linear-gradient(120deg,var(--silver),var(--silver-bright));color:var(--bg);border-color:var(--silver-bright);}
+  .size-err{color:#e08a8a;font-size:11.5px;margin-top:8px;display:none;}
+  .size-row.invalid .size-err{display:block;}
+  .size-row.invalid .size-btn{border-color:#e08a8a;}
+
   .qty-row{display:flex;align-items:center;gap:16px;margin-bottom:20px;}
   .qty-row .label{font-size:12.5px;color:var(--text-dim);}
   .qty-control{display:flex;align-items:center;gap:14px;border:1px solid var(--line);border-radius:20px;padding:6px 16px;}
@@ -464,14 +475,27 @@ function miniCard(p,i){
 
 let qty = 1;
 let currentProduct = null;
+let selectedSize = null;
+
+// Sizes shown on the product page. If the product document has its own
+// `sizes` array (e.g. ["S","M","L"]) that wins; otherwise every product in
+// the "Clothing" category gets M / L / XL.
+const DEFAULT_CLOTHING_SIZES = ['M','L','XL'];
+function getSizes(product){
+  if(Array.isArray(product.sizes) && product.sizes.length) return product.sizes;
+  if(String(product.category||'').trim().toLowerCase() === 'clothing') return DEFAULT_CLOTHING_SIZES;
+  return [];
+}
 
 function renderProduct(product, similar){
   currentProduct = product;
+  selectedSize = null;
   const root = document.getElementById('productRoot');
 
   updateSEOTags(product);
 
   const outOfStock = product.stock === 0;
+  const sizes = getSizes(product);
   const discount = product.was ? Math.round((1 - product.price/product.was) * 100) : 0;
   const soldText = product.sold ? `${product.sold >= 1000 ? (product.sold/1000).toFixed(1).replace('.0','')+'k' : product.sold} sold` : '';
   const images = (product.images && product.images.length) ? product.images : (product.imageUrl ? [product.imageUrl] : []);
@@ -502,6 +526,14 @@ function renderProduct(product, similar){
       <div class="p-actions">
         <button class="btn-outline" disabled style="opacity:0.5;cursor:not-allowed;flex:1;">Currently Out of Stock</button>
       </div>` : `
+      ${sizes.length ? `
+      <div class="size-row" id="sizeRow">
+        <span class="label">Size <b id="sizeVal"></b></span>
+        <div class="size-options" id="sizeOptions">
+          ${sizes.map(s=>`<button type="button" class="size-btn" data-size="${s}">${s}</button>`).join('')}
+        </div>
+        <p class="size-err">Please select a size.</p>
+      </div>` : ''}
       <div class="qty-row">
         <span class="label">Quantity</span>
         <div class="qty-control">
@@ -526,6 +558,31 @@ function renderProduct(product, similar){
     </section>`;
 
   if(!outOfStock){
+  // Size picker: tap a size to select it, tap again to clear
+  if(sizes.length){
+    const sizeRow = document.getElementById('sizeRow');
+    document.getElementById('sizeOptions').addEventListener('click', (e)=>{
+      const btn = e.target.closest('.size-btn');
+      if(!btn) return;
+      const s = btn.dataset.size;
+      selectedSize = (selectedSize === s) ? null : s;
+      sizeRow.querySelectorAll('.size-btn').forEach(b=>b.classList.toggle('active', b.dataset.size === selectedSize));
+      document.getElementById('sizeVal').textContent = selectedSize ? `: ${selectedSize}` : '';
+      if(selectedSize) sizeRow.classList.remove('invalid');
+    });
+  }
+  // Returns true if the shopper may proceed (size not needed, or already chosen)
+  function sizeOk(){
+    if(!sizes.length || selectedSize) return true;
+    const sizeRow = document.getElementById('sizeRow');
+    sizeRow.classList.add('invalid');
+    sizeRow.scrollIntoView({ behavior:'smooth', block:'center' });
+    return false;
+  }
+  function cartItem(){
+    return { id: product.id, name: product.name, price: product.price, imageUrl: product.imageUrl||null, size: selectedSize || null };
+  }
+
   document.getElementById('qtyDec').addEventListener('click', ()=>{
     qty = Math.max(1, qty-1);
     document.getElementById('qtyVal').textContent = qty;
@@ -535,16 +592,18 @@ function renderProduct(product, similar){
     document.getElementById('qtyVal').textContent = qty;
   });
   document.getElementById('addCartBtn').addEventListener('click', ()=>{
+    if(!sizeOk()) return;
     if(!cartApi){ alert('Cart is still loading — try again in a moment, or use Buy Now.'); return; }
     for(let i=0;i<qty;i++){
-      cartApi.addToCart({ id: product.id, name: product.name, price: product.price, imageUrl: product.imageUrl||null });
+      cartApi.addToCart(cartItem());
     }
-    cartApi.showToast(`Added ${qty} × "${product.name}" to cart`);
+    cartApi.showToast(`Added ${qty} × "${product.name}"${selectedSize?` (${selectedSize})`:''} to cart`);
   });
   document.getElementById('buyNowBtn').addEventListener('click', ()=>{
+    if(!sizeOk()) return;
     if(cartApi){
       for(let i=0;i<qty;i++){
-        cartApi.addToCart({ id: product.id, name: product.name, price: product.price, imageUrl: product.imageUrl||null });
+        cartApi.addToCart(cartItem());
       }
       // Buy Now goes straight to checkout — no need to open the cart
       // drawer and make the shopper click a second "Checkout" button.
