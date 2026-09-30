@@ -6,7 +6,7 @@
 // - Live results while typing (debounced) and on Enter / the keyboard's search key
 // - Matches product name, category, subcategory, description and tags
 // - Forgiving: case-insensitive, ignores punctuation, plural/singular (bracelet = bracelets),
-//   multi-word queries, and falls back to "any word" matches when nothing matches every word
+//   multi-word queries, "any word" fallback, and small typos (braclet -> bracelet)
 // - Products come straight from Firestore, so new/edited/removed products show up instantly
 
 import { db, collection, getDocs } from './firebase-config.js';
@@ -30,25 +30,33 @@ function tokenize(q){
 
 /* ---------- the matcher (exported so other pages can reuse it) ---------- */
 export function searchProducts(list, q){
-  const tokens = tokenize(q);
-  if(!tokens.length) return [];
-  const scored = list.filter((p) => p && p.name).map((p) => {
-    const name = norm(p.name);
-    const cat = norm((p.category || '') + ' ' + (p.subcategory || ''));
-    const rest = norm((p.description || '') + ' ' + (Array.isArray(p.tags) ? p.tags.join(' ') : (p.tags || '')));
-    let score = 0, hit = 0;
-    tokens.forEach((t) => {
-      let s = 0;
-      if(name.includes(t)) s = new RegExp('(^| )' + escRe(t)).test(name) ? 5 : 3;
-      else if(cat.includes(t)) s = 2;
-      else if(rest.includes(t)) s = 1;
-      if(s){ hit++; score += s; }
+  const base = tokenize(q);
+  if(!base.length) return [];
+  const docs = list.filter((p) => p && p.name).map((p) => ({
+    p,
+    name: norm(p.name),
+    cat: norm((p.category || '') + ' ' + (p.subcategory || '')),
+    rest: norm((p.description || '') + ' ' + (Array.isArray(p.tags) ? p.tags.join(' ') : (p.tags || '')))
+  }));
+  const rank = (tokens, needAll) => {
+    const out = [];
+    docs.forEach((d) => {
+      let score = 0, hit = 0;
+      tokens.forEach((t) => {
+        let s = 0;
+        if(d.name.includes(t)) s = new RegExp('(^| )' + escRe(t)).test(d.name) ? 5 : 3;
+        else if(d.cat.includes(t)) s = 2;
+        else if(d.rest.includes(t)) s = 1;
+        if(s){ hit++; score += s; }
+      });
+      if(needAll ? hit === tokens.length : hit > 0) out.push({ p: d.p, score, hit });
     });
-    return { p, score, hit };
-  });
-  let res = scored.filter((x) => x.hit === tokens.length);
-  if(!res.length) res = scored.filter((x) => x.hit > 0);
-  return res.sort((a, b) => (b.hit - a.hit) || (b.score - a.score)).map((x) => x.p);
+    return out.sort((a, b) => (b.hit - a.hit) || (b.score - a.score)).map((x) => x.p);
+  };
+  let res = rank(base, true);                       // every word matches
+  if(!res.length) res = rank(base, false);          // at least one word matches
+  if(!res.length) res = rank(base.map((t) => (t.length >= 5 ? t.slice(0, 4) : t)), false); // typo tolerance
+  return res;
 }
 
 /* ---------- product loading (cached; retries after a failure) ---------- */

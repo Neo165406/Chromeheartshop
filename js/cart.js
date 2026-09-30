@@ -7,8 +7,33 @@
 
 // Every page that uses the cart also gets the shared site footer (js/footer.js).
 import './footer.js';
-// ...and the working menu-drawer product search (js/search.js).
-import './search.js';
+// ...and the working menu-drawer product search (js/search.js). Loaded dynamically so a
+// problem in search can never break the cart or the rest of the page.
+import('./search.js').catch((e)=>console.error('Search failed to load:', e));
+
+// Layout safety net, shared by every page that loads the cart.
+// Cause of the "menu cut off on the right" bug: scroll-reveal elements start shifted
+// 46px sideways (.reveal.from-right), which made the page wider than the phone screen;
+// the slide-in menu is pinned to the page's right edge, so it slid in partly off-screen.
+// Clipping sideways overflow fixes it for good (overflow-x:clip keeps the sticky header working).
+(function injectLayoutFix(){
+  try{
+    if(document.getElementById('layout-fix')) return;
+    const st = document.createElement('style');
+    st.id = 'layout-fix';
+    st.textContent = `
+      @supports (overflow-x:clip){
+        html{overflow-x:hidden;}
+        body{overflow-x:clip;}
+      }
+      section,footer{overflow-x:clip;}
+      nav.drawer{max-width:100vw;height:100vh;height:100dvh;overscroll-behavior:contain;}
+      .tiles{grid-template-columns:repeat(3,minmax(0,1fr));}
+      .tile{min-width:0;}
+    `;
+    document.head.appendChild(st);
+  }catch(e){ console.error('Layout fix failed:', e); }
+})();
 
 const CART_KEY = 'argentum_cart';
 const WA_NUMBER = '8801759406602';
