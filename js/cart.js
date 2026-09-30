@@ -11,6 +11,10 @@ import './footer.js';
 const CART_KEY = 'argentum_cart';
 const WA_NUMBER = '8801759406602';
 
+// A cart line is identified by product id + size (so M and L of the same
+// product are separate lines). Older cart entries without a key fall back to id.
+export function itemKey(c){ return c.key || c.id; }
+
 export function getCart(){
   try{
     const raw = JSON.parse(localStorage.getItem(CART_KEY));
@@ -26,19 +30,20 @@ function saveCart(cart){
 }
 export function addToCart(item){
   const cart = getCart();
-  const existing = cart.find(c=>c.id===item.id);
+  const key = item.size ? `${item.id}__${item.size}` : item.id;
+  const existing = cart.find(c=>itemKey(c)===key);
   if(existing){ existing.qty += 1; }
-  else { cart.push({...item, qty:1}); }
+  else { cart.push({...item, key, qty:1}); }
   saveCart(cart);
   renderCartDrawer();
 }
-export function removeFromCart(id){
-  saveCart(getCart().filter(c=>c.id!==id));
+export function removeFromCart(key){
+  saveCart(getCart().filter(c=>itemKey(c)!==key));
   renderCartDrawer();
 }
-export function updateQty(id, qty){
+export function updateQty(key, qty){
   const cart = getCart();
-  const item = cart.find(c=>c.id===id);
+  const item = cart.find(c=>itemKey(c)===key);
   if(item){ item.qty = Math.max(1, qty); }
   saveCart(cart);
   renderCartDrawer();
@@ -70,11 +75,11 @@ export function renderCartDrawer(){
     return;
   }
   list.innerHTML = cart.map(c=>`
-    <div class="cart-item" data-id="${c.id}">
+    <div class="cart-item" data-id="${itemKey(c)}">
       <div class="ci-media">${c.imageUrl?`<img src="${c.imageUrl}">`:''}</div>
       <div class="ci-info">
         <h4>${c.name}</h4>
-        <p>BDT ${c.price}</p>
+        <p>BDT ${c.price}${c.size?` · Size ${c.size}`:''}</p>
         <div class="ci-qty">
           <button class="qty-btn" data-action="dec">−</button>
           <span>${c.qty}</span>
@@ -88,7 +93,7 @@ export function renderCartDrawer(){
 
   list.querySelectorAll('.cart-item').forEach(el=>{
     const id = el.dataset.id;
-    const item = cart.find(c=>c.id===id);
+    const item = cart.find(c=>itemKey(c)===id);
     el.querySelector('[data-action="inc"]').addEventListener('click', ()=>updateQty(id, item.qty+1));
     el.querySelector('[data-action="dec"]').addEventListener('click', ()=>{
       if(item.qty<=1) removeFromCart(id); else updateQty(id, item.qty-1);
@@ -105,14 +110,14 @@ export function clearCart(){
 export function checkoutWhatsApp(){
   const cart = getCart();
   if(cart.length===0) return;
-  const lines = cart.map(c=>`• ${c.name} x${c.qty} — BDT ${c.price*c.qty}`).join('\n');
+  const lines = cart.map(c=>`• ${c.name}${c.size?` (Size ${c.size})`:''} x${c.qty} — BDT ${c.price*c.qty}`).join('\n');
   const msg = `Hi! I'd like to order:\n${lines}\n\nTotal: BDT ${cartTotal()}`;
   window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
 // Instant single-item order, bypassing the cart — used by "Buy Now".
 export function buyNowWhatsApp(item, qty=1){
-  const msg = `Hi! I'd like to buy:\n• ${item.name} x${qty} — BDT ${item.price*qty}\n\nTotal: BDT ${item.price*qty}`;
+  const msg = `Hi! I'd like to buy:\n• ${item.name}${item.size?` (Size ${item.size})`:''} x${qty} — BDT ${item.price*qty}\n\nTotal: BDT ${item.price*qty}`;
   window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
