@@ -7,6 +7,8 @@
 
 // Every page that uses the cart also gets the shared site footer (js/footer.js).
 import './footer.js';
+// ...and the working menu-drawer product search (js/search.js).
+import './search.js';
 
 const CART_KEY = 'argentum_cart';
 const WA_NUMBER = '8801759406602';
