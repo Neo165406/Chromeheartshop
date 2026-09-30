@@ -45,6 +45,7 @@
     --silver:#b8bcc4;--silver-bright:#f2f4f7;--silver-deep:#6b6f76;
     --text:#f2f3f5;--text-dim:#9195a0;--line:rgba(184,188,196,0.22);
     --radius:2px;
+    --header-h:67px;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   html{scroll-behavior:smooth;}
@@ -158,8 +159,8 @@
   .dot{width:6px;height:6px;border-radius:50%;background:var(--line);cursor:pointer;transition:background 0.2s ease, width 0.2s ease;}
   .dot.active{background:var(--silver-bright);width:18px;border-radius:3px;}
 
-  /* ---------- CATEGORY STRIP ---------- */
-  .cats{display:flex;gap:10px;overflow-x:auto;padding:0 22px 32px;scrollbar-width:none;align-items:center;}
+  /* ---------- CATEGORY STRIP (sticky under the header while scrolling) ---------- */
+  .cats{position:sticky;top:calc(var(--header-h) - 1px);z-index:35;background:rgba(10,11,13,0.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line);display:flex;gap:10px;overflow-x:auto;padding:12px 22px;margin-bottom:20px;scrollbar-width:none;align-items:center;}
   .cats::-webkit-scrollbar{display:none;}
   .cat{flex:0 0 auto;padding:9px 16px;font-size:12.5px;border:1px solid var(--line);border-radius:20px;color:var(--text-dim);white-space:nowrap;}
   .cat.active{color:var(--bg);background:var(--silver-bright);border-color:var(--silver-bright);font-weight:600;}
@@ -418,6 +419,15 @@
 import { db, collection, getDocs } from './js/firebase-config.js';
 import { addToCart, renderCartDrawer, updateCartBadge, checkoutWhatsApp, showToast, wireAddToCart } from './js/cart.js';
 import { wireFavButtons, refreshFavButtons } from './js/favorites.js';
+
+/* ---------- Keep the sticky category/filter bar exactly under the header ---------- */
+function syncHeaderHeight(){
+  const h = document.querySelector('header');
+  if(h) document.documentElement.style.setProperty('--header-h', h.offsetHeight + 'px');
+}
+syncHeaderHeight();
+window.addEventListener('resize', syncHeaderHeight);
+window.addEventListener('load', syncHeaderHeight);
 
 window.toggleNav = function(open){
   document.getElementById('drawer').classList.toggle('open',open);
