@@ -144,24 +144,13 @@
   .hero-slider{position:relative;overflow:hidden;background:#000;}
   .slides{display:flex;transition:transform 0.5s ease;}
   .slide{flex:0 0 100%;position:relative;padding:64px 26px 56px;text-align:center;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;}
-  .slide .sglow{position:absolute;left:50%;top:40%;width:260px;height:260px;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(242,244,247,0.16) 0%,rgba(184,188,196,0.06) 45%,transparent 72%);filter:blur(6px);z-index:0;}
-  .stage-lights{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0;mix-blend-mode:screen;}
-  .beam{position:absolute;top:-30%;width:110px;height:170%;transform-origin:top center;filter:blur(7px);opacity:0.65;animation:beamSweep 5.5s ease-in-out infinite;}
-  .beam:nth-child(1){left:2%;background:linear-gradient(180deg,rgba(255,255,255,0.55),rgba(255,255,255,0) 70%);animation-delay:0s;}
-  .beam:nth-child(2){left:26%;background:linear-gradient(180deg,rgba(184,188,196,0.5),rgba(184,188,196,0) 70%);animation-delay:-1.4s;animation-duration:6.5s;}
-  .beam:nth-child(3){left:50%;background:linear-gradient(180deg,rgba(200,180,255,0.4),rgba(200,180,255,0) 70%);animation-delay:-3s;animation-duration:5s;}
-  .beam:nth-child(4){left:72%;background:linear-gradient(180deg,rgba(255,220,235,0.35),rgba(255,220,235,0) 70%);animation-delay:-2s;animation-duration:7s;}
-  .beam:nth-child(5){left:92%;background:linear-gradient(180deg,rgba(255,255,255,0.45),rgba(255,255,255,0) 70%);animation-delay:-4.2s;animation-duration:6s;}
-  @keyframes beamSweep{
-    0%,100%{transform:rotate(-24deg) scaleY(0.96);opacity:0.35;}
-    50%{transform:rotate(22deg) scaleY(1.05);opacity:0.75;}
+  .slide-bg{position:absolute;inset:0;z-index:0;background-size:cover;background-position:center;animation:heroBrightness 4s ease-in-out infinite;}
+  .slide .sglow{position:absolute;left:50%;top:40%;width:260px;height:260px;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(242,244,247,0.16) 0%,rgba(184,188,196,0.06) 45%,transparent 72%);filter:blur(6px);z-index:0;animation:heroBrightness 4s ease-in-out infinite;}
+  @keyframes heroBrightness{
+    0%,100%{filter:brightness(0.7);}
+    50%{filter:brightness(1.25);}
   }
-  .stage-haze{position:absolute;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse at 50% 20%, rgba(255,255,255,0.14), transparent 62%);animation:hazePulse 3.6s ease-in-out infinite;mix-blend-mode:screen;}
-  @keyframes hazePulse{
-    0%,100%{opacity:0.4;}
-    50%{opacity:0.85;}
-  }
-  @media (prefers-reduced-motion: reduce){ .beam, .stage-haze{animation:none;opacity:0.4;} }
+  @media (prefers-reduced-motion: reduce){ .slide-bg, .slide .sglow{animation:none;} }
   .slide-icon{position:relative;z-index:1;width:56px;height:56px;margin-bottom:18px;}
   .slide h1{position:relative;z-index:1;font-size:clamp(24px,6.2vw,36px);font-weight:500;letter-spacing:0.01em;margin-bottom:12px;}
   .slide p{position:relative;z-index:1;max-width:34ch;margin:0 auto 24px;color:var(--text-dim);font-size:14px;}
@@ -531,13 +520,10 @@ async function initHero(){
     return;
   }
   heroSlides.forEach((s,i)=>{
-    const bg = s.imageUrl ? `style="background-image:url('${s.imageUrl}');background-size:cover;background-position:center;"` : '';
+    const bg = s.imageUrl ? `style="background-image:url('${s.imageUrl}');"` : '';
     slidesEl.innerHTML += `
-      <div class="slide" ${bg}>
-        <div class="stage-lights">
-          <div class="beam"></div><div class="beam"></div><div class="beam"></div><div class="beam"></div><div class="beam"></div>
-        </div>
-        <div class="stage-haze"></div>
+      <div class="slide">
+        <div class="slide-bg" ${bg}></div>
         <div class="sglow"></div>
         <div class="slide-icon">${s.imageUrl ? '' : slideIcon(s.icon||'cross')}</div>
         ${s.title ? `<h1 class="display">${s.title}</h1>` : ''}
