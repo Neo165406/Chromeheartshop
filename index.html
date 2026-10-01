@@ -310,6 +310,9 @@
   <span style="width:20px;"></span>
   <span class="logo"><span class="seg">FASH</span><span class="seg">ION</span><span class="seg">ISTA</span></span>
   <div style="display:flex;align-items:center;gap:10px;">
+    <button class="cart-btn" onclick="openSearch()" aria-label="Search">
+      <svg class="navicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+    </button>
     <button class="cart-btn" onclick="toggleCart(true)" aria-label="Cart">
       <svg class="navicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="21" r="1.3"/><circle cx="18" cy="21" r="1.3"/><path d="M2 3h3l2.6 12.4a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L22 7H6"/></svg>
       <span class="cart-badge" id="cartBadge">0</span>
@@ -459,6 +462,14 @@ window.toggleCart = function(open){
   document.getElementById('scrim').classList.toggle('open', open || document.getElementById('drawer').classList.contains('open'));
 };
 window.checkoutCart = function(){ window.location.href = 'checkout.html'; };
+// Header search icon: opens the menu drawer and puts the cursor in its search box.
+window.openSearch = function(){
+  window.toggleNav(true);
+  setTimeout(()=>{
+    const input = document.querySelector('#drawer .search-bar input');
+    if(input) input.focus();
+  }, 350);
+};
 
 /* ---------- Category tree (will map to admin-managed Categories later) ---------- */
 const categoryTree = [
