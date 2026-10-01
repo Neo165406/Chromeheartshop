@@ -24,7 +24,8 @@ const firebaseConfig = {
   appId: "1:640506841572:web:b23582fb753967d5365ff1",
 };
 
-const SITE = "https://fashion1sta.com";
+// Canonical site URL
+const SITE = "https://www.fashion1sta.com";
 
 const STATIC_PAGES = [
   { loc: "/", changefreq: "daily", priority: "1.0" },
@@ -53,6 +54,7 @@ async function main() {
       changefreq: p.changefreq,
       priority: p.priority,
     })),
+
     ...products.map((p) => ({
       loc: `${SITE}/product.html?id=${encodeURIComponent(p.id)}`,
       changefreq: "weekly",
@@ -66,12 +68,17 @@ async function main() {
     urls
       .map(
         (u) =>
-          `  <url>\n    <loc>${u.loc}</loc>\n    <changefreq>${u.changefreq}</changefreq>\n    <priority>${u.priority}</priority>\n  </url>`
+          `  <url>\n` +
+          `    <loc>${u.loc}</loc>\n` +
+          `    <changefreq>${u.changefreq}</changefreq>\n` +
+          `    <priority>${u.priority}</priority>\n` +
+          `  </url>`
       )
       .join("\n") +
     `\n</urlset>\n`;
 
   writeFileSync(new URL("../sitemap.xml", import.meta.url), xml);
+
   console.log(
     `sitemap.xml written with ${urls.length} URLs (${products.length} products, ${STATIC_PAGES.length} static pages).`
   );
