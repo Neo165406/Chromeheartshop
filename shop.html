@@ -362,10 +362,17 @@ async function loadAllProducts(){
   }
 }
 
-function cardHTML(p, i){
+function cardHTML(p, i, eager){
   const outOfStock = p.stock === 0;
+  // "eager" cards (only the first couple in the main shop grid) load
+  // immediately, with fetchpriority=high on the very first; everything
+  // else — including the entire "You Might Also Like" row — is lazy, since
+  // it's never above the fold.
+  const imgAttrs = eager
+    ? (i === 0 ? ' fetchpriority="high"' : '')
+    : ' loading="lazy" decoding="async"';
   const media = p.imageUrl
-    ? `<img src="${p.imageUrl}" alt="${p.name}" style="width:100%;height:100%;object-fit:contain;${outOfStock?'opacity:0.4;':''}">`
+    ? `<img src="${p.imageUrl}" alt="${p.name}"${imgAttrs} style="width:100%;height:100%;object-fit:contain;${outOfStock?'opacity:0.4;':''}">`
     : iconFor(p.iconType);
   const dir = i % 2 === 0 ? 'from-left' : 'from-right';
   const delay = (i % 4) * 0.08;
@@ -427,7 +434,7 @@ function renderShopGrid(list){
     empty.style.display = 'block';
   } else {
     empty.style.display = 'none';
-    grid.innerHTML = list.map((p,i)=>cardHTML(p,i)).join('');
+    grid.innerHTML = list.map((p,i)=>cardHTML(p,i, i<2)).join('');
     wireAddToCart('shopGrid');
     wireFavButtons('shopGrid');
     refreshFavButtons('shopGrid');
@@ -532,7 +539,7 @@ async function init(){
     similarSection.style.display = 'none';
   } else {
     similarSection.style.display = '';
-    document.getElementById('similarGrid').innerHTML = similar.map((p,i)=>cardHTML(p,i)).join('');
+    document.getElementById('similarGrid').innerHTML = similar.map((p,i)=>cardHTML(p,i,false)).join('');
     wireAddToCart('similarGrid');
     wireFavButtons('similarGrid');
     refreshFavButtons('similarGrid');
