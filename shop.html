@@ -291,6 +291,12 @@ const categoryTree = [
   {name:"Accessories", subs:["Bandana","Belts","Bracelets","Chain-Necklaces","Earrings","Fake Piercings","Keychains","Ring Watch","Rings","Sunglasses","Tattoo","Teeth-Grillz","Wallet","Wallet Chains","Watches"]},
   {name:"Clothing", subs:["T-shirt"]}
 ];
+
+// Glasses has its own clean URL (/glasses); every other category still uses this page.
+function categoryUrl(name){
+  return name === 'Glasses' ? '/glasses' : `shop.html?category=${encodeURIComponent(name)}`;
+}
+
 const catTree = document.getElementById('catTree');
 categoryTree.forEach(cat=>{
   const row = document.createElement('div');
@@ -299,14 +305,15 @@ categoryTree.forEach(cat=>{
   catTree.appendChild(row);
   const subs = document.createElement('div');
   subs.className = 'subs';
-  subs.innerHTML = cat.subs.map(s=>`<a href="shop.html?category=${encodeURIComponent(cat.name)}">${s}</a>`).join('');
+  subs.innerHTML = cat.subs.map(s=>`<a href="${categoryUrl(cat.name)}">${s}</a>`).join('');
   catTree.appendChild(subs);
-  row.addEventListener('click', ()=>window.location.href = `shop.html?category=${encodeURIComponent(cat.name)}`);
+  row.addEventListener('click', ()=>window.location.href = categoryUrl(cat.name));
 });
 
 // ---------- SEO: each category gets its own title, description and canonical
 // (set before/independent of the Firestore load). /shop.html with no category
-// keeps the default tags written in the <head>. ----------
+// keeps the default tags written in the <head>. Glasses canonicalizes to its
+// dedicated /glasses page. ----------
 const CATEGORY_SEO = {
   "New In": {
     title: "New Arrivals — Gothic Silver Accessories & Eyewear | FASHIONISTA",
@@ -328,7 +335,9 @@ const CATEGORY_SEO = {
 function applyCategorySEO(cat){
   const s = CATEGORY_SEO[cat];
   if(!s) return;
-  const url = `https://fashion1sta.com/shop.html?category=${encodeURIComponent(cat)}`;
+  const url = cat === 'Glasses'
+    ? 'https://fashion1sta.com/glasses'
+    : `https://fashion1sta.com/shop.html?category=${encodeURIComponent(cat)}`;
   const setContent = (id, v)=>{ const el = document.getElementById(id); if(el) el.setAttribute('content', v); };
   document.title = s.title;
   setContent('metaDesc', s.desc);
@@ -505,7 +514,7 @@ async function init(){
   filterBar.querySelectorAll('.cat').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       const c = btn.dataset.cat;
-      window.location.href = c ? `shop.html?category=${encodeURIComponent(c)}` : 'shop.html';
+      window.location.href = c ? categoryUrl(c) : 'shop.html';
     });
   });
   document.getElementById('openFilterBtn').addEventListener('click', ()=>toggleFilter(true));
