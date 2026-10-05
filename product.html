@@ -461,7 +461,7 @@ async function loadSimilarProducts(category, excludeId){
 
 function miniCard(p,i){
   const media = p.imageUrl
-    ? `<img src="${p.imageUrl}" alt="${p.name}" style="width:100%;height:100%;object-fit:contain;">`
+    ? `<img src="${p.imageUrl}" alt="${p.name}" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:contain;">`
     : iconFor(p.iconType);
   return `
     <div class="card">
@@ -501,8 +501,11 @@ function renderProduct(product, similar){
   const images = (product.images && product.images.length) ? product.images : (product.imageUrl ? [product.imageUrl] : []);
   galleryImages = images;
   galleryIndex = 0;
+  // The main image is the page's LCP candidate — never lazy, and flagged
+  // fetchpriority=high so the browser fetches it before lower-priority
+  // requests like the thumbnail strip or similar-product images below.
   const media = images.length
-    ? `<img id="mainProductImg" src="${images[0]}" alt="${product.name}" style="${outOfStock?'opacity:0.4;':''}">`
+    ? `<img id="mainProductImg" src="${images[0]}" alt="${product.name}" fetchpriority="high" style="${outOfStock?'opacity:0.4;':''}">`
     : iconFor(product.iconType);
 
   root.innerHTML = `
@@ -512,7 +515,7 @@ function renderProduct(product, similar){
       ${outOfStock ? `<span class="discount-badge" style="background:var(--text-dim);">Out of Stock</span>` : ''}
       ${media}
     </div>
-    ${images.length>1 ? `<div class="p-thumbs" id="pThumbs">${images.map((img,i)=>`<img src="${img}" class="${i===0?'active':''}" data-i="${i}">`).join('')}</div>` : ''}
+    ${images.length>1 ? `<div class="p-thumbs" id="pThumbs">${images.map((img,i)=>`<img src="${img}" class="${i===0?'active':''}" data-i="${i}" loading="lazy" decoding="async">`).join('')}</div>` : ''}
     <div class="p-info">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
         <h1 class="display">${product.name}</h1>
