@@ -12,7 +12,7 @@ const SITE = 'https://fashion1sta.com';
 const STATIC_PAGES = [
   { loc: `${SITE}/`, changefreq: 'daily', priority: '1.0' },
   { loc: `${SITE}/shop.html`, changefreq: 'daily', priority: '0.9' },
-  { loc: `${SITE}/shop.html?category=Glasses`, changefreq: 'daily', priority: '0.7' },
+  { loc: `${SITE}/glasses`, changefreq: 'daily', priority: '0.8' },
   { loc: `${SITE}/shop.html?category=Accessories`, changefreq: 'daily', priority: '0.7' },
   { loc: `${SITE}/shop.html?category=Clothing`, changefreq: 'daily', priority: '0.7' },
   { loc: `${SITE}/contact.html`, changefreq: 'monthly', priority: '0.5' },

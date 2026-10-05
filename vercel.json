@@ -3,6 +3,7 @@
     "api/generate-image.js": { "maxDuration": 60 }
   },
   "rewrites": [
-    { "source": "/sitemap.xml", "destination": "/api/sitemap" }
+    { "source": "/sitemap.xml", "destination": "/api/sitemap" },
+    { "source": "/glasses", "destination": "/glasses.html" }
   ]
 }
