@@ -10,23 +10,23 @@
 <meta name="description" content="Shop gothic silver accessories in Bangladesh — sunglasses, chain necklaces, rings, bracelets, teeth grillz and more. Cash on delivery nationwide from FASHIONISTA, Dhaka.">
 <meta name="keywords" content="fashionista bd, gothic accessories bd, silver accessories shop bd, sunglasses price in bangladesh, chain necklace bd, silver ring for men bd, silver bracelet men bd, teeth grillz bd, gothic jewelry bangladesh, cash on delivery accessories bd">
 <meta name="theme-color" content="#0a0b0d">
-<link rel="canonical" href="https://www.fashion1sta.com/">
+<link rel="canonical" href="https://fashion1sta.com/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="FASHIONISTA">
 <meta property="og:title" content="FASHIONISTA — Gothic Silver Accessories, Sunglasses &amp; Jewelry in Bangladesh">
 <meta property="og:description" content="Shop gothic silver accessories in Bangladesh — sunglasses, chain necklaces, rings, bracelets, teeth grillz and more. Cash on delivery nationwide from FASHIONISTA, Dhaka.">
-<meta property="og:url" content="https://www.fashion1sta.com/">
-<meta property="og:image" content="https://www.fashion1sta.com/og-image.png">
+<meta property="og:url" content="https://fashion1sta.com/">
+<meta property="og:image" content="https://fashion1sta.com/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="FASHIONISTA — Gothic Silver Accessories, Sunglasses &amp; Jewelry in Bangladesh">
 <meta name="twitter:description" content="Shop gothic silver accessories in Bangladesh — sunglasses, chain necklaces, rings, bracelets, teeth grillz and more. Cash on delivery nationwide from FASHIONISTA, Dhaka.">
-<meta name="twitter:image" content="https://www.fashion1sta.com/og-image.png">
+<meta name="twitter:image" content="https://fashion1sta.com/og-image.png">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "OnlineStore",
   "name": "FASHIONISTA",
-  "url": "https://www.fashion1sta.com/",
+  "url": "https://fashion1sta.com/",
   "description": "Gothic silver accessories shop in Bangladesh — sunglasses, chain necklaces, rings, bracelets, bandanas and teeth grillz. Cash on delivery nationwide from Dhaka.",
   "areaServed": "BD",
   "sameAs": [
@@ -341,7 +341,7 @@
 
 <div class="cats">
   <a class="cat active" href="shop.html?category=New">New In</a>
-  <a class="cat active" href="shop.html?category=Glasses">Glasses</a>
+  <a class="cat active" href="/glasses">Glasses</a>
   <a class="cat" href="shop.html?category=Accessories">Accessories</a>
   <a class="cat" href="shop.html?category=Clothing">Clothing</a>
   <a class="cat-filter-btn" href="shop.html?filter=1" aria-label="Filter">
@@ -355,7 +355,7 @@
 </section>
 
 <section class="collection" id="glasses">
-  <div class="section-head"><h2 class="display reveal from-right">Glasses</h2><a class="viewall" href="shop.html?category=Glasses">View all →</a></div>
+  <div class="section-head"><h2 class="display reveal from-right">Glasses</h2><a class="viewall" href="/glasses">View all →</a></div>
   <div class="grid" id="glassesGrid"></div>
 </section>
 
@@ -450,6 +450,10 @@ const categoryTree = [
   {name:"Accessories", subs:["Bandana","Belts","Bracelets","Chain-Necklaces","Earrings","Fake Piercings","Keychains","Ring Watch","Rings","Sunglasses","Tattoo","Teeth-Grillz","Wallet","Wallet Chains","Watches"]},
   {name:"Clothing", subs:["T-shirt"]}
 ];
+// Glasses has its own clean URL (/glasses); every other category still uses the shop page.
+function categoryUrl(name){
+  return name === 'Glasses' ? '/glasses' : `shop.html?category=${encodeURIComponent(name)}`;
+}
 const catTree = document.getElementById('catTree');
 categoryTree.forEach((cat,i)=>{
   const row = document.createElement('div');
@@ -459,12 +463,12 @@ categoryTree.forEach((cat,i)=>{
   catTree.appendChild(row);
   const subs = document.createElement('div');
   subs.className = 'subs';
-  subs.innerHTML = cat.subs.map(s=>`<a href="shop.html?category=${encodeURIComponent(cat.name)}">${s}</a>`).join('');
+  subs.innerHTML = cat.subs.map(s=>`<a href="${categoryUrl(cat.name)}">${s}</a>`).join('');
   catTree.appendChild(subs);
   if(cat.subs.length){
     row.addEventListener('click',()=>row.classList.toggle('open'));
   } else {
-    row.addEventListener('click',()=>{ window.location.href = `shop.html?category=${encodeURIComponent(cat.name)}`; });
+    row.addEventListener('click',()=>{ window.location.href = categoryUrl(cat.name); });
   }
 });
 
