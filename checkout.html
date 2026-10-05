@@ -7,6 +7,8 @@
 <meta name="theme-color" content="#0a0b0d">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://firestore.googleapis.com">
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -278,7 +280,7 @@ function getSubtotal(){
 function itemsMarkup(cart){
   return cart.map(c=>`
     <div class="summary-item" data-id="${lineKey(c)}">
-      <div class="si-media">${c.imageUrl?`<img src="${c.imageUrl}">`:''}</div>
+      <div class="si-media">${c.imageUrl?`<img src="${c.imageUrl}" loading="lazy" decoding="async">`:''}</div>
       <div class="si-info">
         <h4>${c.name}</h4>
         <p>${money(c.price)} each${c.size?` · Size ${c.size}`:''}</p>
@@ -633,5 +635,6 @@ async function init(){
 }
 init();
 </script>
+<script defer src="/_vercel/speed-insights/script.js"></script>
 </body>
 </html>
