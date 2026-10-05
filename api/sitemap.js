@@ -7,7 +7,7 @@
 
 const FIREBASE_API_KEY = 'AIzaSyC_Fgdc_JlFlrPwByNQIa3e-MMGmoRXRWE'; // public web key (same as js/firebase-config.js)
 const PROJECT_ID = 'argentum-3709f';
-const SITE = 'https://www.fashion1sta.com';
+const SITE = 'https://fashion1sta.com';
 
 const STATIC_PAGES = [
   { loc: `${SITE}/`, changefreq: 'daily', priority: '1.0' },
