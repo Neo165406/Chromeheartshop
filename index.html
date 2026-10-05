@@ -538,7 +538,8 @@ async function loadProducts(){
     return { items: [], failed:true };
   }
 }
-function renderCards(id, items, failed){
+function renderCards(id, items, failed, eagerCount){
+  eagerCount = eagerCount || 0;
   const grid = document.getElementById(id);
   if(!items.length){
     grid.innerHTML = failed
@@ -549,8 +550,15 @@ function renderCards(id, items, failed){
   items.forEach((p,i)=>{
     const pid = p.id || p.name.toLowerCase().replace(/[^a-z0-9]+/g,'-');
     const outOfStock = p.stock === 0;
+    // Only the first couple of cards in the very first above-the-fold grid
+    // load eagerly (with fetchpriority=high on the first); everything else
+    // is lazy so the browser isn't fighting over bandwidth for images the
+    // shopper hasn't scrolled to yet.
+    const imgAttrs = i < eagerCount
+      ? (i === 0 ? ' fetchpriority="high"' : '')
+      : ' loading="lazy" decoding="async"';
     const media = p.imageUrl
-      ? `<img src="${p.imageUrl}" alt="${p.name}" style="width:100%;height:100%;object-fit:contain;${outOfStock?'opacity:0.4;':''}">`
+      ? `<img src="${p.imageUrl}" alt="${p.name}"${imgAttrs} style="width:100%;height:100%;object-fit:contain;${outOfStock?'opacity:0.4;':''}">`
       : iconFor(p.iconType);
     const dir = i % 2 === 0 ? 'from-left' : 'from-right';
     const delay = (i % 4) * 0.08;
@@ -585,10 +593,10 @@ async function initProducts(){
   // Falls back to the first few real products if none are marked featured yet —
   // never to placeholder/demo items.
   const featured = all.filter(p=>p.featured).slice(0,4);
-  renderCards('arrivalsGrid', featured.length ? featured : all.slice(0,4), failed);
-  renderCards('glassesGrid', all.filter(p=>p.category==="Glasses").slice(0,4), failed);
-  renderCards('clothingGrid', all.filter(p=>p.category==="Clothing").slice(0,4), failed);
-  renderCards('newInRow', all.slice(0,8), failed);
+  renderCards('arrivalsGrid', featured.length ? featured : all.slice(0,4), failed, 2);
+  renderCards('glassesGrid', all.filter(p=>p.category==="Glasses").slice(0,4), failed, 0);
+  renderCards('clothingGrid', all.filter(p=>p.category==="Clothing").slice(0,4), failed, 0);
+  renderCards('newInRow', all.slice(0,8), failed, 0);
 }
 
 /* ---------- Reels — managed from the admin dashboard (Reels tab) ---------- */
