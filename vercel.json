@@ -1,9 +1,11 @@
 {
   "functions": {
-    "api/generate-image.js": { "maxDuration": 60 }
+    "api/generate-image.js": { "maxDuration": 60 },
+    "api/product-page.js": { "includeFiles": "templates/product.html" }
   },
   "rewrites": [
     { "source": "/sitemap.xml", "destination": "/api/sitemap" },
-    { "source": "/glasses", "destination": "/glasses.html" }
+    { "source": "/glasses", "destination": "/glasses.html" },
+    { "source": "/product.html", "destination": "/api/product-page" }
   ]
 }
