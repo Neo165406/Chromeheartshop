@@ -18,6 +18,14 @@ const FIREBASE_API_KEY = 'AIzaSyC_Fgdc_JlFlrPwByNQIa3e-MMGmoRXRWE'; // public we
 const PROJECT_ID = 'argentum-3709f';
 const SITE = 'https://fashion1sta.com';
 
+// Hard time limits on the Firestore calls so a slow database can never hold
+// the whole page hostage. The product itself gets a generous limit (if it
+// times out we fall back to the client-side loader). "Similar products" is
+// only a nice-to-have, so it gets a short one — on timeout the page ships
+// without it and the browser fills it in afterwards.
+const PRODUCT_TIMEOUT_MS = 4000;
+const SIMILAR_TIMEOUT_MS = 1500;
+
 // ---------- Firestore REST "fields" -> plain JS value ----------
 function fsValue(v){
   if(v == null) return null;
@@ -37,7 +45,7 @@ function fsFields(fields){
 
 async function fetchProduct(id){
   const url = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/products/${encodeURIComponent(id)}?key=${FIREBASE_API_KEY}`;
-  const r = await fetch(url);
+  const r = await fetch(url, { signal: AbortSignal.timeout(PRODUCT_TIMEOUT_MS) });
   if(r.status === 404) return null;
   if(!r.ok) throw new Error('Firestore product fetch failed: ' + r.status);
   const doc = await r.json();
@@ -55,7 +63,12 @@ async function fetchSimilar(category, excludeId){
         limit: 6
       }
     };
-    const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const r = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(SIMILAR_TIMEOUT_MS)
+    });
     if(!r.ok) return [];
     const rows = await r.json();
     return rows
