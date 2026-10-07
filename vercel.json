@@ -2,10 +2,12 @@
   "functions": {
     "api/generate-image.js": { "maxDuration": 60 },
     "api/product-page.js": { "includeFiles": "templates/product.html" },
-    "api/home-page.js": { "includeFiles": "templates/index.html" }
+    "api/home-page.js": { "includeFiles": "templates/index.html" },
+    "api/og-image.js": { "includeFiles": "og-image.png" }
   },
   "rewrites": [
     { "source": "/sitemap.xml", "destination": "/api/sitemap" },
+    { "source": "/og.png", "destination": "/api/og-image" },
     { "source": "/glasses", "destination": "/glasses.html" },
     { "source": "/product.html", "destination": "/api/product-page" },
     { "source": "/", "destination": "/api/home-page" },
