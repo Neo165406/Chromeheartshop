@@ -179,8 +179,11 @@ function withShareImage(html, req){
   const origin = rawHost && !/localhost|\.vercel\.app$/i.test(rawHost) ? `https://${rawHost}` : SITE;
   const img = `${origin}/${OG_IMAGE_FILE}`;
   // Favicon: the old favicon.svg was removed; the brand logo now lives at
-  // /favicon.png (512x512), used for the tab icon and the iOS home-screen icon.
-  const iconTags = `<link rel="icon" type="image/png" sizes="512x512" href="/favicon.png">\n`
+  // /favicon-192.png (192x192 — a multiple of 48px, which is what Google
+  // Search needs for the result icon) and /favicon.png (512x512), also used
+  // for the iOS home-screen icon.
+  const iconTags = `<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">\n`
+    + `<link rel="icon" type="image/png" sizes="512x512" href="/favicon.png">\n`
     + `<link rel="apple-touch-icon" href="/favicon.png">`;
   return html
     .replace(
