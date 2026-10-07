@@ -18,10 +18,10 @@ const FIREBASE_API_KEY = 'AIzaSyC_Fgdc_JlFlrPwByNQIa3e-MMGmoRXRWE'; // public we
 const PROJECT_ID = 'argentum-3709f';
 const SITE = 'https://fashion1sta.com';
 
-// Bump this whenever og-image.png changes — it makes Instagram / Facebook /
+// Bump this whenever the share image changes — it makes Instagram / Facebook /
 // WhatsApp treat the image as a brand-new URL instead of reusing a cached
 // (possibly blank) preview from an earlier failed scrape.
-const OG_IMAGE_VERSION = '2';
+const OG_IMAGE_VERSION = '3';
 
 // ---------- Firestore REST "fields" -> plain JS value ----------
 function fsValue(v){
@@ -169,15 +169,15 @@ function reelMarkup(r){
     </a>`;
 }
 
-// Share-preview (Instagram / WhatsApp / Facebook) image tags. The image URL is
-// built from the host that actually served this request, so it can never point
-// at a host that redirects (social crawlers often give up on a redirected
-// og:image and show a blank preview). Width/height/type are declared so the
-// crawler doesn't have to download the file just to size the card.
+// Share-preview (Instagram / WhatsApp / Facebook) image tags. The image is
+// served at /og.png (api/og-image.js turns the repo's og-image.png into a real
+// PNG), on the host that actually served this request, so it can never point
+// at a host that redirects. Width/height/type are declared so the crawler
+// doesn't have to download the file just to size the card.
 function withShareImage(html, req){
   const rawHost = String((req && req.headers && (req.headers['x-forwarded-host'] || req.headers.host)) || '').split(',')[0].trim();
   const origin = rawHost && !/localhost|\.vercel\.app$/i.test(rawHost) ? `https://${rawHost}` : SITE;
-  const img = `${origin}/og-image.png?v=${OG_IMAGE_VERSION}`;
+  const img = `${origin}/og.png?v=${OG_IMAGE_VERSION}`;
   return html
     .replace(
       '<meta property="og:image" content="https://fashion1sta.com/og-image.png">',
