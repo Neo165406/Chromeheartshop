@@ -7,6 +7,17 @@
 (function(){
   if(window.__siteFooterInit) return;
   window.__siteFooterInit = true;
+  // Site favicon on every page that loads this script: add the brand-logo
+  // icon tags unless the page already declares its own (home + product do).
+  (function(){
+    if(document.querySelector('link[rel~="icon"]')) return;
+    var icon = document.createElement('link');
+    icon.rel = 'icon'; icon.type = 'image/png'; icon.setAttribute('sizes', '512x512'); icon.href = '/favicon.png';
+    var touch = document.createElement('link');
+    touch.rel = 'apple-touch-icon'; touch.href = '/favicon.png';
+    document.head.appendChild(icon);
+    document.head.appendChild(touch);
+  })();
   if(/admin/i.test(location.pathname)) return; // admin dashboard keeps its own layout
 
   var CSS = ''
