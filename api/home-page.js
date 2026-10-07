@@ -18,10 +18,11 @@ const FIREBASE_API_KEY = 'AIzaSyC_Fgdc_JlFlrPwByNQIa3e-MMGmoRXRWE'; // public we
 const PROJECT_ID = 'argentum-3709f';
 const SITE = 'https://fashion1sta.com';
 
-// Bump this whenever the share image changes — it makes Instagram / Facebook /
-// WhatsApp treat the image as a brand-new URL instead of reusing a cached
-// (possibly blank) preview from an earlier failed scrape.
-const OG_IMAGE_VERSION = '5';
+// Share image: a plain static file in the repo root (og-image.jpg, 1200x630,
+// under 100 KB). Served directly — no function, no query string — because
+// WhatsApp is picky about both. If the image ever changes, give the new file a
+// new name so Instagram / Facebook / WhatsApp don't reuse a cached preview.
+const OG_IMAGE_FILE = 'og-image.jpg';
 
 // ---------- Firestore REST "fields" -> plain JS value ----------
 function fsValue(v){
@@ -170,14 +171,13 @@ function reelMarkup(r){
 }
 
 // Share-preview (Instagram / WhatsApp / Facebook) image tags. The image is
-// served at /og.png (api/og-image.js turns the repo's og-image.png into a real
-// PNG), on the host that actually served this request, so it can never point
-// at a host that redirects. Width/height/type are declared so the crawler
-// doesn't have to download the file just to size the card.
+// the static /og-image.jpg, on the host that actually served this request, so
+// it can never point at a host that redirects. Width/height/type are declared
+// so the crawler doesn't have to download the file just to size the card.
 function withShareImage(html, req){
   const rawHost = String((req && req.headers && (req.headers['x-forwarded-host'] || req.headers.host)) || '').split(',')[0].trim();
   const origin = rawHost && !/localhost|\.vercel\.app$/i.test(rawHost) ? `https://${rawHost}` : SITE;
-  const img = `${origin}/og.png?v=${OG_IMAGE_VERSION}`;
+  const img = `${origin}/${OG_IMAGE_FILE}`;
   // Favicon: the old favicon.svg was removed; the brand logo now lives at
   // /favicon.png (512x512), used for the tab icon and the iOS home-screen icon.
   const iconTags = `<link rel="icon" type="image/png" sizes="512x512" href="/favicon.png">\n`
@@ -191,7 +191,7 @@ function withShareImage(html, req){
       '<meta property="og:image" content="https://fashion1sta.com/og-image.png">',
       () => `<meta property="og:image" content="${img}">\n`
         + `<meta property="og:image:secure_url" content="${img}">\n`
-        + `<meta property="og:image:type" content="image/png">\n`
+        + `<meta property="og:image:type" content="image/jpeg">\n`
         + `<meta property="og:image:width" content="1200">\n`
         + `<meta property="og:image:height" content="630">\n`
         + `<meta property="og:image:alt" content="FASHIONISTA — gothic silver accessories">`

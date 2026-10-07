@@ -221,7 +221,7 @@ module.exports = async function handler(req, res){
   const desc = product.description
     ? product.description.replace(/\s+/g,' ').trim().slice(0,155)
     : `${product.name} — BDT ${product.price}. Neon silver accessories and eyewear from FASHIONISTA, cash on delivery across Bangladesh.`;
-  const image = (product.images && product.images[0]) || product.imageUrl || `${SITE}/og-image.png`;
+  const image = (product.images && product.images[0]) || product.imageUrl || `${SITE}/og-image.jpg`;
   const titleTag = `${esc(product.name)} — FASHIONISTA`;
 
   html = html
