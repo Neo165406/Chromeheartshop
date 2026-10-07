@@ -168,6 +168,13 @@ module.exports = async function handler(req, res){
     return;
   }
 
+  // Favicon: the old favicon.svg was removed; the brand logo now lives at
+  // /favicon.png (512x512), used for the tab icon and the iOS home-screen icon.
+  html = html.replace(
+    '<link rel="icon" type="image/svg+xml" href="favicon.svg">\n<link rel="alternate icon" href="favicon-4.ico">\n<link rel="apple-touch-icon" href="apple-touch-icon-4.png">',
+    () => '<link rel="icon" type="image/png" sizes="512x512" href="/favicon.png">\n<link rel="apple-touch-icon" href="/favicon.png">'
+  );
+
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
 
   if(!id){
