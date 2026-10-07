@@ -21,7 +21,7 @@ const SITE = 'https://fashion1sta.com';
 // Bump this whenever the share image changes — it makes Instagram / Facebook /
 // WhatsApp treat the image as a brand-new URL instead of reusing a cached
 // (possibly blank) preview from an earlier failed scrape.
-const OG_IMAGE_VERSION = '4';
+const OG_IMAGE_VERSION = '5';
 
 // ---------- Firestore REST "fields" -> plain JS value ----------
 function fsValue(v){
