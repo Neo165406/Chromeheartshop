@@ -25,8 +25,9 @@
 <meta id="twitterImage" name="twitter:image" content="https://fashion1sta.com/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://firestore.googleapis.com">
-<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="modulepreload" href="js/cart.js">
+<link rel="modulepreload" href="js/favorites.js">
+<link rel="modulepreload" href="js/footer.js">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -195,9 +196,12 @@
 </div>
 
 <script type="module">
-// Firebase/cart are loaded dynamically (not as static imports) so that if
+// Cart/favorites are loaded dynamically (not as static imports) so that if
 // either module fails to load — wrong path, network hiccup, whatever —
 // it's a catchable error instead of silently killing this entire script.
+// Firebase is only loaded when it's really needed (see init() below): the
+// server normally embeds the product, so the heavy Firebase SDK download
+// no longer blocks the page from becoming interactive.
 let fbApi = null;   // { db, collection, getDocs, getDoc, doc, query, where, limit }
 let cartApi = null; // { addToCart, buyNowWhatsApp, renderCartDrawer, updateCartBadge, checkoutWhatsApp, showToast }
 let favApi = null;  // { isFavorite, toggleFavorite }
@@ -420,6 +424,14 @@ function iconFor(type){
   return crossSVG();
 }
 
+// ---------- Firebase (fallback only) ----------
+function makeFbApi(fb){
+  return {
+    db: fb.db, collection: fb.collection, getDocs: fb.getDocs,
+    getDoc: fb.getDoc, doc: fb.doc, query: fb.query, where: fb.where, limit: fb.limit
+  };
+}
+
 // ---------- Load ONE product by ID (fast + light — no need to pull the
 // whole catalog just to show one item). Retries once before giving up, so
 // a slow-but-successful Firestore read is never mistaken for a missing
@@ -478,6 +490,19 @@ function miniCard(p,i){
       </a>
       <div class="price"><span class="now">BDT ${p.price}</span>${p.was?`<span class="was">BDT ${p.was}</span>`:''}</div>
     </div>`;
+}
+
+// Background fill for the "Similar Products" grid — used when the server
+// gave up on that (slow) query to keep the page fast. Never blocks the page.
+async function fillSimilarLater(product){
+  try{
+    if(!fbApi) fbApi = makeFbApi(await import('./js/firebase-config.js'));
+    const similar = await loadSimilarProducts(product.category, product.id);
+    const grid = document.getElementById('similarGrid');
+    if(grid && similar.length) grid.innerHTML = similar.map((p,i)=>miniCard(p,i)).join('');
+  }catch(e){
+    console.error('Late similar-products load failed:', e);
+  }
 }
 
 let qty = 1;
@@ -666,44 +691,57 @@ async function init(){
   const id = params.get('id');
   const root = document.getElementById('productRoot');
 
-  try{
-    favApi = await import('./js/favorites.js');
-  }catch(e){
-    console.error('Favorites module failed to load:', e);
-  }
-
-  try{
-    const [fb, cart] = await Promise.all([
-      import('./js/firebase-config.js'),
-      import('./js/cart.js')
-    ]);
-    fbApi = {
-      db: fb.db, collection: fb.collection, getDocs: fb.getDocs,
-      getDoc: fb.getDoc, doc: fb.doc, query: fb.query, where: fb.where, limit: fb.limit
-    };
-    cartApi = cart;
-    cartApi.updateCartBadge();
-    cartApi.renderCartDrawer();
-  }catch(e){
-    console.error('Firebase/cart modules failed to load:', e);
-  }
-
   // If the server already fetched and embedded this product (see
-  // api/product-page.js), hydrate straight from that — the page already
-  // showed the real product before this script even ran, and this just
-  // upgrades that static snapshot into the fully interactive version
+  // api/product-page.js), we can hydrate straight from that — the page
+  // already showed the real product before this script even ran, and this
+  // just upgrades that static snapshot into the fully interactive version
   // without a second trip to Firestore.
+  let ssrPayload = null;
   const ssrDataEl = document.getElementById('__SSR_DATA__');
   if(ssrDataEl){
     try{
       const payload = JSON.parse(ssrDataEl.textContent);
-      if(payload && payload.product){
-        renderProduct(payload.product, payload.similar || []);
-        return;
-      }
+      if(payload && payload.product) ssrPayload = payload;
+    }catch(e){
+      console.error('SSR data unreadable, falling back to client fetch:', e);
+    }
+  }
+
+  // favorites.js and cart.js only use localStorage — they're tiny, so load
+  // them together (in parallel). The heavy Firebase SDK is NOT loaded here:
+  // it used to block this whole page from becoming interactive.
+  const [favRes, cartRes] = await Promise.allSettled([
+    import('./js/favorites.js'),
+    import('./js/cart.js')
+  ]);
+  if(favRes.status === 'fulfilled') favApi = favRes.value;
+  else console.error('Favorites module failed to load:', favRes.reason);
+  if(cartRes.status === 'fulfilled'){
+    cartApi = cartRes.value;
+    cartApi.updateCartBadge();
+    cartApi.renderCartDrawer();
+  } else {
+    console.error('Cart module failed to load:', cartRes.reason);
+  }
+
+  if(ssrPayload){
+    try{
+      const similarList = ssrPayload.similar || [];
+      renderProduct(ssrPayload.product, similarList);
+      // Server skipped the similar-products query (it was slow) — fill it in
+      // quietly in the background instead of holding the page back.
+      if(!similarList.length && ssrPayload.product.category) fillSimilarLater(ssrPayload.product);
+      return;
     }catch(e){
       console.error('SSR hydration failed, falling back to client fetch:', e);
     }
+  }
+
+  // Fallback path (no server-embedded product): only now do we need Firebase.
+  try{
+    fbApi = makeFbApi(await import('./js/firebase-config.js'));
+  }catch(e){
+    console.error('Firebase module failed to load:', e);
   }
 
   if(!id){
