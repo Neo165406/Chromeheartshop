@@ -1,11 +1,14 @@
 {
   "functions": {
     "api/generate-image.js": { "maxDuration": 60 },
-    "api/product-page.js": { "includeFiles": "templates/product.html" }
+    "api/product-page.js": { "includeFiles": "templates/product.html" },
+    "api/home-page.js": { "includeFiles": "templates/index.html" }
   },
   "rewrites": [
     { "source": "/sitemap.xml", "destination": "/api/sitemap" },
     { "source": "/glasses", "destination": "/glasses.html" },
-    { "source": "/product.html", "destination": "/api/product-page" }
+    { "source": "/product.html", "destination": "/api/product-page" },
+    { "source": "/", "destination": "/api/home-page" },
+    { "source": "/index.html", "destination": "/api/home-page" }
   ]
 }
