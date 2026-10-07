@@ -21,7 +21,7 @@ const SITE = 'https://fashion1sta.com';
 // Bump this whenever the share image changes — it makes Instagram / Facebook /
 // WhatsApp treat the image as a brand-new URL instead of reusing a cached
 // (possibly blank) preview from an earlier failed scrape.
-const OG_IMAGE_VERSION = '3';
+const OG_IMAGE_VERSION = '4';
 
 // ---------- Firestore REST "fields" -> plain JS value ----------
 function fsValue(v){
@@ -178,7 +178,15 @@ function withShareImage(html, req){
   const rawHost = String((req && req.headers && (req.headers['x-forwarded-host'] || req.headers.host)) || '').split(',')[0].trim();
   const origin = rawHost && !/localhost|\.vercel\.app$/i.test(rawHost) ? `https://${rawHost}` : SITE;
   const img = `${origin}/og.png?v=${OG_IMAGE_VERSION}`;
+  // Favicon: the old favicon.svg was removed; the brand logo now lives at
+  // /favicon.png (512x512), used for the tab icon and the iOS home-screen icon.
+  const iconTags = `<link rel="icon" type="image/png" sizes="512x512" href="/favicon.png">\n`
+    + `<link rel="apple-touch-icon" href="/favicon.png">`;
   return html
+    .replace(
+      '<link rel="icon" type="image/svg+xml" sizes="any" href="/favicon.svg">\n<link rel="shortcut icon" type="image/svg+xml" href="/favicon.svg">',
+      () => iconTags
+    )
     .replace(
       '<meta property="og:image" content="https://fashion1sta.com/og-image.png">',
       () => `<meta property="og:image" content="${img}">\n`
