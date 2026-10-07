@@ -600,10 +600,9 @@ async function placeOrder(){
   };
 
   if(cartApi) cartApi.clearCart();
+  // WhatsApp does NOT open automatically — the buyer taps the
+  // "Send order on WhatsApp" button on this confirmation screen if they want to.
   renderConfirm(waUrl, invoice);
-  // Try to open WhatsApp right away. If the browser blocks the popup, the
-  // "Send order on WhatsApp" button on the confirmation screen does the same.
-  try{ window.open(waUrl, '_blank'); }catch(e){}
 }
 
 async function loadDeliverySettings(){
