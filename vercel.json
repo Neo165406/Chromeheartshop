@@ -6,6 +6,14 @@
     "api/home-page.js": { "includeFiles": "templates/index.html" },
     "api/og-image.js": { "includeFiles": "og-image.png" }
   },
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "www.fashion1sta.com" }],
+      "destination": "https://fashion1sta.com/$1",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     { "source": "/sitemap.xml", "destination": "/api/sitemap" },
     { "source": "/og.png", "destination": "/api/og-image" },
