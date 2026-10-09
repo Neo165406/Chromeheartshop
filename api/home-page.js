@@ -18,11 +18,11 @@ const FIREBASE_API_KEY = 'AIzaSyC_Fgdc_JlFlrPwByNQIa3e-MMGmoRXRWE'; // public we
 const PROJECT_ID = 'argentum-3709f';
 const SITE = 'https://fashion1sta.com';
 
-// Share image: a plain static file in the repo root (og-image.jpg, 1200x630,
-// under 100 KB). Served directly — no function, no query string — because
+// Share image: a plain static file in the repo root (1200x630, under 100 KB,
+// black background). Served directly — no function, no query string — because
 // WhatsApp is picky about both. If the image ever changes, give the new file a
 // new name so Instagram / Facebook / WhatsApp don't reuse a cached preview.
-const OG_IMAGE_FILE = 'og-image.jpg';
+const OG_IMAGE_FILE = 'og-image-black.jpg';
 
 // Every Firestore call gets a hard time limit and one retry, so a slow or
 // flaky database can't hold the page hostage — and a single hiccup doesn't
@@ -205,7 +205,7 @@ function reelMarkup(r){
 }
 
 // Share-preview (Instagram / WhatsApp / Facebook) image tags. The image is
-// the static /og-image.jpg, on the host that actually served this request, so
+// the static /og-image-black.jpg, on the host that actually served this request, so
 // it can never point at a host that redirects. Width/height/type are declared
 // so the crawler doesn't have to download the file just to size the card.
 function withShareImage(html, req){
