@@ -231,11 +231,17 @@ module.exports = async function handler(req, res){
   const similar = await fetchSimilar(product.category, product.id);
 
   const url = `${SITE}/product.html?id=${encodeURIComponent(product.id)}`;
-  const desc = product.description
-    ? product.description.replace(/\s+/g,' ').trim().slice(0,155)
-    : `${product.name} — BDT ${product.price}. Neon silver accessories and eyewear from FASHIONISTA, cash on delivery across Bangladesh.`;
+  // SEO override for this exact product only.
+  const isChromeHeartRimlessSilver = product.id === 'hRTjTVeGAcjWuwFAMwcs';
+  const desc = isChromeHeartRimlessSilver
+    ? 'Shop silver rimless glasses with Chrome Hearts-inspired detailing at Fashion1sta. Stylish silver-tone eyewear for everyday streetwear.'
+    : (product.description
+      ? product.description.replace(/\s+/g,' ').trim().slice(0,155)
+      : `${product.name} — BDT ${product.price}. Neon silver accessories and eyewear from FASHIONISTA, cash on delivery across Bangladesh.`);
   const image = (product.images && product.images[0]) || product.imageUrl || `${SITE}/og-image.jpg`;
-  const titleTag = `${esc(product.name)} — FASHIONISTA`;
+  const titleTag = isChromeHeartRimlessSilver
+    ? 'Chrome Heart Rimless Silver Glasses | Fashion1sta'
+    : `${esc(product.name)} — FASHIONISTA`;
 
   html = html
     .replace('<title>FASHIONISTA</title>', `<title>${titleTag}</title>`)
