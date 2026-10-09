@@ -216,20 +216,27 @@ let galleryIndex = 0;
 // rare page load that reaches this script without server-rendered data. ----------
 function updateSEOTags(product){
   const url = `https://fashion1sta.com/product.html?id=${encodeURIComponent(product.id)}`;
-  const desc = product.description
-    ? product.description.replace(/\s+/g,' ').trim().slice(0,155)
-    : `${product.name} — BDT ${product.price}. Neon silver accessories and eyewear from FASHIONISTA, cash on delivery across Bangladesh.`;
+  // SEO override for this exact product only.
+  const isChromeHeartRimlessSilver = product.id === 'hRTjTVeGAcjWuwFAMwcs';
+  const desc = isChromeHeartRimlessSilver
+    ? 'Shop silver rimless glasses with Chrome Hearts-inspired detailing at Fashion1sta. Stylish silver-tone eyewear for everyday streetwear.'
+    : (product.description
+      ? product.description.replace(/\s+/g,' ').trim().slice(0,155)
+      : `${product.name} — BDT ${product.price}. Neon silver accessories and eyewear from FASHIONISTA, cash on delivery across Bangladesh.`);
   const image = (product.images && product.images[0]) || product.imageUrl || 'https://fashion1sta.com/og-image.png';
+  const seoTitle = isChromeHeartRimlessSilver
+    ? 'Chrome Heart Rimless Silver Glasses | Fashion1sta'
+    : `${product.name} — FASHIONISTA`;
 
-  document.title = `${product.name} — FASHIONISTA`;
+  document.title = seoTitle;
   document.getElementById('canonicalLink').setAttribute('href', url);
   const descMeta = document.querySelector('meta[name="description"]');
   if(descMeta) descMeta.setAttribute('content', desc);
-  document.getElementById('ogTitle').setAttribute('content', `${product.name} — FASHIONISTA`);
+  document.getElementById('ogTitle').setAttribute('content', seoTitle);
   document.getElementById('ogDescription').setAttribute('content', desc);
   document.getElementById('ogUrl').setAttribute('content', url);
   document.getElementById('ogImage').setAttribute('content', image);
-  document.getElementById('twitterTitle').setAttribute('content', `${product.name} — FASHIONISTA`);
+  document.getElementById('twitterTitle').setAttribute('content', seoTitle);
   document.getElementById('twitterDescription').setAttribute('content', desc);
   const twImg = document.getElementById('twitterImage');
   if(twImg) twImg.setAttribute('content', image);
