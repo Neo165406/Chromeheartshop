@@ -24,6 +24,17 @@ const SITE = 'https://fashion1sta.com';
 // new name so Instagram / Facebook / WhatsApp don't reuse a cached preview.
 const OG_IMAGE_FILE = 'og-image.jpg';
 
+// Every Firestore call gets a hard time limit and one retry, so a slow or
+// flaky database can't hold the page hostage — and a single hiccup doesn't
+// turn into an empty page. Worst case per collection is ~2 x 3s.
+const FETCH_TIMEOUT_MS = 3000;
+const FETCH_ATTEMPTS = 2;
+
+// Search-engine crawlers. If the data genuinely can't be fetched, they get a
+// 503 (try again later) instead of an empty 200 page, which Google would
+// otherwise file as a "Soft 404" for the homepage.
+const CRAWLER_UA = /googlebot|google-inspectiontool|googleother|adsbot-google|bingbot|duckduckbot|yandexbot|baiduspider/i;
+
 // ---------- Firestore REST "fields" -> plain JS value ----------
 function fsValue(v){
   if(v == null) return null;
@@ -41,15 +52,15 @@ function fsFields(fields){
   return out;
 }
 
-// Fetches every document in a collection (paginated). Throws on failure —
-// callers decide how to fail soft.
-async function listCollection(name){
+// Fetches every document in a collection (paginated), with a per-request
+// timeout. Throws on failure — callers decide how to fail soft.
+async function listCollectionOnce(name){
   const docs = [];
   let pageToken = '';
   do{
     const url = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/${name}?pageSize=300&key=${FIREBASE_API_KEY}`
       + (pageToken ? `&pageToken=${encodeURIComponent(pageToken)}` : '');
-    const r = await fetch(url);
+    const r = await fetch(url, { signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) });
     if(!r.ok) throw new Error(`Firestore list(${name}) failed: ${r.status}`);
     const j = await r.json();
     (j.documents || []).forEach(doc => {
@@ -58,6 +69,18 @@ async function listCollection(name){
     pageToken = j.nextPageToken || '';
   } while(pageToken);
   return docs;
+}
+async function listCollection(name){
+  let lastErr;
+  for(let attempt = 1; attempt <= FETCH_ATTEMPTS; attempt++){
+    try{
+      return await listCollectionOnce(name);
+    }catch(e){
+      lastErr = e;
+      console.error(`Firestore list(${name}) attempt ${attempt}/${FETCH_ATTEMPTS} failed:`, e);
+    }
+  }
+  throw lastErr;
 }
 
 function esc(s){
@@ -84,6 +107,8 @@ function isDirectVideo(url){
 }
 
 // ---------- Section markup (mirrors the client's render functions) ----------
+// Hero slides intentionally render no title <h1>: the page's single h1 is the
+// static visually-hidden one in the template (id="staticH1").
 function slidesMarkup(slides){
   return slides.map(s=>{
     const bg = s.imageUrl ? ` style="background-image:url('${esc(s.imageUrl)}');"` : '';
@@ -92,13 +117,22 @@ function slidesMarkup(slides){
         <div class="slide-bg"${bg}></div>
         <div class="sglow"></div>
         <div class="slide-icon">${s.imageUrl ? '' : slideIcon(s.icon||'cross')}</div>
-        ${s.title ? `<h1 class="display">${esc(s.title)}</h1>` : ''}
         ${s.text ? `<p>${esc(s.text)}</p>` : ''}
       </div>`;
   }).join('');
 }
 function dotsMarkup(slides){
   return slides.map((s,i)=>`<span class="dot${i===0?' active':''}" data-i="${i}"></span>`).join('');
+}
+
+// The template's client script (initHero) re-renders the slides after the
+// page loads and would put the slide title back as an <h1>. Strip that one
+// expression out of the served HTML so the hero never gets a title h1,
+// before or after hydration. If the template line ever changes, this simply
+// does nothing (the replace finds no match) — it can't break the page.
+const CLIENT_SLIDE_TITLE_EXPR = '${s.title ? `<h1 class="display">${s.title}</h1>` : \'\'}';
+function withoutSlideTitles(html){
+  return html.split(CLIENT_SLIDE_TITLE_EXPR).join('');
 }
 
 function cardMarkup(p, i, eagerCount){
@@ -217,6 +251,7 @@ module.exports = async function handler(req, res){
   }
 
   html = withShareImage(html, req);
+  html = withoutSlideTitles(html);
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
 
@@ -229,12 +264,22 @@ module.exports = async function handler(req, res){
       listCollection('collage')
     ]);
   }catch(e){
-    // Fail soft: any single failure here means we can't trust the whole
-    // batch, so serve the template completely unmodified. The client
-    // script's own per-section fetches (with their own retry logic) take
-    // over exactly as before this project had SSR.
-    console.error('SSR homepage data fetch failed, serving unmodified template:', e);
+    console.error('SSR homepage data fetch failed after retries:', e);
     res.setHeader('Cache-Control', 'no-store');
+
+    // Crawlers: tell them to come back later rather than letting them index
+    // an empty shell (which Google reports as a "Soft 404").
+    const ua = String((req && req.headers && req.headers['user-agent']) || '');
+    if(CRAWLER_UA.test(ua)){
+      res.setHeader('Retry-After', '120');
+      res.status(503).send('Service temporarily unavailable. Please try again shortly.');
+      return;
+    }
+
+    // Everyone else: fail soft. We can't trust the whole batch, so serve the
+    // template completely unmodified. The client script's own per-section
+    // fetches (with their own retry logic) take over exactly as before this
+    // project had SSR.
     res.status(200).send(html);
     return;
   }
