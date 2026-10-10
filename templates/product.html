@@ -526,7 +526,7 @@ function getSizes(product){
   return [];
 }
 
-function renderProduct(product, similar){
+function renderProduct(product, similar, reviews){
   currentProduct = product;
   selectedSize = null;
   const root = document.getElementById('productRoot');
@@ -681,6 +681,12 @@ function renderProduct(product, similar){
 
   document.getElementById('similarGrid').innerHTML = similar.map((p,i)=>miniCard(p,i)).join('');
 
+  // Customer reviews section (js/reviews.js). `reviews` is the list the server
+  // embedded, or undefined/null when the module should fetch them itself.
+  import('./js/reviews.js')
+    .then(m => m.mountReviews(product, root, Array.isArray(reviews) ? reviews : null))
+    .catch(e => console.error('Reviews module failed to load:', e));
+
   if(cartApi){ cartApi.updateCartBadge(); cartApi.renderCartDrawer(); }
 }
 
@@ -734,7 +740,7 @@ async function init(){
   if(ssrPayload){
     try{
       const similarList = ssrPayload.similar || [];
-      renderProduct(ssrPayload.product, similarList);
+      renderProduct(ssrPayload.product, similarList, ssrPayload.reviews);
       // Server skipped the similar-products query (it was slow) — fill it in
       // quietly in the background instead of holding the page back.
       if(!similarList.length && ssrPayload.product.category) fillSimilarLater(ssrPayload.product);
