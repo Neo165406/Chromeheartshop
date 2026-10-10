@@ -47,6 +47,34 @@ service cloud.firestore {
       allow read, update, delete: if isAdmin();
     }
 
+    // Product reviews: anyone can read; only a signed-in customer can post one,
+    // and only as themselves. The document id must be "<productId>_<uid>", so
+    // each customer can review each product once. Customers can delete their
+    // own review; admin can delete/edit any (moderation).
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasOnly(['productId', 'uid', 'name', 'rating', 'comment', 'createdAt'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.productId is string
+        && request.resource.data.productId.size() > 0
+        && request.resource.data.productId.size() <= 100
+        && reviewId == request.resource.data.productId + '_' + request.auth.uid
+        && request.resource.data.name is string
+        && request.resource.data.name.size() >= 1
+        && request.resource.data.name.size() <= 60
+        && request.resource.data.rating is int
+        && request.resource.data.rating >= 1
+        && request.resource.data.rating <= 5
+        && request.resource.data.comment is string
+        && request.resource.data.comment.size() >= 5
+        && request.resource.data.comment.size() <= 1000
+        && request.resource.data.createdAt == request.time;
+      allow delete: if request.auth != null
+        && (resource.data.uid == request.auth.uid || isAdmin());
+      allow update: if isAdmin();
+    }
+
     // Customer accounts: a signed-in customer can manage only their own profile
     match /customers/{uid} {
       allow read, update, delete: if request.auth != null && request.auth.uid == uid;
