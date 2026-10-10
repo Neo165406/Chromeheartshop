@@ -165,6 +165,18 @@ document.querySelectorAll('.tab').forEach(t=>{
   });
 });
 
+// ---------- Return to the product after logging in from a review prompt ----------
+// js/reviews.js links here as account.html?next=product.html%3Fid%3D<id>.
+// Only that exact shape is accepted, so this can never redirect off-site.
+function goNext(){
+  const next = new URLSearchParams(location.search).get('next');
+  if(next && /^product\.html\?id=[A-Za-z0-9_-]{1,100}$/.test(next)){
+    location.replace('/' + next + '#reviews');
+    return true;
+  }
+  return false;
+}
+
 // ---------- Sign in ----------
 async function signIn(){
   const btn = document.getElementById('siBtn');
@@ -177,6 +189,7 @@ async function signIn(){
   try{
     await signInWithEmailAndPassword(auth, email, pass);
     // onAuthStateChanged below shows the account view.
+    if(goNext()) return;
   }catch(e){
     console.error('Sign in failed:', e.code, e);
     err.textContent = authMessage(e, 'signin');
@@ -213,6 +226,7 @@ async function signUp(){
     // Reflect the name immediately (onAuthStateChanged may have fired before updateProfile finished).
     document.getElementById('accountName').textContent = name;
     document.getElementById('accountAvatar').textContent = name.trim()[0].toUpperCase();
+    if(goNext()) return;
   }catch(e){
     console.error('Sign up failed:', e.code, e);
     err.textContent = authMessage(e, 'signup');
