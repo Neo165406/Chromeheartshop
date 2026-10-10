@@ -25,6 +25,7 @@ const SITE = 'https://fashion1sta.com';
 // without it and the browser fills it in afterwards.
 const PRODUCT_TIMEOUT_MS = 4000;
 const SIMILAR_TIMEOUT_MS = 1500;
+const REVIEWS_TIMEOUT_MS = 1500;
 
 // ---------- Firestore REST "fields" -> plain JS value ----------
 function fsValue(v){
@@ -33,6 +34,7 @@ function fsValue(v){
   if('integerValue' in v) return Number(v.integerValue);
   if('doubleValue' in v) return Number(v.doubleValue);
   if('booleanValue' in v) return v.booleanValue;
+  if('timestampValue' in v) return v.timestampValue;
   if('arrayValue' in v) return (v.arrayValue.values || []).map(fsValue);
   if('mapValue' in v) return fsFields(v.mapValue.fields || {});
   return null;
@@ -79,6 +81,49 @@ async function fetchSimilar(category, excludeId){
   }catch(e){
     console.error('SSR similar-products fetch failed:', e);
     return [];
+  }
+}
+
+// Real customer reviews for this product (Firestore "reviews" collection,
+// written by js/reviews.js). Returns an array (possibly empty), or null if the
+// query failed/timed out — in that case the browser loads them itself and no
+// review markup is put in the schema (we never guess).
+async function fetchReviews(productId){
+  try{
+    const url = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents:runQuery?key=${FIREBASE_API_KEY}`;
+    const body = {
+      structuredQuery: {
+        from: [{ collectionId: 'reviews' }],
+        where: { fieldFilter: { field: { fieldPath: 'productId' }, op: 'EQUAL', value: { stringValue: productId } } },
+        limit: 100
+      }
+    };
+    const r = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(REVIEWS_TIMEOUT_MS)
+    });
+    if(!r.ok) return null;
+    const rows = await r.json();
+    return rows
+      .filter(row => row.document)
+      .map(row => {
+        const d = fsFields(row.document.fields || {});
+        return {
+          id: row.document.name.split('/').pop(),
+          uid: String(d.uid || ''),
+          name: String(d.name || 'Customer').slice(0, 60),
+          rating: Number(d.rating),
+          comment: String(d.comment || '').slice(0, 1000),
+          createdAt: d.createdAt || null
+        };
+      })
+      .filter(rv => Number.isInteger(rv.rating) && rv.rating >= 1 && rv.rating <= 5)
+      .sort((a, b) => Date.parse(b.createdAt || 0) - Date.parse(a.createdAt || 0));
+  }catch(e){
+    console.error('SSR reviews fetch failed:', e);
+    return null;
   }
 }
 
@@ -228,7 +273,10 @@ module.exports = async function handler(req, res){
     return;
   }
 
-  const similar = await fetchSimilar(product.category, product.id);
+  const [similar, reviews] = await Promise.all([
+    fetchSimilar(product.category, product.id),
+    fetchReviews(product.id)
+  ]);
 
   const url = `${SITE}/product.html?id=${encodeURIComponent(product.id)}`;
   // SEO override for this exact product only.
@@ -286,8 +334,7 @@ module.exports = async function handler(req, res){
       `<meta id="twitterImage" name="twitter:image" content="${esc(image)}">`
     );
 
-  const jsonLd = `
-<script type="application/ld+json" id="productLd">${JSON.stringify({
+  const productSchema = {
     "@context": "https://schema.org",
     "@type": "Product",
     "name": product.name,
@@ -302,7 +349,29 @@ module.exports = async function handler(req, res){
       "price": product.price,
       "availability": product.stock === 0 ? "https://schema.org/OutOfStock" : "https://schema.org/InStock"
     }
-  }).replace(/</g,'\\u003c')}</script>
+  };
+  // Only real customer reviews ever go into the schema: products with no
+  // reviews (or when the reviews query failed) get no rating markup at all.
+  if(Array.isArray(reviews) && reviews.length){
+    const avg = reviews.reduce((s, rv) => s + rv.rating, 0) / reviews.length;
+    productSchema.aggregateRating = {
+      "@type": "AggregateRating",
+      "ratingValue": Math.round(avg * 10) / 10,
+      "reviewCount": reviews.length,
+      "bestRating": 5,
+      "worstRating": 1
+    };
+    productSchema.review = reviews.slice(0, 5).map(rv => ({
+      "@type": "Review",
+      "author": { "@type": "Person", "name": rv.name || 'Customer' },
+      "datePublished": rv.createdAt ? String(rv.createdAt).slice(0, 10) : undefined,
+      "reviewRating": { "@type": "Rating", "ratingValue": rv.rating, "bestRating": 5, "worstRating": 1 },
+      "reviewBody": rv.comment || undefined
+    }));
+  }
+
+  const jsonLd = `
+<script type="application/ld+json" id="productLd">${JSON.stringify(productSchema).replace(/</g,'\\u003c')}</script>
 <script type="application/ld+json" id="breadcrumbLd">${JSON.stringify({
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -316,7 +385,7 @@ module.exports = async function handler(req, res){
   html = html.replace('</head>', jsonLd);
 
   const snapshot = renderSnapshot(product, similar);
-  const ssrDataScript = `<script type="application/json" id="__SSR_DATA__">${JSON.stringify({ product, similar }).replace(/</g,'\\u003c')}</script>`;
+  const ssrDataScript = `<script type="application/json" id="__SSR_DATA__">${JSON.stringify({ product, similar, reviews }).replace(/</g,'\\u003c')}</script>`;
   html = html.replace(
     '<div id="productRoot">\n  <p class="not-found">Loading...</p>\n</div>',
     `<div id="productRoot">${snapshot}</div>\n${ssrDataScript}`
