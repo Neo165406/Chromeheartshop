@@ -131,6 +131,109 @@ function esc(s){
   return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+// ---------- SEO: keywords / title / description ----------
+// Brand keywords go on every product page (this is what makes searches like
+// "fashionista clothing" land on the site). Category + product-name keywords
+// are added on top, so every product gets its own relevant Bangladesh terms.
+const BRAND_KEYWORDS = [
+  'fashionista',
+  'fashionista bd',
+  'fashionista bangladesh',
+  'fashionista clothing',
+  'fashion1sta',
+  'online fashion store bangladesh',
+  'cash on delivery bangladesh'
+];
+
+// Matched against "<category> <product name>" (lowercase).
+const CATEGORY_KEYWORDS = [
+  { match: /glass|eyewear/, words: [
+    'sunglasses price in bangladesh', 'sunglasses bangladesh', "men's sunglasses bd",
+    'gothic sunglasses bangladesh', 'rimless glasses bd', 'aviator sunglasses bd',
+    'round sunglasses bd', 'gothic accessories bd'
+  ]},
+  { match: /cloth|t-?shirt|\btee\b|shirt|hoodie|jersey/, words: [
+    'clothing', 'fashionista clothing', "men's clothing bd", "men's t-shirt bangladesh",
+    'gothic t-shirt bd', 'gothic clothing bangladesh', 'online clothing store bangladesh',
+    't-shirt price in bangladesh'
+  ]},
+  { match: /chain|necklace|pendant/, words: [
+    'chain necklace bangladesh', "men's chain necklace bd", 'chain necklace bd',
+    'gothic jewelry bangladesh', 'silver chain price in bangladesh'
+  ]},
+  { match: /\brings?\b/, words: [
+    "men's rings bangladesh", 'silver ring bd', 'silver ring for men bd',
+    'gothic jewelry bangladesh', 'ring price in bangladesh'
+  ]},
+  { match: /bracelet|bangle/, words: [
+    "men's bracelet bangladesh", 'silver bracelet bd', 'silver bracelet men bd',
+    'gothic jewelry bangladesh', 'bracelet price in bangladesh'
+  ]},
+  { match: /grill|grillz|teeth/, words: [
+    'teeth grillz bangladesh', 'teeth grillz bd', 'grillz price in bangladesh'
+  ]},
+  { match: /bandana/, words: [
+    'bandana bangladesh', 'bandana bd', 'bandana price in bangladesh'
+  ]},
+  { match: /watch/, words: [
+    "men's watches bangladesh", 'watch price in bangladesh', 'watch bd'
+  ]}
+];
+
+// Extra keywords picked up from words inside the product name.
+const NAME_KEYWORDS = [
+  { match: /chrome\s*hearts?/, words: [
+    'chrome hearts bangladesh', 'chrome hearts inspired bd', 'chrome heart price in bangladesh', 'chrome hearts glasses bd'
+  ]},
+  { match: /rimless/, words: ['rimless sunglasses price in bangladesh', 'rimless glasses bd'] },
+  { match: /aviator/, words: ['aviator sunglasses bd', 'aviator sunglasses price in bangladesh'] },
+  { match: /\bround\b/, words: ['round sunglasses bd'] },
+  { match: /y2k|retro|star/, words: ['retro y2k sunglasses bd', 'y2k accessories bangladesh'] },
+  { match: /gold/, words: ['gold sunglasses bangladesh'] },
+  { match: /silver/, words: ['silver accessories shop bd'] },
+  { match: /black/, words: ['black sunglasses bd'] },
+  { match: /raglan|long sleeve/, words: ['raglan t-shirt bd', 'long sleeve t-shirt bangladesh'] }
+];
+
+function buildKeywords(product){
+  const name = String(product.name || '').trim();
+  const lowerName = name.toLowerCase();
+  const hay = `${product.category || ''} ${name}`.toLowerCase();
+  const list = [];
+  if(name){
+    list.push(lowerName, `${lowerName} price in bangladesh`, `${lowerName} bd`);
+  }
+  CATEGORY_KEYWORDS.forEach(c => { if(c.match.test(hay)) list.push(...c.words); });
+  NAME_KEYWORDS.forEach(c => { if(c.match.test(hay)) list.push(...c.words); });
+  list.push(...BRAND_KEYWORDS);
+  // de-duplicate (case-insensitive), keep order, cap at 30
+  const seen = new Set();
+  const out = [];
+  for(const k of list){
+    const key = k.toLowerCase();
+    if(!seen.has(key)){ seen.add(key); out.push(k); }
+  }
+  return out.slice(0, 30);
+}
+
+function buildDescription(product){
+  const suffix = ' Price in Bangladesh — cash on delivery.';
+  const clean = product.description ? String(product.description).replace(/\s+/g,' ').trim() : '';
+  if(!clean){
+    const cat = product.category ? `${product.category} from FASHIONISTA` : 'from FASHIONISTA';
+    return `${product.name} — BDT ${product.price}. ${cat}, price in Bangladesh, cash on delivery nationwide.`;
+  }
+  const room = 160 - suffix.length;
+  let base = clean;
+  if(base.length > room){
+    base = base.slice(0, room);
+    const lastSpace = base.lastIndexOf(' ');
+    if(lastSpace > 60) base = base.slice(0, lastSpace);
+    base = base.replace(/[\s,;:.\-—]+$/, '') + '.';
+  }
+  return base + suffix;
+}
+
 const DEFAULT_CLOTHING_SIZES = ['M','L','XL'];
 function getSizes(product){
   if(Array.isArray(product.sizes) && product.sizes.length) return product.sizes;
@@ -282,20 +385,19 @@ module.exports = async function handler(req, res){
   // SEO override for this exact product only.
   const isChromeHeartRimlessSilver = product.id === 'hRTjTVeGAcjWuwFAMwcs';
   const desc = isChromeHeartRimlessSilver
-    ? 'Shop silver rimless glasses with Chrome Hearts-inspired detailing at Fashion1sta. Stylish silver-tone eyewear for everyday streetwear.'
-    : (product.description
-      ? product.description.replace(/\s+/g,' ').trim().slice(0,155)
-      : `${product.name} — BDT ${product.price}. Neon silver accessories and eyewear from FASHIONISTA, cash on delivery across Bangladesh.`);
+    ? 'Shop silver rimless glasses with Chrome Hearts-inspired detailing at Fashion1sta. Stylish silver-tone eyewear for everyday streetwear. Price in Bangladesh — cash on delivery.'
+    : buildDescription(product);
   const image = (product.images && product.images[0]) || product.imageUrl || `${SITE}/og-image.jpg`;
   const titleTag = isChromeHeartRimlessSilver
-    ? 'Chrome Heart Rimless Silver Glasses | Fashion1sta'
-    : `${esc(product.name)} — FASHIONISTA`;
+    ? 'Chrome Heart Rimless Silver Glasses Price in Bangladesh | Fashion1sta'
+    : `${esc(product.name)} Price in Bangladesh — FASHIONISTA`;
+  const keywordsContent = esc(buildKeywords(product).join(', '));
 
   html = html
     .replace('<title>FASHIONISTA</title>', `<title>${titleTag}</title>`)
     .replace(
       '<meta name="description" content="Shop neon silver accessories and eyewear at FASHIONISTA. Cash on delivery across Bangladesh.">',
-      `<meta name="description" content="${esc(desc)}">`
+      `<meta name="description" content="${esc(desc)}">\n<meta name="keywords" content="${keywordsContent}">`
     )
     .replace(
       '<link rel="canonical" id="canonicalLink" href="https://fashion1sta.com/product.html">',
