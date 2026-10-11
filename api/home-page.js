@@ -236,7 +236,45 @@ function withShareImage(html, req){
     .replace(
       '<meta name="twitter:image" content="https://fashion1sta.com/og-image.png">',
       () => `<meta name="twitter:image" content="${img}">`
+    )
+    // Structured data: give the OnlineStore entity an image and a logo.
+    // Google reads these (not just og:image) when choosing the picture shown
+    // next to a search result. Absolute URLs on the canonical domain.
+    .replace(
+      '"areaServed": "BD",',
+      () => `"image": "${SITE}/${OG_IMAGE_FILE}",\n  "logo": "${SITE}/favicon.png",\n  "areaServed": "BD",`
     );
+}
+
+// schema.org ItemList of the products shown on the homepage, each with its
+// image. This is what lets Google pair the homepage result with product
+// pictures instead of showing a price with no image. Only products that have
+// an absolute http(s) image URL are included.
+function itemListJsonLd(products){
+  const seen = new Set();
+  const items = [];
+  for(const p of products){
+    if(!p || !p.name || typeof p.imageUrl !== 'string' || !/^https?:\/\//i.test(p.imageUrl)) continue;
+    const pid = p.id || String(p.name||'').toLowerCase().replace(/[^a-z0-9]+/g,'-');
+    if(seen.has(pid)) continue;
+    seen.add(pid);
+    items.push({
+      "@type": "ListItem",
+      "position": items.length + 1,
+      "url": `${SITE}/product.html?id=${encodeURIComponent(pid)}`,
+      "name": p.name,
+      "image": p.imageUrl
+    });
+    if(items.length >= 8) break;
+  }
+  if(!items.length) return '';
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "FASHIONISTA — featured products",
+    "itemListElement": items
+  };
+  return `<script type="application/ld+json" id="homeItemListLd">${JSON.stringify(data).replace(/</g,'\\u003c')}</script>\n`;
 }
 
 module.exports = async function handler(req, res){
@@ -327,6 +365,13 @@ module.exports = async function handler(req, res){
     html = html
       .replace('<section class="collection" id="reels" style="display:none;">', '<section class="collection" id="reels">')
       .replace('<div class="reels-row" id="reelsRow"></div>', `<div class="reels-row" id="reelsRow">${reels.map(reelMarkup).join('')}</div>`);
+  }
+
+  // Product ItemList structured data (featured first, then newest) so the
+  // homepage carries product images in its schema, not just prices.
+  const itemListLd = itemListJsonLd([...arrivals, ...newIn]);
+  if(itemListLd){
+    html = html.replace('</head>', () => itemListLd + '</head>');
   }
 
   const ssrDataScript = `<script type="application/json" id="__SSR_DATA__">${JSON.stringify({ slides, products, reels, collage: collagePhotos }).replace(/</g,'\\u003c')}</script>\n`;
