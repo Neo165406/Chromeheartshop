@@ -35,6 +35,14 @@
     else window.addEventListener('load', start);
   })();
 
+  // Extra sections under the Add to Cart buttons (trust strip, accordions,
+  // "pay after you look" steps). Product pages only. See js/product-extras.js.
+  if(/product/i.test(location.pathname)){
+    import('/js/product-extras.js').catch(function(e){
+      console.error('product-extras load error:', (e && e.code) ? e.code + ' — ' + e.message : e);
+    });
+  }
+
   var CSS = ''
     + '.site-footer{padding:40px 24px 44px;border-top:1px solid var(--line,rgba(184,188,196,0.22));text-align:center;margin:0;background:transparent;font-family:"Instrument Sans",sans-serif;line-height:1.5;color:var(--text-dim,#9195a0);}'
     + '.site-footer *{box-sizing:border-box;}'
