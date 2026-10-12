@@ -10,7 +10,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 import {
   getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile,
-  onAuthStateChanged, signOut
+  onAuthStateChanged, signOut, signInAnonymously
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -31,5 +31,5 @@ export {
   app, db, collection, getDocs, getDoc, addDoc, updateDoc, deleteDoc, setDoc,
   doc, query, where, limit, orderBy, serverTimestamp,
   auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile,
-  onAuthStateChanged, signOut
+  onAuthStateChanged, signOut, signInAnonymously
 };
