@@ -2,7 +2,12 @@
 //
 // Reviews live in the Firestore "reviews" collection, one document per
 // customer per product (document id = "<productId>_<uid>", enforced by
-// firestore.rules). Only signed-in customers can post; anyone can read.
+// firestore.rules). Anyone can read. Posting does NOT need an account: when a
+// visitor submits a review without being logged in, they are signed in
+// silently as an anonymous Firebase user (needs the "Anonymous" sign-in
+// provider enabled in Firebase → Authentication). That anonymous ID is what
+// keeps it to one review per product per browser. A visitor who is already
+// logged in with a real account reviews as that account.
 //
 // The server (api/product-page.js) normally embeds the existing reviews in
 // the page, so the list shows instantly without the Firebase SDK. The SDK is
@@ -133,6 +138,7 @@ export function mountReviews(product, root, initialReviews){
     altName: '',
     authReady: false,
     authFailed: false,
+    submitting: false,
     shown: PAGE_SIZE,
     pick: 0
   };
@@ -203,20 +209,16 @@ export function mountReviews(product, root, initialReviews){
       elForm.innerHTML = '';
       return;
     }
-    if(!state.user){
-      const next = encodeURIComponent('product.html?id=' + product.id);
-      elForm.innerHTML = `<div class="rv-formbox"><h3 class="display">Write a review</h3>
-        <p class="rv-note"><a href="account.html?next=${next}">Log in or create an account</a> to review this product.</p></div>`;
-      return;
-    }
-    const mine = (state.reviews || []).find(r => r.uid === state.user.uid);
+    // A visitor who is not logged in still sees the form — they are signed in
+    // anonymously at the moment they press "Submit review".
+    const mine = state.user ? (state.reviews || []).find(r => r.uid === state.user.uid) : null;
     if(mine){
       elForm.innerHTML = `<div class="rv-formbox"><p class="rv-note">Thanks — you've already reviewed this product. <button type="button" class="rv-link" id="rvDel">Delete my review</button></p><p class="rv-msg err" id="rvDelMsg" style="display:none;"></p></div>`;
       elForm.querySelector('#rvDel').addEventListener('click', deleteMine);
       return;
     }
     state.pick = 0;
-    const prefill = state.user.displayName || state.altName || '';
+    const prefill = (state.user && state.user.displayName) || state.altName || '';
     elForm.innerHTML = `
       <div class="rv-formbox">
         <h3 class="display">Write a review</h3>
@@ -254,17 +256,23 @@ export function mountReviews(product, root, initialReviews){
   }
 
   async function submitReview(){
+    if(state.submitting) return;
     const btn = elForm.querySelector('#rvSubmit');
     const name = elForm.querySelector('#rvName').value.trim().slice(0, MAX_NAME);
     const comment = elForm.querySelector('#rvText').value.trim();
     if(!state.pick){ formMsg('Please choose a star rating.', 'err'); return; }
     if(!name){ formMsg('Please enter your name.', 'err'); return; }
     if(comment.length < MIN_COMMENT){ formMsg('Please write a few words about the product.', 'err'); return; }
-    if(!state.user){ formMsg('Please log in first.', 'err'); return; }
+    state.submitting = true; // keeps the sign-in listener from re-drawing the form mid-submit
     btn.disabled = true;
     formMsg('', '');
     try{
       const f = await loadFb();
+      if(!state.user){
+        // No account needed: sign in silently as an anonymous user.
+        const cred = await f.signInAnonymously(f.auth);
+        state.user = cred.user;
+      }
       const uid = state.user.uid;
       const id = product.id + '_' + uid;
       await f.setDoc(f.doc(f.db, 'reviews', id), {
@@ -277,12 +285,17 @@ export function mountReviews(product, root, initialReviews){
       });
       state.reviews = normalize([{ id, uid, name, rating: state.pick, comment, ms: Date.now() }].concat(state.reviews || []));
       state.loadError = false;
+      state.submitting = false;
       renderAll();
     }catch(e){
       console.error('Posting review failed:', e);
-      formMsg(e && e.code === 'permission-denied'
-        ? "Your review couldn't be posted. Please log in again and retry."
-        : 'Could not post your review. Check your connection and try again.', 'err');
+      state.submitting = false;
+      const code = e && e.code;
+      formMsg(code === 'auth/operation-not-allowed' || code === 'auth/admin-restricted-operation'
+        ? "Reviews aren't available right now. Please try again later."
+        : code === 'permission-denied'
+          ? "Your review couldn't be posted. Please refresh the page and try again."
+          : 'Could not post your review. Check your connection and try again.', 'err');
       btn.disabled = false;
     }
   }
@@ -339,14 +352,14 @@ export function mountReviews(product, root, initialReviews){
     f.onAuthStateChanged(f.auth, async (u) => {
       state.user = u || null;
       state.altName = '';
-      if(u && !u.displayName){
+      if(u && !u.displayName && !u.isAnonymous){
         try{
           const s = await f.getDoc(f.doc(f.db, 'customers', u.uid));
           if(s.exists()) state.altName = s.data().name || '';
         }catch(e){ /* optional */ }
       }
       state.authReady = true;
-      renderForm();
+      if(!state.submitting) renderForm();
     });
   }
 
