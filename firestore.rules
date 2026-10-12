@@ -47,6 +47,27 @@ service cloud.firestore {
       allow read, update, delete: if isAdmin();
     }
 
+    // Visitor counter: every device writes only its own anonymous tracking doc
+    // (a random ID made by the browser — no names, phones or emails). Only the
+    // admin can read the numbers or delete rows. See js/visitor-tracker.js.
+    match /visitors/{deviceId} {
+      allow read, delete: if isAdmin();
+      allow create, update: if deviceId.size() >= 20 && deviceId.size() <= 64
+        && request.resource.data.keys().hasOnly(['firstSeen', 'lastSeen', 'lastPage', 'device', 'visits', 'source'])
+        && request.resource.data.lastSeen == request.time
+        && request.resource.data.firstSeen is number
+        && request.resource.data.device in ['Android', 'iOS', 'Desktop', 'Other']
+        && request.resource.data.lastPage is string
+        && request.resource.data.lastPage.size() <= 300
+        && (!('visits' in request.resource.data)
+            || (request.resource.data.visits is int
+                && request.resource.data.visits >= 1
+                && request.resource.data.visits <= 1000000))
+        && (!('source' in request.resource.data)
+            || (request.resource.data.source is string
+                && request.resource.data.source.size() <= 100));
+    }
+
     // Product reviews: anyone can read; only a signed-in customer can post one,
     // and only as themselves. The document id must be "<productId>_<uid>", so
     // each customer can review each product once. Customers can delete their

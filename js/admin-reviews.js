@@ -156,3 +156,10 @@ function render(){
     list.appendChild(el);
   });
 }
+
+// The "Visitors" tab (anonymous visitor counter) lives in its own module. It is
+// loaded from here so admin.html stays unchanged, and a failure there can never
+// break the Reviews tab.
+import('./admin-visitors.js').catch(function(e){
+  console.error('admin-visitors load error:', (e && e.code) ? e.code + ' — ' + e.message : e);
+});

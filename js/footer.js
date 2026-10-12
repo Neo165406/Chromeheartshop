@@ -20,6 +20,21 @@
   })();
   if(/admin/i.test(location.pathname)) return; // admin dashboard keeps its own layout
 
+  // Anonymous visitor counter (one random ID per device, numbers shown only in the
+  // admin "Visitors" tab). Started a second after the page has loaded so it never
+  // slows the page down. See js/visitor-tracker.js.
+  (function(){
+    function start(){
+      setTimeout(function(){
+        import('/js/visitor-tracker.js').catch(function(e){
+          console.error('visitor-tracker load error:', (e && e.code) ? e.code + ' — ' + e.message : e);
+        });
+      }, 1000);
+    }
+    if(document.readyState === 'complete') start();
+    else window.addEventListener('load', start);
+  })();
+
   var CSS = ''
     + '.site-footer{padding:40px 24px 44px;border-top:1px solid var(--line,rgba(184,188,196,0.22));text-align:center;margin:0;background:transparent;font-family:"Instrument Sans",sans-serif;line-height:1.5;color:var(--text-dim,#9195a0);}'
     + '.site-footer *{box-sizing:border-box;}'
