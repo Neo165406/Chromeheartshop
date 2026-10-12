@@ -6,12 +6,12 @@
 <title>Account — FASHIONISTA</title>
 <meta name="description" content="Sign in or create your FASHIONISTA account to save favourites and track orders faster.">
 <meta name="theme-color" content="#0a0b0d">
-<link rel="canonical" href="https://www.fashion1sta.com/account.html">
+<link rel="canonical" href="https://fashion1sta.com/account.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="FASHIONISTA">
 <meta property="og:title" content="Account — FASHIONISTA">
 <meta property="og:description" content="Sign in or create your FASHIONISTA account.">
-<meta property="og:url" content="https://www.fashion1sta.com/account.html">
+<meta property="og:url" content="https://fashion1sta.com/account.html">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Account — FASHIONISTA">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -165,8 +165,8 @@ document.querySelectorAll('.tab').forEach(t=>{
   });
 });
 
-// ---------- Return to the product after logging in from a review prompt ----------
-// js/reviews.js links here as account.html?next=product.html%3Fid%3D<id>.
+// ---------- Return to the product after logging in ----------
+// Accepts account.html?next=product.html%3Fid%3D<id>.
 // Only that exact shape is accepted, so this can never redirect off-site.
 function goNext(){
   const next = new URLSearchParams(location.search).get('next');
@@ -241,10 +241,13 @@ document.getElementById('suPass').addEventListener('keydown', e=>{ if(e.key==='E
 document.getElementById('logoutBtn').addEventListener('click', ()=>signOut(auth));
 
 // ---------- Auth state ----------
+// Visitors who posted a review without an account are signed in anonymously
+// behind the scenes (js/reviews.js). They are NOT real customers, so they
+// still see the sign-in / create-account form here.
 onAuthStateChanged(auth, async (user)=>{
   const authView = document.getElementById('authView');
   const accountView = document.getElementById('accountView');
-  if(user){
+  if(user && !user.isAnonymous){
     authView.style.display = 'none';
     accountView.style.display = 'block';
     let name = user.displayName || '';
