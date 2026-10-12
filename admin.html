@@ -275,6 +275,13 @@
     <div class="card-form">
       <h3>Orders</h3>
       <p style="font-size:12.5px;color:var(--text-dim);line-height:1.5;">Placed through the checkout form — each new order also pings you by email / WhatsApp, and this list is the record. Marking an order fulfilled updates each product's sold count and stock. Tap <b>Send confirmation</b> to message the buyer on WhatsApp with their order details (you can edit the message before sending).</p>
+      <div class="field" style="margin-top:14px;margin-bottom:0;">
+        <label>Show orders from</label>
+        <select id="ordersDateFilter">
+          <option value="all">All dates</option>
+        </select>
+      </div>
+      <p class="status-msg" id="ordersSummary"></p>
       <p class="status-msg" id="ordersStatus"></p>
     </div>
     <div class="list" id="ordersList"></div>
@@ -806,83 +813,170 @@ function buildConfirmationMessage(o){
 }
 
 // ---------- Orders ----------
+let allOrders = [];
+
+// Date helpers — orders are grouped by the admin's local calendar day.
+function keyFromDate(d){
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function daysAgoKey(n){
+  const d = new Date();
+  d.setHours(12,0,0,0);
+  d.setDate(d.getDate() - n);
+  return keyFromDate(d);
+}
+function orderDateKey(o){
+  const s = o.createdAt && o.createdAt.seconds;
+  return s ? keyFromDate(new Date(s*1000)) : null;
+}
+function dateKeyLabel(key){
+  const [y,m,d] = key.split('-').map(Number);
+  return new Date(y, m-1, d).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+}
+function orderMatchesDateFilter(o, val){
+  if(val === 'all') return true;
+  const k = orderDateKey(o);
+  if(!k) return false;
+  if(val === 'today') return k === daysAgoKey(0);
+  if(val === 'yesterday') return k === daysAgoKey(1);
+  if(val === 'last7') return k >= daysAgoKey(6);
+  if(val === 'last30') return k >= daysAgoKey(29);
+  if(val.startsWith('d:')) return k === val.slice(2);
+  return true;
+}
+
+// Rebuilds the dropdown (presets + every date that has orders, newest first)
+// and keeps the current selection if it still exists.
+function populateOrdersDateFilter(){
+  const sel = document.getElementById('ordersDateFilter');
+  const previous = sel.value || 'all';
+  const count = val => allOrders.filter(o=>orderMatchesDateFilter(o, val)).length;
+
+  const dayCounts = {};
+  allOrders.forEach(o=>{
+    const k = orderDateKey(o);
+    if(k) dayCounts[k] = (dayCounts[k]||0) + 1;
+  });
+  const dayKeys = Object.keys(dayCounts).sort().reverse();
+
+  let html = `<option value="all">All dates (${allOrders.length})</option>
+    <option value="today">Today (${count('today')})</option>
+    <option value="yesterday">Yesterday (${count('yesterday')})</option>
+    <option value="last7">Last 7 days (${count('last7')})</option>
+    <option value="last30">Last 30 days (${count('last30')})</option>`;
+  if(dayKeys.length){
+    html += '<optgroup label="Specific date">' +
+      dayKeys.map(k=>`<option value="d:${k}">${dateKeyLabel(k)} (${dayCounts[k]})</option>`).join('') +
+      '</optgroup>';
+  }
+  sel.innerHTML = html;
+  sel.value = Array.from(sel.options).some(op=>op.value === previous) ? previous : 'all';
+}
+
+document.getElementById('ordersDateFilter').addEventListener('change', renderOrders);
+
+function renderOrders(){
+  const list = document.getElementById('ordersList');
+  const summary = document.getElementById('ordersSummary');
+  const val = document.getElementById('ordersDateFilter').value;
+  const orders = allOrders.filter(o=>orderMatchesDateFilter(o, val));
+
+  const totalBdt = orders.reduce((s,o)=>s + (Number(o.total)||0), 0);
+  summary.textContent = `${orders.length} order${orders.length===1?'':'s'} · BDT ${totalBdt}`;
+
+  if(!orders.length){
+    list.innerHTML = '<p style="color:var(--text-dim);font-size:12.5px;">No orders for this date.</p>';
+    return;
+  }
+  list.innerHTML = '';
+  orders.forEach(o=>{
+    const itemsText = (o.items||[]).map(i=>`${i.name} x${i.qty}`).join(', ');
+    const dk = orderDateKey(o);
+    const timeText = o.createdAt && o.createdAt.seconds
+      ? new Date(o.createdAt.seconds*1000).toLocaleString('en-GB', { day:'numeric', month:'short', year:'numeric', hour:'numeric', minute:'2-digit' })
+      : '';
+    const el = document.createElement('div');
+    el.className = 'item';
+    el.style.alignItems = 'flex-start';
+    el.innerHTML = `
+      <div class="info">
+        <h4>${o.customerName || 'Unnamed'} · BDT ${o.total}</h4>
+        ${timeText ? `<p>${timeText}</p>` : ''}
+        <p>${o.phone || ''}</p>
+        <p>${o.address || ''}</p>
+        <p>${itemsText}</p>
+        ${o.note ? `<p>Note: ${o.note}</p>` : ''}
+        ${o.stockApplied ? '<p style="color:var(--silver);">Counted in sold &amp; stock</p>' : ''}
+        ${o.confirmationSentAt ? '<p style="color:var(--silver);">Confirmation sent to buyer ✓</p>' : ''}
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+        <span style="font-size:10.5px;padding:3px 8px;border-radius:10px;border:1px solid var(--line);color:${o.status==='fulfilled'?'var(--silver-bright)':'var(--text-dim)'};">${o.status||'pending'}</span>
+        <button class="toggle-status" data-id="${o.id}" data-status="${o.status||'pending'}">${o.status==='fulfilled' ? 'Mark pending' : 'Mark fulfilled'}</button>
+        <button class="toggle-status confirm-btn">${o.confirmationSentAt ? 'Resend confirmation' : 'Send confirmation'}</button>
+      </div>`;
+    el.querySelector('.confirm-btn').addEventListener('click', async (e)=>{
+      const btn = e.currentTarget;
+      const ordersStatus = document.getElementById('ordersStatus');
+      const number = toWaNumber(o.phone);
+      if(!number){ ordersStatus.textContent = 'This order has no valid phone number.'; return; }
+      // Open WhatsApp first (inside the tap) so the browser doesn't block the popup.
+      window.open(`https://wa.me/${number}?text=${encodeURIComponent(buildConfirmationMessage(o))}`, '_blank');
+      btn.disabled = true;
+      try{
+        await updateDoc(doc(db,'orders',o.id), { confirmationSentAt: serverTimestamp() });
+        ordersStatus.textContent = '';
+        loadOrdersList();
+      }catch(err){
+        console.error('Could not mark confirmation as sent:', err);
+        ordersStatus.textContent = 'WhatsApp opened, but could not save "confirmation sent": ' + err.message;
+        btn.disabled = false;
+      }
+    });
+    el.querySelector('button[data-id]').addEventListener('click', async (e)=>{
+      const btn = e.currentTarget;
+      const ordersStatus = document.getElementById('ordersStatus');
+      const newStatus = btn.dataset.status === 'fulfilled' ? 'pending' : 'fulfilled';
+      btn.disabled = true;
+      ordersStatus.textContent = 'Updating...';
+      try{
+        const update = { status: newStatus };
+        if(newStatus === 'fulfilled' && !o.stockApplied){
+          await applyOrderToProducts(o, +1);
+          update.stockApplied = true;
+        } else if(newStatus === 'pending' && o.stockApplied){
+          await applyOrderToProducts(o, -1);
+          update.stockApplied = false;
+        }
+        await updateDoc(doc(db,'orders',o.id), update);
+        ordersStatus.textContent = '';
+        loadProductsList();
+        loadDashboardStats();
+      }catch(err){
+        console.error('Order update failed:', err);
+        ordersStatus.textContent = 'Could not update the order: ' + err.message;
+      }
+      loadOrdersList();
+    });
+    list.appendChild(el);
+  });
+}
+
 async function loadOrdersList(){
   const list = document.getElementById('ordersList');
   list.innerHTML = 'Loading...';
   try{
     const snap = await getDocs(collection(db,'orders'));
     if(snap.empty){
+      allOrders = [];
+      populateOrdersDateFilter();
+      document.getElementById('ordersSummary').textContent = '';
       list.innerHTML = '<p style="color:var(--text-dim);font-size:12.5px;">No orders yet — they\'ll show up here as customers check out.</p>';
       return;
     }
-    const orders = snap.docs.map(d=>({id:d.id, ...d.data()}))
+    allOrders = snap.docs.map(d=>({id:d.id, ...d.data()}))
       .sort((a,b)=>(b.createdAt?.seconds||0) - (a.createdAt?.seconds||0));
-    list.innerHTML = '';
-    orders.forEach(o=>{
-      const itemsText = (o.items||[]).map(i=>`${i.name} x${i.qty}`).join(', ');
-      const el = document.createElement('div');
-      el.className = 'item';
-      el.style.alignItems = 'flex-start';
-      el.innerHTML = `
-        <div class="info">
-          <h4>${o.customerName || 'Unnamed'} · BDT ${o.total}</h4>
-          <p>${o.phone || ''}</p>
-          <p>${o.address || ''}</p>
-          <p>${itemsText}</p>
-          ${o.note ? `<p>Note: ${o.note}</p>` : ''}
-          ${o.stockApplied ? '<p style="color:var(--silver);">Counted in sold &amp; stock</p>' : ''}
-          ${o.confirmationSentAt ? '<p style="color:var(--silver);">Confirmation sent to buyer ✓</p>' : ''}
-        </div>
-        <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
-          <span style="font-size:10.5px;padding:3px 8px;border-radius:10px;border:1px solid var(--line);color:${o.status==='fulfilled'?'var(--silver-bright)':'var(--text-dim)'};">${o.status||'pending'}</span>
-          <button class="toggle-status" data-id="${o.id}" data-status="${o.status||'pending'}">${o.status==='fulfilled' ? 'Mark pending' : 'Mark fulfilled'}</button>
-          <button class="toggle-status confirm-btn">${o.confirmationSentAt ? 'Resend confirmation' : 'Send confirmation'}</button>
-        </div>`;
-      el.querySelector('.confirm-btn').addEventListener('click', async (e)=>{
-        const btn = e.currentTarget;
-        const ordersStatus = document.getElementById('ordersStatus');
-        const number = toWaNumber(o.phone);
-        if(!number){ ordersStatus.textContent = 'This order has no valid phone number.'; return; }
-        // Open WhatsApp first (inside the tap) so the browser doesn't block the popup.
-        window.open(`https://wa.me/${number}?text=${encodeURIComponent(buildConfirmationMessage(o))}`, '_blank');
-        btn.disabled = true;
-        try{
-          await updateDoc(doc(db,'orders',o.id), { confirmationSentAt: serverTimestamp() });
-          ordersStatus.textContent = '';
-          loadOrdersList();
-        }catch(err){
-          console.error('Could not mark confirmation as sent:', err);
-          ordersStatus.textContent = 'WhatsApp opened, but could not save "confirmation sent": ' + err.message;
-          btn.disabled = false;
-        }
-      });
-      el.querySelector('button[data-id]').addEventListener('click', async (e)=>{
-        const btn = e.currentTarget;
-        const ordersStatus = document.getElementById('ordersStatus');
-        const newStatus = btn.dataset.status === 'fulfilled' ? 'pending' : 'fulfilled';
-        btn.disabled = true;
-        ordersStatus.textContent = 'Updating...';
-        try{
-          const update = { status: newStatus };
-          if(newStatus === 'fulfilled' && !o.stockApplied){
-            await applyOrderToProducts(o, +1);
-            update.stockApplied = true;
-          } else if(newStatus === 'pending' && o.stockApplied){
-            await applyOrderToProducts(o, -1);
-            update.stockApplied = false;
-          }
-          await updateDoc(doc(db,'orders',o.id), update);
-          ordersStatus.textContent = '';
-          loadProductsList();
-          loadDashboardStats();
-        }catch(err){
-          console.error('Order update failed:', err);
-          ordersStatus.textContent = 'Could not update the order: ' + err.message;
-        }
-        loadOrdersList();
-      });
-      list.appendChild(el);
-    });
+    populateOrdersDateFilter();
+    renderOrders();
   }catch(e){
     console.error('Orders load failed:', e);
     list.innerHTML = '<p style="color:var(--text-dim);font-size:12.5px;">Could not load orders.</p>';
