@@ -176,6 +176,11 @@
   .reel-card .reel-caption{position:absolute;left:10px;right:10px;bottom:9px;font-size:12px;line-height:1.35;color:#f2f3f5;pointer-events:none;}
   .reel-card .reel-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:44px;height:44px;border-radius:50%;background:rgba(10,11,13,0.55);border:1px solid rgba(242,244,247,0.5);display:flex;align-items:center;justify-content:center;color:#f2f4f7;font-size:15px;pointer-events:none;}
   .reel-card .reel-sound{position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:50%;background:rgba(10,11,13,0.6);border:1px solid rgba(242,244,247,0.35);color:#f2f4f7;font-size:11px;display:flex;align-items:center;justify-content:center;}
+  /* Silent auto-playing preview inside a link reel's card (YouTube / Vimeo).
+     Taps pass through to the card, which opens the full player with sound. */
+  .reel-card .reel-live{position:absolute;top:0;left:0;width:100%;height:100%;border:0;background:#000;pointer-events:none;}
+  .reel-card .reel-live.land{left:50%;width:316%;transform:translateX(-50%);}
+  .reel-card.playing .reel-play{display:none;}
 
   /* ---------- REEL PLAYER (link reels play inside the site) ---------- */
   .reel-modal{position:fixed;inset:0;z-index:110;background:rgba(0,0,0,0.94);display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity 0.25s ease;}
@@ -637,9 +642,20 @@ function isDirectVideo(url){
   return /\.(mp4|webm|mov|m4v)(\?|$)/i.test(url) || /firebasestorage\.googleapis\.com|firebasestorage\.app/i.test(url);
 }
 
+// YouTube: full player URL (tap, with sound) + silent looping preview URL (auto-plays in the card).
+function ytEmbed(id, vertical){
+  return {
+    src:`https://www.youtube.com/embed/${id}?autoplay=1&playsinline=1&rel=0`,
+    preview:`https://www.youtube.com/embed/${id}?autoplay=1&mute=1&controls=0&loop=1&playlist=${id}&playsinline=1&rel=0&modestbranding=1&disablekb=1`,
+    vertical
+  };
+}
+
 // Turns a pasted reel/video link into an embeddable player URL so it can play
-// inside the site. Returns { src, vertical } or null when the link is not a
-// recognised platform (the card then falls back to opening the link in a new tab).
+// inside the site. Returns { src, vertical, preview? } or null when the link is
+// not a recognised platform (the card then falls back to opening the link in a
+// new tab). "preview" is a silent auto-playing URL — only YouTube and Vimeo
+// allow that; Instagram / TikTok / Facebook / Drive embeds need a tap to play.
 function parseEmbed(url){
   let u;
   try{ u = new URL(url); }catch(e){ return null; }
@@ -650,21 +666,25 @@ function parseEmbed(url){
   // YouTube (watch, youtu.be, shorts, embed, live)
   if(host === 'youtu.be'){
     m = path.match(/^\/([\w-]{11})/);
-    if(m) return { src:`https://www.youtube.com/embed/${m[1]}?autoplay=1&playsinline=1&rel=0`, vertical:false };
+    if(m) return ytEmbed(m[1], false);
   }
   if(host === 'youtube.com' || host.endsWith('.youtube.com') || host === 'youtube-nocookie.com'){
     m = path.match(/^\/shorts\/([\w-]{11})/);
-    if(m) return { src:`https://www.youtube.com/embed/${m[1]}?autoplay=1&playsinline=1&rel=0`, vertical:true };
+    if(m) return ytEmbed(m[1], true);
     m = path.match(/^\/(?:embed|live|v)\/([\w-]{11})/);
-    if(m) return { src:`https://www.youtube.com/embed/${m[1]}?autoplay=1&playsinline=1&rel=0`, vertical:false };
+    if(m) return ytEmbed(m[1], false);
     const v = u.searchParams.get('v');
-    if(v && /^[\w-]{11}$/.test(v)) return { src:`https://www.youtube.com/embed/${v}?autoplay=1&playsinline=1&rel=0`, vertical:false };
+    if(v && /^[\w-]{11}$/.test(v)) return ytEmbed(v, false);
   }
 
   // Vimeo
   if(host === 'vimeo.com' || host === 'player.vimeo.com'){
     m = path.match(/(\d{6,})/);
-    if(m) return { src:`https://player.vimeo.com/video/${m[1]}?autoplay=1&playsinline=1`, vertical:false };
+    if(m) return {
+      src:`https://player.vimeo.com/video/${m[1]}?autoplay=1&playsinline=1`,
+      preview:`https://player.vimeo.com/video/${m[1]}?autoplay=1&muted=1&loop=1&background=1&playsinline=1`,
+      vertical:false
+    };
   }
 
   // Facebook (reels, videos, fb.watch)
@@ -773,8 +793,10 @@ async function initReels(preloaded){
     const cover = r.thumbUrl
       ? `<img src="${r.thumbUrl}" alt="${r.caption||'Reel'}" loading="lazy">`
       : `<div style="width:100%;height:100%;background:var(--bg-alt);"></div>`;
+    const info = parseEmbed(r.videoUrl||'');
+    const previewAttr = info && info.preview ? ' data-preview="1"' : '';
     // Link reels: tapping plays the video inside the site (see openReelPlayer).
-    return `<div class="reel-card reel-embed" role="button" tabindex="0" data-reel-index="${i}" aria-label="Play reel">
+    return `<div class="reel-card reel-embed" role="button" tabindex="0" data-reel-index="${i}"${previewAttr} aria-label="Play reel">
       ${cover}<div class="reel-overlay"></div><div class="reel-play">&#9654;</div>${cap}
     </div>`;
   }).join('');
@@ -803,6 +825,37 @@ async function initReels(preloaded){
     card.addEventListener('click', open);
     card.addEventListener('keydown', e=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); open(); } });
   });
+
+  // YouTube / Vimeo link reels auto-play silently inside their card while on
+  // screen, and are unloaded when scrolled away (keeps the page light).
+  const previewCards = row.querySelectorAll('.reel-embed[data-preview]');
+  if(previewCards.length && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    const pio = new IntersectionObserver(entries=>{
+      entries.forEach(en=>{
+        const card = en.target;
+        const live = card.querySelector('.reel-live');
+        if(en.isIntersecting){
+          if(live) return;
+          const reel = reels[+card.dataset.reelIndex];
+          const info = reel && parseEmbed(reel.videoUrl || '');
+          if(!info || !info.preview) return;
+          const f = document.createElement('iframe');
+          f.className = 'reel-live' + (info.vertical ? '' : ' land');
+          f.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
+          f.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+          f.setAttribute('tabindex', '-1');
+          f.setAttribute('aria-hidden', 'true');
+          f.src = info.preview;
+          card.insertBefore(f, card.querySelector('.reel-overlay'));
+          card.classList.add('playing');
+        }else if(live){
+          live.remove();
+          card.classList.remove('playing');
+        }
+      });
+    }, {threshold:0.6});
+    previewCards.forEach(c=>pio.observe(c));
+  }
 
   // Play only while visible, so the page stays light on mobile data.
   const vids = row.querySelectorAll('video');
