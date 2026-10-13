@@ -228,16 +228,24 @@ function updateSEOTags(product){
     ? 'Chrome Heart Rimless Silver Glasses | Fashion1sta'
     : `${product.name} — FASHIONISTA`;
 
-  document.title = seoTitle;
+  // When the server already baked in the title and descriptions (api/product-page.js
+  // builds the unique, cleaned versions), keep them as they are: overwriting them
+  // here would put the old "<name> — FASHIONISTA" title and raw description back
+  // into the rendered page that search engines index. Only a page that reached
+  // this script without server-rendered data gets them set here.
+  const serverRendered = !!document.getElementById('__SSR_DATA__');
+  if(!serverRendered){
+    document.title = seoTitle;
+    const descMeta = document.querySelector('meta[name="description"]');
+    if(descMeta) descMeta.setAttribute('content', desc);
+    document.getElementById('ogTitle').setAttribute('content', seoTitle);
+    document.getElementById('ogDescription').setAttribute('content', desc);
+    document.getElementById('twitterTitle').setAttribute('content', seoTitle);
+    document.getElementById('twitterDescription').setAttribute('content', desc);
+  }
   document.getElementById('canonicalLink').setAttribute('href', url);
-  const descMeta = document.querySelector('meta[name="description"]');
-  if(descMeta) descMeta.setAttribute('content', desc);
-  document.getElementById('ogTitle').setAttribute('content', seoTitle);
-  document.getElementById('ogDescription').setAttribute('content', desc);
   document.getElementById('ogUrl').setAttribute('content', url);
   document.getElementById('ogImage').setAttribute('content', image);
-  document.getElementById('twitterTitle').setAttribute('content', seoTitle);
-  document.getElementById('twitterDescription').setAttribute('content', desc);
   const twImg = document.getElementById('twitterImage');
   if(twImg) twImg.setAttribute('content', image);
   const priceAmt = document.getElementById('ogPriceAmount');
