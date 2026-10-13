@@ -2,6 +2,7 @@
 // Reels tab logic for admin.html: add a reel by uploading a video file OR
 // pasting a video link, list existing reels, delete them.
 // The homepage (index.html) reads the same Firestore "reels" collection.
+// Video files are uploaded to Cloudinary (see js/cloudinary.js).
 
 import {
   db, collection, getDocs, addDoc, deleteDoc, doc, serverTimestamp,
@@ -66,12 +67,14 @@ async function addReel() {
     }
 
     if (videoFile) {
-      // Loaded on demand so a Storage problem can never break the rest of the admin.
-      const { uploadVideoDetailed } = await import('./video-upload.js');
+      // Loaded on demand so an upload problem can never break the rest of the admin.
+      const { uploadVideoDetailed } = await import('./cloudinary.js');
       status.textContent = 'Uploading video... 0%';
       const res = await uploadVideoDetailed(videoFile, (pct) => { status.textContent = `Uploading video... ${pct}%`; });
       videoUrl = res.url;
-      storagePath = res.path;
+      // No cover chosen? Use the first frame Cloudinary makes from the video.
+      if (!thumbUrl) thumbUrl = res.thumbUrl || null;
+      // Cloudinary files can't be deleted from the browser, so no storagePath is kept.
     } else if (!thumbUrl && !isDirectVideo(link)) {
       thumbUrl = youtubeThumb(link);
     }
@@ -133,6 +136,8 @@ async function loadReelsList() {
         delBtn.disabled = true;
         try {
           await deleteDoc(doc(db, 'reels', r.id));
+          // Older reels uploaded to Firebase Storage still have a storagePath;
+          // Cloudinary uploads don't, so this is skipped for them.
           if (r.storagePath) {
             try {
               const { deleteVideoByPath } = await import('./video-upload.js');
