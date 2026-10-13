@@ -216,16 +216,17 @@ let galleryIndex = 0;
 // rare page load that reaches this script without server-rendered data. ----------
 function updateSEOTags(product){
   const url = `https://fashion1sta.com/product.html?id=${encodeURIComponent(product.id)}`;
-  // SEO override for this exact product only.
-  const isChromeHeartRimlessSilver = product.id === 'hRTjTVeGAcjWuwFAMwcs';
-  const desc = isChromeHeartRimlessSilver
-    ? 'Shop silver rimless glasses with Chrome Hearts-inspired detailing at Fashion1sta. Stylish silver-tone eyewear for everyday streetwear.'
+  // SEO override for this exact product only. Describes the style instead of
+  // naming a third-party brand (must match api/product-page.js).
+  const isSilverRimlessOverride = product.id === 'hRTjTVeGAcjWuwFAMwcs';
+  const desc = isSilverRimlessOverride
+    ? 'Shop silver rimless glasses at FASHIONISTA. Stylish silver-tone eyewear for everyday streetwear.'
     : (product.description
       ? product.description.replace(/\s+/g,' ').trim().slice(0,155)
       : `${product.name} — BDT ${product.price}. Neon silver accessories and eyewear from FASHIONISTA, cash on delivery across Bangladesh.`);
   const image = (product.images && product.images[0]) || product.imageUrl || 'https://fashion1sta.com/og-image.png';
-  const seoTitle = isChromeHeartRimlessSilver
-    ? 'Chrome Heart Rimless Silver Glasses | Fashion1sta'
+  const seoTitle = isSilverRimlessOverride
+    ? 'Silver Rimless Glasses | FASHIONISTA'
     : `${product.name} — FASHIONISTA`;
 
   // When the server already baked in the title and descriptions (api/product-page.js
