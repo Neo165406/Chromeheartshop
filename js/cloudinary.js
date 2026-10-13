@@ -2,15 +2,13 @@
 // Uploads a reel video File to Cloudinary (unsigned upload) and returns its
 // public URL. Used by js/admin-reels.js (Reels tab in admin.html).
 //
-// Setup (one time, in the Cloudinary dashboard):
-//   1. Copy your "Cloud name" (top of the dashboard).
-//   2. Settings -> Upload -> Upload presets -> Add upload preset:
-//        Signing mode = Unsigned, Folder = reels. Save, copy the preset name.
-//   3. Paste both values below.
-// Neither value is secret - they are meant to be used from the browser.
+// Cloudinary dashboard setup (one time):
+//   Settings -> Upload -> Upload presets -> Add upload preset
+//     Preset name = fashion1sta_reels, Signing mode = Unsigned, Folder = reels.
+// Neither value below is secret - they are meant to be used from the browser.
 
-const CLOUDINARY_CLOUD_NAME = "YOUR_CLOUD_NAME";
-const CLOUDINARY_UPLOAD_PRESET = "YOUR_UNSIGNED_PRESET";
+const CLOUDINARY_CLOUD_NAME = "ksorx9qy";
+const CLOUDINARY_UPLOAD_PRESET = "fashion1sta_reels";
 
 // If the upload makes no progress at all for this long, give up and say why.
 const STALL_TIMEOUT_MS = 90000;
