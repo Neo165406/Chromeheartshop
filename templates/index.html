@@ -177,6 +177,15 @@
   .reel-card .reel-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:44px;height:44px;border-radius:50%;background:rgba(10,11,13,0.55);border:1px solid rgba(242,244,247,0.5);display:flex;align-items:center;justify-content:center;color:#f2f4f7;font-size:15px;pointer-events:none;}
   .reel-card .reel-sound{position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:50%;background:rgba(10,11,13,0.6);border:1px solid rgba(242,244,247,0.35);color:#f2f4f7;font-size:11px;display:flex;align-items:center;justify-content:center;}
 
+  /* ---------- REEL PLAYER (link reels play inside the site) ---------- */
+  .reel-modal{position:fixed;inset:0;z-index:110;background:rgba(0,0,0,0.94);display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity 0.25s ease;}
+  .reel-modal.open{opacity:1;pointer-events:auto;}
+  .reel-modal-box{position:relative;width:min(92vw,calc(82vh * 9 / 16));aspect-ratio:9/16;background:#000;border-radius:8px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.6);}
+  .reel-modal-box.landscape{width:min(94vw,calc(70vh * 16 / 9));aspect-ratio:16/9;}
+  .reel-modal-box iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000;}
+  .reel-modal .rm-close{position:absolute;top:16px;right:16px;width:40px;height:40px;border-radius:50%;border:1px solid rgba(242,244,247,0.35);background:rgba(10,11,13,0.7);color:#f2f4f7;font-size:22px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2;}
+  .reel-modal .rm-caption{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);max-width:90%;text-align:center;font-size:13px;color:#f2f3f5;background:rgba(10,11,13,0.65);padding:8px 16px;border-radius:20px;pointer-events:none;}
+
   /* ---------- MODEL COLLAGE (admin-managed; hidden until photos are added) ---------- */
   .collage-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;grid-auto-rows:1fr;}
   .collage-item{position:relative;display:block;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--bg-alt);aspect-ratio:1/1;}
@@ -627,6 +636,114 @@ async function initProducts(preloaded){
 function isDirectVideo(url){
   return /\.(mp4|webm|mov|m4v)(\?|$)/i.test(url) || /firebasestorage\.googleapis\.com|firebasestorage\.app/i.test(url);
 }
+
+// Turns a pasted reel/video link into an embeddable player URL so it can play
+// inside the site. Returns { src, vertical } or null when the link is not a
+// recognised platform (the card then falls back to opening the link in a new tab).
+function parseEmbed(url){
+  let u;
+  try{ u = new URL(url); }catch(e){ return null; }
+  const host = u.hostname.toLowerCase().replace(/^(www|m|web|mbasic)\./,'');
+  const path = u.pathname;
+  let m;
+
+  // YouTube (watch, youtu.be, shorts, embed, live)
+  if(host === 'youtu.be'){
+    m = path.match(/^\/([\w-]{11})/);
+    if(m) return { src:`https://www.youtube.com/embed/${m[1]}?autoplay=1&playsinline=1&rel=0`, vertical:false };
+  }
+  if(host === 'youtube.com' || host.endsWith('.youtube.com') || host === 'youtube-nocookie.com'){
+    m = path.match(/^\/shorts\/([\w-]{11})/);
+    if(m) return { src:`https://www.youtube.com/embed/${m[1]}?autoplay=1&playsinline=1&rel=0`, vertical:true };
+    m = path.match(/^\/(?:embed|live|v)\/([\w-]{11})/);
+    if(m) return { src:`https://www.youtube.com/embed/${m[1]}?autoplay=1&playsinline=1&rel=0`, vertical:false };
+    const v = u.searchParams.get('v');
+    if(v && /^[\w-]{11}$/.test(v)) return { src:`https://www.youtube.com/embed/${v}?autoplay=1&playsinline=1&rel=0`, vertical:false };
+  }
+
+  // Vimeo
+  if(host === 'vimeo.com' || host === 'player.vimeo.com'){
+    m = path.match(/(\d{6,})/);
+    if(m) return { src:`https://player.vimeo.com/video/${m[1]}?autoplay=1&playsinline=1`, vertical:false };
+  }
+
+  // Facebook (reels, videos, fb.watch)
+  if(host === 'facebook.com' || host.endsWith('.facebook.com') || host === 'fb.watch'){
+    const vertical = /\/reel\//i.test(path);
+    return { src:`https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(url)}&show_text=false&autoplay=true`, vertical };
+  }
+
+  // Instagram (reel, p, tv)
+  if(host === 'instagram.com'){
+    m = path.match(/\/(reels?|p|tv)\/([\w-]+)/i);
+    if(m){
+      const kind = m[1].toLowerCase() === 'reels' ? 'reel' : m[1].toLowerCase();
+      return { src:`https://www.instagram.com/${kind}/${m[2]}/embed`, vertical:true };
+    }
+  }
+
+  // TikTok (full video links only — short vm.tiktok.com links cannot be resolved here)
+  if(host === 'tiktok.com'){
+    m = path.match(/\/video\/(\d+)/);
+    if(m) return { src:`https://www.tiktok.com/embed/v2/${m[1]}`, vertical:true };
+  }
+
+  // Google Drive shared video
+  if(host === 'drive.google.com'){
+    m = path.match(/\/file\/d\/([\w-]+)/);
+    if(m) return { src:`https://drive.google.com/file/d/${m[1]}/preview`, vertical:false };
+  }
+
+  return null;
+}
+
+function openReelPlayer(reel){
+  const embed = parseEmbed(reel.videoUrl || '');
+  if(!embed){
+    // Not a platform we can embed — keep the old behaviour.
+    window.open(reel.videoUrl, '_blank', 'noopener');
+    return;
+  }
+  const modal = document.getElementById('reelModal');
+  const box = document.getElementById('reelModalBox');
+  const cap = document.getElementById('reelModalCaption');
+  if(!modal || !box) return;
+  box.innerHTML = '';
+  box.classList.toggle('landscape', !embed.vertical);
+  const frame = document.createElement('iframe');
+  frame.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture; fullscreen; clipboard-write');
+  frame.setAttribute('allowfullscreen', '');
+  frame.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+  frame.setAttribute('title', reel.caption || 'Reel');
+  frame.src = embed.src;
+  box.appendChild(frame);
+  if(reel.caption){
+    cap.textContent = reel.caption;
+    cap.style.display = 'block';
+  }else{
+    cap.style.display = 'none';
+  }
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeReelPlayer(){
+  const modal = document.getElementById('reelModal');
+  const box = document.getElementById('reelModalBox');
+  if(!modal) return;
+  modal.classList.remove('open');
+  document.body.style.overflow = '';
+  // Removing the iframe stops the video (and its sound) immediately.
+  if(box) box.innerHTML = '';
+}
+(function wireReelModal(){
+  const modal = document.getElementById('reelModal');
+  const closeBtn = document.getElementById('reelModalClose');
+  if(!modal) return;
+  closeBtn && closeBtn.addEventListener('click', closeReelPlayer);
+  modal.addEventListener('click', e=>{ if(e.target === modal) closeReelPlayer(); });
+  document.addEventListener('keydown', e=>{ if(e.key==='Escape' && modal.classList.contains('open')) closeReelPlayer(); });
+})();
+
 // preloaded (optional): reels already fetched server-side.
 async function initReels(preloaded){
   const section = document.getElementById('reels');
@@ -643,7 +760,7 @@ async function initReels(preloaded){
   if(!reels.length) return;
   reels.sort((a,b)=>(a.order||0)-(b.order||0));
   section.style.display = 'block';
-  row.innerHTML = reels.map(r=>{
+  row.innerHTML = reels.map((r,i)=>{
     const cap = r.caption ? `<div class="reel-caption">${r.caption}</div>` : '';
     if(isDirectVideo(r.videoUrl||'')){
       return `<div class="reel-card" data-href="${r.href||''}">
@@ -656,9 +773,10 @@ async function initReels(preloaded){
     const cover = r.thumbUrl
       ? `<img src="${r.thumbUrl}" alt="${r.caption||'Reel'}" loading="lazy">`
       : `<div style="width:100%;height:100%;background:var(--bg-alt);"></div>`;
-    return `<a class="reel-card" href="${r.videoUrl}" target="_blank" rel="noopener">
+    // Link reels: tapping plays the video inside the site (see openReelPlayer).
+    return `<div class="reel-card reel-embed" role="button" tabindex="0" data-reel-index="${i}" aria-label="Play reel">
       ${cover}<div class="reel-overlay"></div><div class="reel-play">&#9654;</div>${cap}
-    </a>`;
+    </div>`;
   }).join('');
 
   // Tap a video reel to open its link (if set); the speaker button toggles sound.
@@ -675,6 +793,15 @@ async function initReels(preloaded){
     }
     const href = card.dataset.href;
     if(href) card.addEventListener('click', ()=>{ window.location.href = href; });
+  });
+
+  // Link reels (YouTube / Facebook / Instagram / TikTok / Vimeo / Drive) play in the on-site player.
+  row.querySelectorAll('.reel-embed').forEach(card=>{
+    const reel = reels[+card.dataset.reelIndex];
+    if(!reel) return;
+    const open = ()=> openReelPlayer(reel);
+    card.addEventListener('click', open);
+    card.addEventListener('keydown', e=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); open(); } });
   });
 
   // Play only while visible, so the page stays light on mobile data.
@@ -808,6 +935,12 @@ renderCartDrawer();
   <img id="lbImage" src="" alt="">
   <a class="lb-shop" id="lbShop" href="#" style="display:none;">Shop this look →</a>
   <div class="lb-caption" id="lbCaption" style="display:none;"></div>
+</div>
+
+<div class="reel-modal" id="reelModal" role="dialog" aria-modal="true" aria-label="Reel player">
+  <button type="button" class="rm-close" id="reelModalClose" aria-label="Close">&times;</button>
+  <div class="reel-modal-box" id="reelModalBox"></div>
+  <div class="rm-caption" id="reelModalCaption" style="display:none;"></div>
 </div>
 
 <script defer src="/_vercel/speed-insights/script.js"></script>
