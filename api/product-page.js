@@ -181,6 +181,11 @@ const BRAND_KEYWORDS = [
   'cash on delivery bangladesh'
 ];
 
+// Third-party brand names we must never target in keywords (trademark risk).
+// Any generated keyword matching this is dropped, including ones that come
+// from a product name typed in the admin panel.
+const BLOCKED_KEYWORD_RE = /chrome\s*-?\s*hearts?/i;
+
 // Matched against "<category> <product name>" (lowercase).
 const CATEGORY_KEYWORDS = [
   { match: /glass|eyewear/, words: [
@@ -218,9 +223,6 @@ const CATEGORY_KEYWORDS = [
 
 // Extra keywords picked up from words inside the product name.
 const NAME_KEYWORDS = [
-  { match: /chrome\s*hearts?/, words: [
-    'chrome hearts bangladesh', 'chrome hearts inspired bd', 'chrome heart price in bangladesh', 'chrome hearts glasses bd'
-  ]},
   { match: /rimless/, words: ['rimless sunglasses price in bangladesh', 'rimless glasses bd'] },
   { match: /aviator/, words: ['aviator sunglasses bd', 'aviator sunglasses price in bangladesh'] },
   { match: /\bround\b/, words: ['round sunglasses bd'] },
@@ -242,10 +244,12 @@ function buildKeywords(product){
   CATEGORY_KEYWORDS.forEach(c => { if(c.match.test(hay)) list.push(...c.words); });
   NAME_KEYWORDS.forEach(c => { if(c.match.test(hay)) list.push(...c.words); });
   list.push(...BRAND_KEYWORDS);
-  // de-duplicate (case-insensitive), keep order, cap at 30
+  // de-duplicate (case-insensitive), keep order, drop blocked third-party
+  // brand terms, cap at 30
   const seen = new Set();
   const out = [];
   for(const k of list){
+    if(BLOCKED_KEYWORD_RE.test(k)) continue;
     const key = k.toLowerCase();
     if(!seen.has(key)){ seen.add(key); out.push(k); }
   }
@@ -339,7 +343,7 @@ function buildTitle(label){
   return full.length <= 65 ? full : `${label} Price in BD | FASHIONISTA`;
 }
 
-// Meta description, at most 160 characters: "<name>: <cleaned description>
+// Meta description, at most 160 characters: "<n>: <cleaned description>
 // Price in Bangladesh — cash on delivery." The name leads so products that
 // share the same stored description (the bandana colours, say) still differ.
 function buildDescription(product, label){
@@ -574,14 +578,15 @@ module.exports = async function handler(req, res){
   // Name used in <title>/meta: title-cased, plus a differentiator when another
   // product in the category has the very same name.
   const label = `${titleCaseName(product.name) || 'Product'}${variantSuffix(product, peers)}`;
-  // SEO override for this exact product only.
-  const isChromeHeartRimlessSilver = product.id === 'hRTjTVeGAcjWuwFAMwcs';
-  const desc = isChromeHeartRimlessSilver
-    ? 'Shop silver rimless glasses with Chrome Hearts-inspired detailing at Fashion1sta. Stylish silver-tone eyewear for everyday streetwear. Price in Bangladesh — cash on delivery.'
+  // SEO override for this exact product only. Describes the style instead of
+  // naming a third-party brand.
+  const isSilverRimlessOverride = product.id === 'hRTjTVeGAcjWuwFAMwcs';
+  const desc = isSilverRimlessOverride
+    ? 'Shop silver rimless glasses at FASHIONISTA. Stylish silver-tone eyewear for everyday streetwear. Price in Bangladesh — cash on delivery.'
     : buildDescription(product, label);
   const image = (product.images && product.images[0]) || product.imageUrl || `${SITE}/og-image.jpg`;
-  const titleTag = isChromeHeartRimlessSilver
-    ? 'Chrome Heart Rimless Silver Glasses Price in Bangladesh | Fashion1sta'
+  const titleTag = isSilverRimlessOverride
+    ? 'Silver Rimless Glasses Price in Bangladesh | FASHIONISTA'
     : esc(buildTitle(label));
   const keywordsContent = esc(buildKeywords(product).join(', '));
 
