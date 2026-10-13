@@ -84,6 +84,42 @@ async function fetchSimilar(category, excludeId){
   }
 }
 
+// Name + price of every product in the same category (id, name, price only).
+// Used to spot products that share the same name, so each one still gets a
+// unique <title> and meta description. Returns [] on failure/timeout, in which
+// case no differentiator is added (the page itself is never blocked).
+async function fetchCategoryPeers(category){
+  if(!category) return [];
+  try{
+    const url = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents:runQuery?key=${FIREBASE_API_KEY}`;
+    const body = {
+      structuredQuery: {
+        from: [{ collectionId: 'products' }],
+        select: { fields: [{ fieldPath: 'name' }, { fieldPath: 'price' }] },
+        where: { fieldFilter: { field: { fieldPath: 'category' }, op: 'EQUAL', value: { stringValue: category } } },
+        limit: 100
+      }
+    };
+    const r = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(SIMILAR_TIMEOUT_MS)
+    });
+    if(!r.ok) return [];
+    const rows = await r.json();
+    return rows
+      .filter(row => row.document)
+      .map(row => {
+        const d = fsFields(row.document.fields || {});
+        return { id: row.document.name.split('/').pop(), name: d.name, price: d.price };
+      });
+  }catch(e){
+    console.error('SSR category-peers fetch failed:', e);
+    return [];
+  }
+}
+
 // Real customer reviews for this product (Firestore "reviews" collection,
 // written by js/reviews.js). Returns an array (possibly empty), or null if the
 // query failed/timed out — in that case the browser loads them itself and no
@@ -216,23 +252,175 @@ function buildKeywords(product){
   return out.slice(0, 30);
 }
 
-function buildDescription(product){
-  const suffix = ' Price in Bangladesh — cash on delivery.';
-  const clean = product.description ? String(product.description).replace(/\s+/g,' ').trim() : '';
-  if(!clean){
-    const cat = product.category ? `${product.category} from FASHIONISTA` : 'from FASHIONISTA';
-    return `${product.name} — BDT ${product.price}. ${cat}, price in Bangladesh, cash on delivery nationwide.`;
-  }
-  const room = 160 - suffix.length;
-  let base = clean;
-  if(base.length > room){
-    base = base.slice(0, room);
-    const lastSpace = base.lastIndexOf(' ');
-    if(lastSpace > 60) base = base.slice(0, lastSpace);
-    base = base.replace(/[\s,;:.\-—]+$/, '') + '.';
-  }
-  return base + suffix;
+// ---------- SEO: clean titles / meta descriptions / on-page copy ----------
+
+// Decorative symbols typed into product descriptions (stars, bullets, emoji).
+// In the meta description they become separators instead of showing up raw
+// ("★As a headband ★ On your waist ...").
+const DECOR_CODES = [0x2605, 0x2606, 0x2726, 0x2727, 0x2728, 0x2022, 0x25CF, 0x25AA, 0x25C6, 0x25C7, 0x27A4, 0x279C, 0x2714, 0x2713, 0x2B50, 0xFE0F];
+const DECOR_RE = new RegExp('\\s*(?:[' + DECOR_CODES.map(c => String.fromCharCode(c)).join('') + ']|[\\u{1F300}-\\u{1FAFF}])+\\s*', 'gu');
+const SEG = '\u0001';
+
+// Words a cut-off sentence must not end on ("... with a.").
+const DANGLING = new Set(['a','an','the','with','and','or','of','for','to','in','on','at','by','from','that','your','our','as','is','are','it','its','this','these','those']);
+
+function normName(n){
+  return String(n == null ? '' : n).toLowerCase().replace(/\s+/g, ' ').trim();
 }
+
+// "chrome heart bracelet" -> "Chrome Heart Bracelet" (title/meta only; the
+// on-page <h1> keeps the name exactly as typed in the admin panel).
+function titleCaseName(name){
+  return String(name == null ? '' : name).trim().split(/\s+/).filter(Boolean).map(w => {
+    if(/^y2k$/i.test(w)) return 'Y2K';
+    if(/[A-Z]/.test(w.slice(1))) return w;           // keep mixed/upper case such as UV400
+    return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+  }).join(' ');
+}
+
+// Turns the owner-typed description into one clean sentence-style string:
+// decorative symbols become separators, stray spaces before punctuation go,
+// and a SHOUTING lead ("RAGLAN LONG SLEEVE A timeless...") is sentence-cased.
+function cleanDescription(raw){
+  if(!raw) return '';
+  const segs = String(raw).replace(DECOR_RE, SEG).replace(/\s+/g, ' ').split(SEG)
+    .map(s => s.trim()).filter(Boolean);
+  if(!segs.length) return '';
+  let out = segs[0];
+  if(segs.length > 1){
+    const rest = segs.slice(1)
+      .map(s => s.replace(/^[A-Z](?=[a-z])/, c => c.toLowerCase()).replace(/[\s,;]+$/, ''))
+      .join(', ');
+    out += (/[—–:-]$/.test(out) ? ' ' : ' — ') + rest;
+  }
+  out = out.replace(/^((?:[A-Z]{2,}\s+){1,5})(?![A-Z]{2,}\b)(?=[A-Za-z])/, m => `${titleCaseName(m.trim().toLowerCase())} — `);
+  return out.replace(/\s+([,.;:!?])/g, '$1').replace(/\s+/g, ' ').trim();
+}
+
+// Shortens text to at most `room` characters at a sentence end when possible,
+// otherwise at a word boundary, never leaving a dangling "with a" / "and the".
+function cutAtBoundary(text, room){
+  if(text.length <= room) return text;
+  const head = text.slice(0, room);
+  const sentEnd = Math.max(head.lastIndexOf('. '), head.lastIndexOf('! '), head.lastIndexOf('? '));
+  if(sentEnd >= 35) return head.slice(0, sentEnd + 1);
+  // No sentence end in range: cut at the last clause break (comma, dash, semicolon)
+  // so the text still reads as a complete thought; the caller adds the period.
+  const clauseEnd = Math.max(head.lastIndexOf(', '), head.lastIndexOf(' — '), head.lastIndexOf('—'), head.lastIndexOf('; '));
+  if(clauseEnd >= 45) return head.slice(0, clauseEnd).replace(/[\s,;:\-—–]+$/, '');
+  const limit = room - 1;                              // leave space for the ellipsis
+  let cut = text.slice(0, limit);
+  if(text.charAt(limit) !== ' '){
+    const sp = cut.lastIndexOf(' ');
+    if(sp > 40) cut = cut.slice(0, sp);
+  }
+  const words = cut.replace(/[\s,;:\-—–]+$/, '').split(' ');
+  while(words.length > 6 && DANGLING.has(words[words.length - 1].toLowerCase().replace(/[^a-z]/g, ''))) words.pop();
+  return words.join(' ').replace(/[\s,;:\-—–]+$/, '') + '…';
+}
+
+// Products in the same category that share this product's name (e.g. two
+// "Chrome heart bracelet" listings) get a differentiator so their <title> and
+// meta description are not identical: the price when the prices differ,
+// otherwise "Style n" (stable, ordered by product id).
+function variantSuffix(product, peers){
+  const me = normName(product.name);
+  const group = (Array.isArray(peers) ? peers : []).filter(p => normName(p.name) === me);
+  if(!group.some(p => p.id === product.id)) group.push({ id: product.id, name: product.name, price: product.price });
+  if(group.length < 2) return '';
+  const prices = group.map(p => Number(p.price));
+  if(new Set(prices).size === prices.length) return ` (BDT ${product.price})`;
+  const ids = group.map(p => p.id).sort();
+  return ` — Style ${ids.indexOf(product.id) + 1}`;
+}
+
+function buildTitle(label){
+  const full = `${label} Price in Bangladesh | FASHIONISTA`;
+  return full.length <= 65 ? full : `${label} Price in BD | FASHIONISTA`;
+}
+
+// Meta description, at most 160 characters: "<name>: <cleaned description>
+// Price in Bangladesh — cash on delivery." The name leads so products that
+// share the same stored description (the bandana colours, say) still differ.
+function buildDescription(product, label){
+  const suffix = ' Price in Bangladesh — cash on delivery.';
+  const cleaned = cleanDescription(product.description);
+  if(!cleaned){
+    const cat = product.category ? `${product.category} from FASHIONISTA` : 'from FASHIONISTA';
+    return `${label} — BDT ${product.price}. ${cat}, price in Bangladesh, cash on delivery nationwide.`;
+  }
+  // Lead with the product name unless the description already opens with it
+  // (at least 3 of every 4 name words in its first 80 characters). Products
+  // that carry a differentiator always lead with their full label.
+  const baseName = label.replace(/ \(BDT \d+\)$| — Style \d+$/, '');
+  const variant = baseName !== label;
+  const nameWords = normName(baseName).split(' ').filter(Boolean);
+  const opening = cleaned.slice(0, 80).toLowerCase();
+  const hits = nameWords.filter(w => opening.includes(w)).length;
+  const alreadyNamed = nameWords.length > 0 && hits / nameWords.length >= 0.75;
+  const lead = (alreadyNamed && !variant) ? '' : `${label}: `;
+  const room = 160 - lead.length - suffix.length - 1;   // -1: possible closing period
+  const body = cutAtBoundary(cleaned, room);
+  const tail = /[.!?…]$/.test(body) ? '' : '.';
+  return `${lead}${body}${tail}${suffix}`;
+}
+
+// Short category-aware sentence for the on-page copy. Deliberately makes no
+// claims about materials or sizing beyond what the shop already states.
+function categoryBlurb(product){
+  const hay = `${product.category || ''} ${product.name || ''}`.toLowerCase();
+  if(/bandana/.test(hay)) return 'A versatile accessory you can wear as a headband, around your neck, on your waist or hooked onto your jeans.';
+  if(/glass|eyewear/.test(hay)) return 'It belongs to our eyewear range, built around gothic, Y2K and streetwear styling. Wear the frames with a plain tee or an all-black outfit to make the look stand out.';
+  if(/cloth|t-?shirt|\btee\b|shirt|hoodie|jersey/.test(hay)) return 'It belongs to our clothing range: clean, everyday streetwear cuts that are easy to style. Check the size options on this page before ordering, and message us on WhatsApp if you are unsure which size to pick.';
+  if(/bracelet|bangle|\brings?\b|chain|necklace|pendant|grill/.test(hay)) return 'It belongs to our jewellery and accessories range for gothic and streetwear outfits. Pieces like this are easy to layer and easy to match with the rest of your look.';
+  return "It belongs to FASHIONISTA's gothic and streetwear accessories collection.";
+}
+
+// Server-rendered "About this product" block. It is injected OUTSIDE
+// #productRoot on purpose: the client-side hydration replaces everything inside
+// #productRoot, which would remove this text again and leave the page thin.
+function renderInfoSection(product){
+  const name = esc(titleCaseName(product.name) || 'This product');
+  const price = Number(product.price);
+  const hasPrice = Number.isFinite(price);
+  const catRaw = String(product.category || '').trim().toLowerCase();
+  const cat = /^new/.test(catRaw) ? '' : catRaw;         // "New In" is a shelf, not a product type
+  const sizes = getSizes(product);
+  const outOfStock = product.stock === 0;
+  const was = Number(product.was);
+  const discount = hasPrice && was > price ? Math.round((1 - price / was) * 100) : 0;
+
+  const intro = [
+    `${name} ${cat ? `is part of our ${esc(cat)} collection at FASHIONISTA` : 'is available at FASHIONISTA'}`,
+    hasPrice ? ` and costs BDT ${price}${discount > 0 ? `, ${discount}% off the original BDT ${was}` : ''}` : '',
+    '. We deliver across Bangladesh with cash on delivery, so you pay when the parcel reaches you.',
+    outOfStock ? ' This item is currently out of stock; message us on WhatsApp to ask when it will be back.' : '',
+    sizes.length ? ` Available sizes: ${sizes.map(esc).join(', ')}.` : ''
+  ].join('');
+
+  return `
+<section class="seo-info" aria-labelledby="seoInfoHead">
+  <h2 id="seoInfoHead" class="display">About ${name}</h2>
+  <p>${intro}</p>
+  <p>${esc(categoryBlurb(product))}</p>
+  <h3>What is the price of ${name} in Bangladesh?</h3>
+  <p>${hasPrice ? `${name} costs BDT ${price} at FASHIONISTA. ` : ''}Delivery charges depend on where you live; see our <a href="/shipping.html">shipping info</a> for charges, timelines and how order confirmation works.</p>
+  <h3>Can I pay cash on delivery?</h3>
+  <p>Yes. We offer cash on delivery nationwide across Bangladesh, so there is nothing to pay online.</p>
+  <h3>What if the item is damaged or the wrong size?</h3>
+  <p>Inspect your parcel in front of the delivery person and report any damaged, incorrect or wrong-size item on the spot. Full details are in our <a href="/return-policy.html">return and exchange policy</a>.</p>
+  <h3>Have a question before you order?</h3>
+  <p>Message us on WhatsApp or visit our <a href="/contact.html">contact page</a>. We usually reply within a few hours.</p>
+</section>`;
+}
+
+const SEO_INFO_CSS = `<style>
+  .seo-info{padding:6px 22px 40px;max-width:760px;}
+  .seo-info h2{font-family:'Fraunces',serif;font-weight:500;font-size:19px;margin-bottom:14px;padding-bottom:13px;border-bottom:1px solid var(--line);}
+  .seo-info h3{font-size:14px;font-weight:600;color:var(--silver-bright);margin:18px 0 6px;}
+  .seo-info p{font-size:13.5px;color:var(--text-dim);line-height:1.7;margin-bottom:10px;}
+  .seo-info a{color:var(--silver-bright);text-decoration:underline;text-underline-offset:2px;}
+</style>`;
 
 const DEFAULT_CLOTHING_SIZES = ['M','L','XL'];
 function getSizes(product){
@@ -376,21 +564,25 @@ module.exports = async function handler(req, res){
     return;
   }
 
-  const [similar, reviews] = await Promise.all([
+  const [similar, reviews, peers] = await Promise.all([
     fetchSimilar(product.category, product.id),
-    fetchReviews(product.id)
+    fetchReviews(product.id),
+    fetchCategoryPeers(product.category)
   ]);
 
   const url = `${SITE}/product.html?id=${encodeURIComponent(product.id)}`;
+  // Name used in <title>/meta: title-cased, plus a differentiator when another
+  // product in the category has the very same name.
+  const label = `${titleCaseName(product.name) || 'Product'}${variantSuffix(product, peers)}`;
   // SEO override for this exact product only.
   const isChromeHeartRimlessSilver = product.id === 'hRTjTVeGAcjWuwFAMwcs';
   const desc = isChromeHeartRimlessSilver
     ? 'Shop silver rimless glasses with Chrome Hearts-inspired detailing at Fashion1sta. Stylish silver-tone eyewear for everyday streetwear. Price in Bangladesh — cash on delivery.'
-    : buildDescription(product);
+    : buildDescription(product, label);
   const image = (product.images && product.images[0]) || product.imageUrl || `${SITE}/og-image.jpg`;
   const titleTag = isChromeHeartRimlessSilver
     ? 'Chrome Heart Rimless Silver Glasses Price in Bangladesh | Fashion1sta'
-    : `${esc(product.name)} Price in Bangladesh — FASHIONISTA`;
+    : esc(buildTitle(label));
   const keywordsContent = esc(buildKeywords(product).join(', '));
 
   html = html
@@ -473,6 +665,7 @@ module.exports = async function handler(req, res){
   }
 
   const jsonLd = `
+${SEO_INFO_CSS}
 <script type="application/ld+json" id="productLd">${JSON.stringify(productSchema).replace(/</g,'\\u003c')}</script>
 <script type="application/ld+json" id="breadcrumbLd">${JSON.stringify({
     "@context": "https://schema.org",
@@ -490,9 +683,12 @@ module.exports = async function handler(req, res){
   const ssrDataScript = `<script type="application/json" id="__SSR_DATA__">${JSON.stringify({ product, similar, reviews }).replace(/</g,'\\u003c')}</script>`;
   html = html.replace(
     '<div id="productRoot">\n  <p class="not-found">Loading...</p>\n</div>',
-    `<div id="productRoot">${snapshot}</div>\n${ssrDataScript}`
+    `<div id="productRoot">${snapshot}</div>\n${ssrDataScript}\n${renderInfoSection(product)}`
   );
 
   res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=600');
   res.status(200).send(html);
 };
+
+// Exposed only so the SEO helpers can be unit-tested locally; Vercel ignores it.
+module.exports.__seo = { cleanDescription, cutAtBoundary, variantSuffix, buildTitle, buildDescription, titleCaseName, renderInfoSection };

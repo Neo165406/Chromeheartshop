@@ -25,7 +25,7 @@ const firebaseConfig = {
 };
 
 // Canonical site URL
-const SITE = "https://www.fashion1sta.com";
+const SITE = "https://fashion1sta.com";
 
 const STATIC_PAGES = [
   { loc: "/", changefreq: "daily", priority: "1.0" },
