@@ -10,6 +10,11 @@
 // directly (same public web key already used client-side — firestore.rules
 // already allows public read on /products, same access level the
 // storefront pages themselves have).
+//
+// Sub-category landing pages (/bracelets, /bandanas) are served by this same
+// function via the rewrites in vercel.json (?scope=bracelets / ?scope=bandanas).
+// They reuse the shop template and add their own title, description, H1,
+// intro, supporting copy, internal links and JSON-LD (see SCOPE_PAGES below).
 
 const fs = require('fs');
 const path = require('path');
@@ -17,6 +22,11 @@ const path = require('path');
 const FIREBASE_API_KEY = 'AIzaSyC_Fgdc_JlFlrPwByNQIa3e-MMGmoRXRWE'; // public web key (same as js/firebase-config.js)
 const PROJECT_ID = 'argentum-3709f';
 const SITE = 'https://fashion1sta.com';
+
+// Search-engine crawlers. If the product data genuinely can't be fetched for a
+// sub-category landing page, they get a 503 (try again later) instead of a
+// thin 200 page — same policy as api/home-page.js.
+const CRAWLER_UA = /googlebot|google-inspectiontool|googleother|adsbot-google|bingbot|duckduckbot|yandexbot|baiduspider/i;
 
 // ---------- Firestore REST "fields" -> plain JS value ----------
 function fsValue(v){
@@ -67,6 +77,19 @@ function setAttrById(html, id, attr, value){
 function setTextById(html, id, tag, text){
   const re = new RegExp(`(<${tag}[^>]*\\bid="${id}"[^>]*>)[^<]*(</${tag}>)`);
   return html.replace(re, (m, p1, p2) => p1 + text.replace(/\$/g, '$$$$') + p2);
+}
+
+// Title / description / social tags / canonical, written server-side.
+function applySeoHead(html, seo, url){
+  html = html.replace(/<title>[^<]*<\/title>/, () => `<title>${esc(seo.title)}</title>`);
+  html = setAttrById(html, 'metaDesc', 'content', esc(seo.desc));
+  html = setAttrById(html, 'ogTitle', 'content', esc(seo.title));
+  html = setAttrById(html, 'ogDescription', 'content', esc(seo.desc));
+  html = setAttrById(html, 'ogUrl', 'content', esc(url));
+  html = setAttrById(html, 'twitterTitle', 'content', esc(seo.title));
+  html = setAttrById(html, 'twitterDescription', 'content', esc(seo.desc));
+  html = setAttrById(html, 'canonicalLink', 'href', esc(url));
+  return html;
 }
 
 function glassesSVG(){return `<svg viewBox="0 0 100 46" fill="none"><circle cx="26" cy="23" r="19" stroke="url(#sg1)" stroke-width="2.5"/><circle cx="74" cy="23" r="19" stroke="url(#sg1)" stroke-width="2.5"/><line x1="45" y1="23" x2="55" y2="23" stroke="url(#sg1)" stroke-width="2.5"/><line x1="7" y1="16" x2="0" y2="11" stroke="url(#sg1)" stroke-width="2.5" stroke-linecap="round"/><line x1="93" y1="16" x2="100" y2="11" stroke="url(#sg1)" stroke-width="2.5" stroke-linecap="round"/><defs><linearGradient id="sg1" x1="0" y1="0" x2="100" y2="46"><stop offset="0%" stop-color="#6b6f76"/><stop offset="55%" stop-color="#f2f4f7"/><stop offset="100%" stop-color="#b8bcc4"/></linearGradient></defs></svg>`;}
@@ -132,6 +155,329 @@ const CATEGORY_SEO = {
   }
 };
 
+// =====================================================================
+// Sub-category landing pages: /bracelets and /bandanas
+// =====================================================================
+// A product belongs to a landing page when its Firestore `subcategory` field
+// matches one of `aliases` (case-insensitive, trimmed) — the same field the
+// shop's filter drawer uses. Nothing here is guessed from product names.
+//
+// Copy rules: no claims about materials, authenticity, sizing, reviews or
+// delivery times beyond what the site already states (see shipping.html and
+// return-policy.html). The "highlights" blocks are generated from the real
+// product names/descriptions and only appear when at least one product
+// actually mentions the term. Third-party brand names are never used.
+const SCOPE_PAGES = {
+  bracelets: {
+    path: '/bracelets',
+    label: 'Bracelets',
+    aliases: ['bracelets', 'bracelet'],
+    title: 'Gothic & Fashion Bracelets in Bangladesh | FASHIONISTA',
+    desc: 'Browse gothic and streetwear bracelets at FASHIONISTA. Prices in BDT, live stock status and cash on delivery across Bangladesh.',
+    h1: 'Fashion Bracelets in Bangladesh',
+    sub: 'Gothic and streetwear bracelets, priced in BDT',
+    intro: [
+      'FASHIONISTA is a Bangladesh-based accessories brand inspired by retro, Y2K and street fashion. This page collects the bracelets currently listed in our shop, with the price in BDT and a clear out-of-stock label on anything that has sold through.',
+      'Pay cash on delivery anywhere in Bangladesh, with nothing to pay online.'
+    ],
+    highlights: [
+      { heading: 'Silver cross bracelets', text: 'These listings mention both silver and a cross design in their name or description:', test: s => /cross/i.test(s) && /silver/i.test(s) },
+      { heading: 'Cross bracelets', text: 'These listings mention a cross design in their name or description:', test: s => /cross/i.test(s) && !/silver/i.test(s) },
+      { heading: 'Gothic bracelets', text: 'These listings describe themselves as gothic:', test: s => /goth/i.test(s) }
+    ],
+    sections: [
+      { h: 'How to choose a bracelet', p: [
+        'Open any listing to see its photos, price and description. Size and finish differ from piece to piece, so check those details on the product page before you order, and message us on WhatsApp through the <a href="/contact.html">contact page</a> if you are unsure about fit.'
+      ]},
+      { h: 'Styling a bracelet', p: [
+        'Darker, gothic-leaning designs look sharpest against plain basics such as a black or white tee, a hoodie or a denim jacket. Wear one on its own for a clean look, or stack it with a watch or a second bracelet. Chain necklaces and rings from the wider <a href="/shop.html?category=Accessories">accessories range</a> are an easy match.'
+      ]},
+      { h: 'Ordering bracelets in Bangladesh', p: [
+        'We deliver across Bangladesh and every order is cash on delivery, so you pay the courier when the parcel arrives. Delivery charges depend on whether you are inside or outside Dhaka; the <a href="/shipping.html">shipping info page</a> lists the current charges and timelines. After checkout we confirm your order on WhatsApp. If an item arrives damaged or incorrect, our <a href="/return-policy.html">return and exchange policy</a> explains what to do.'
+      ]}
+    ],
+    related: [
+      { href: '/bandanas', text: 'Bandanas' },
+      { href: '/glasses', text: 'Glasses and sunglasses' },
+      { href: '/shop.html?category=Accessories', text: 'All accessories' },
+      { href: '/shop.html', text: 'Shop everything' }
+    ]
+  },
+  bandanas: {
+    path: '/bandanas',
+    label: 'Bandanas',
+    aliases: ['bandana', 'bandanas'],
+    title: 'Bandanas in Bangladesh | Streetwear & Gothic | FASHIONISTA',
+    desc: 'Shop bandanas at FASHIONISTA to wear as a headband, neck scarf or waist accessory. Prices in BDT, cash on delivery across Bangladesh.',
+    h1: 'Bandanas in Bangladesh',
+    sub: 'Streetwear and gothic bandanas, priced in BDT',
+    intro: [
+      'A bandana is one of the easiest ways to change an outfit. Tie one as a headband, around your neck, on your waist or hooked onto your jeans. Every bandana listed here shows its price in BDT and an out-of-stock label when it has sold through.',
+      'Order from anywhere in Bangladesh and pay cash on delivery.'
+    ],
+    highlights: [
+      { heading: 'Printed bandanas', text: 'These listings mention a print, paisley or pattern in their name or description:', test: s => /print|paisley|pattern/i.test(s) },
+      { heading: 'Gothic bandanas', text: 'These listings describe themselves as gothic:', test: s => /goth/i.test(s) },
+      { heading: 'Streetwear bandanas', text: 'These listings mention streetwear in their name or description:', test: s => /street/i.test(s) }
+    ],
+    sections: [
+      { h: 'Ways to wear a bandana', p: [
+        'Folded into a band and tied at the back, it works as a headband. Knotted loosely at the front, it becomes a neck scarf. You can also tie it at your waist, hook it onto a belt loop or jeans, or knot it around a wrist or bag strap for a small pop of colour.'
+      ]},
+      { h: 'Choosing a bandana', p: [
+        'Look at the photos on each product page for colour and print, and read the description for any details we have added. Darker, graphic designs suit gothic and streetwear outfits, while a lighter colour gives a strong contrast against all black.'
+      ]},
+      { h: 'Ordering bandanas in Bangladesh', p: [
+        'Place your order and pay the courier in cash when the parcel reaches you. Delivery charges are different inside and outside Dhaka, and the <a href="/shipping.html">shipping info page</a> has the current charges and timelines. We confirm each order with you on WhatsApp after checkout. Our <a href="/return-policy.html">return and exchange policy</a> covers damaged or incorrect items.'
+      ]}
+    ],
+    related: [
+      { href: '/bracelets', text: 'Bracelets' },
+      { href: '/glasses', text: 'Glasses and sunglasses' },
+      { href: '/shop.html?category=Accessories', text: 'All accessories' },
+      { href: '/shop.html', text: 'Shop everything' }
+    ]
+  }
+};
+
+function getScopeConfig(req){
+  const key = String((req.query && req.query.scope) || '').toLowerCase();
+  return Object.prototype.hasOwnProperty.call(SCOPE_PAGES, key) ? SCOPE_PAGES[key] : null;
+}
+
+function inScope(p, cfg){
+  return cfg.aliases.indexOf(String(p.subcategory || '').trim().toLowerCase()) !== -1;
+}
+
+const LANDING_CSS = `<style>
+  .crumbs{font-size:12px;color:var(--text-dim);margin-bottom:12px;}
+  .crumbs a{color:var(--silver-bright);text-decoration:underline;text-underline-offset:2px;}
+  .cat-intro{max-width:760px;margin:0 auto 22px;font-size:13.5px;color:var(--text-dim);line-height:1.7;}
+  .cat-intro p{margin-bottom:10px;}
+  .cat-copy{padding:6px 22px 40px;max-width:760px;}
+  .cat-copy h2{font-family:'Fraunces',serif;font-weight:500;font-size:19px;margin:26px 0 12px;padding-bottom:12px;border-bottom:1px solid var(--line);}
+  .cat-copy h2:first-child{margin-top:0;}
+  .cat-copy p,.cat-copy li{font-size:13.5px;color:var(--text-dim);line-height:1.7;margin-bottom:10px;}
+  .cat-copy ul{padding-left:20px;margin-bottom:10px;}
+  .cat-copy a{color:var(--silver-bright);text-decoration:underline;text-underline-offset:2px;}
+  .cat-links{padding:0 22px 32px;font-size:13px;color:var(--text-dim);}
+  .cat-links a{color:var(--silver-bright);text-decoration:underline;text-underline-offset:2px;margin-right:14px;}
+</style>`;
+
+function productLink(p){
+  const out = p.stock === 0 ? ' (out of stock)' : '';
+  const price = Number.isFinite(Number(p.price)) ? ` — BDT ${esc(p.price)}` : '';
+  return `<li><a href="/product.html?id=${encodeURIComponent(p.id)}">${esc(p.name)}</a>${price}${out}</li>`;
+}
+
+// "Silver cross bracelets" / "Printed bandanas" ... blocks, built only from
+// products whose own name or description contains the term.
+function highlightsMarkup(cfg, items){
+  const used = new Set();
+  const blocks = [];
+  cfg.highlights.forEach(h => {
+    const hits = items
+      .filter(p => !used.has(h.heading + p.id) && h.test(`${p.name || ''} ${p.description || ''}`))
+      .slice(0, 6);
+    if(!hits.length) return;
+    blocks.push(`<h2>${esc(h.heading)}</h2><p>${esc(h.text)}</p><ul>${hits.map(productLink).join('')}</ul>`);
+  });
+  return blocks.join('\n  ');
+}
+
+function relatedMarkup(cfg){
+  return `<h2>More from FASHIONISTA</h2><ul>${cfg.related.map(l => `<li><a href="${esc(l.href)}">${esc(l.text)}</a></li>`).join('')}</ul>`;
+}
+
+function introMarkup(cfg, count){
+  const countLine = count > 0
+    ? `${count} ${count === 1 ? 'style is' : 'styles are'} listed right now.`
+    : 'New styles are being added soon, so check back shortly.';
+  return `<div class="cat-intro">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/shop.html?category=Accessories">Accessories</a> / <span>${esc(cfg.label)}</span></nav>
+    <p>${esc(cfg.intro[0])} ${esc(countLine)}</p>
+    <p>${esc(cfg.intro[1])}</p>
+  </div>`;
+}
+
+function supportingCopyMarkup(cfg, items){
+  const sections = cfg.sections.map(s => `<h2>${esc(s.h)}</h2>${s.p.map(t => `<p>${t}</p>`).join('')}`).join('\n  ');
+  const highlights = highlightsMarkup(cfg, items);
+  return `<section class="cat-copy" aria-label="${esc(cfg.label)} buying guide">
+  ${highlights ? highlights + '\n  ' : ''}${sections}
+  ${relatedMarkup(cfg)}
+</section>`;
+}
+
+function landingJsonLd(cfg, items){
+  const url = SITE + cfg.path;
+  const crumbs = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": `${SITE}/` },
+      { "@type": "ListItem", "position": 2, "name": "Accessories", "item": `${SITE}/shop.html?category=Accessories` },
+      { "@type": "ListItem", "position": 3, "name": cfg.label, "item": url }
+    ]
+  };
+  const listItems = [];
+  for(const p of items){
+    if(!p || !p.name) continue;
+    const entry = {
+      "@type": "ListItem",
+      "position": listItems.length + 1,
+      "url": `${SITE}/product.html?id=${encodeURIComponent(p.id)}`,
+      "name": p.name
+    };
+    if(typeof p.imageUrl === 'string' && /^https?:\/\//i.test(p.imageUrl)) entry.image = p.imageUrl;
+    listItems.push(entry);
+    if(listItems.length >= 30) break;
+  }
+  const tags = [`<script type="application/ld+json" id="breadcrumbLd">${JSON.stringify(crumbs).replace(/</g,'\\u003c')}</script>`];
+  if(listItems.length){
+    const list = {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": cfg.h1,
+      "url": url,
+      "numberOfItems": listItems.length,
+      "itemListElement": listItems
+    };
+    tags.push(`<script type="application/ld+json" id="itemListLd">${JSON.stringify(list).replace(/</g,'\\u003c')}</script>`);
+  }
+  return tags.join('\n');
+}
+
+// The shop template's client script re-renders the grid and the heading after
+// load, using only ?category= from the URL. On a landing page that would reset
+// the heading to "Shop All" and show every product, so a handful of exact
+// one-line anchors in that script are patched (only for landing pages — the
+// template file itself, and every other shop URL, are untouched). If the
+// template is ever edited so an anchor no longer matches, the patch is skipped
+// with a console error and the SSR HTML is still correct; only the client-side
+// re-render would fall back to the generic behaviour.
+const CLIENT_PATCHES = [
+  [
+    "document.getElementById('pageTitle').textContent = activeCategory || 'Shop All';",
+    "document.getElementById('pageTitle').textContent = window.__SHOP_SCOPE__ ? window.__SHOP_SCOPE__.title : (activeCategory || 'Shop All');"
+  ],
+  [
+    "document.getElementById('pageSub').textContent = activeCategory",
+    "document.getElementById('pageSub').textContent = window.__SHOP_SCOPE__ ? window.__SHOP_SCOPE__.sub : activeCategory"
+  ],
+  [
+    "baseFiltered = filtered;",
+    "if(window.__SHOP_SCOPE__){ filtered = window.__shopScopeFilter(all); }\n  baseFiltered = filtered;"
+  ],
+  [
+    "document.getElementById('pageTitle').textContent = 'Shop All';",
+    "document.getElementById('pageTitle').textContent = window.__SHOP_SCOPE__ ? window.__SHOP_SCOPE__.title : 'Shop All';"
+  ],
+  [
+    "document.getElementById('pageSub').textContent = 'Every FASHIONISTA piece in one place';",
+    "document.getElementById('pageSub').textContent = window.__SHOP_SCOPE__ ? window.__SHOP_SCOPE__.sub : 'Every FASHIONISTA piece in one place';"
+  ]
+];
+
+function patchClientForScope(html){
+  CLIENT_PATCHES.forEach(([from, to]) => {
+    if(html.indexOf(from) === -1){
+      console.error('shop-page: client patch anchor not found, skipped:', from);
+      return;
+    }
+    html = html.replace(from, () => to);
+  });
+  return html;
+}
+
+// Classic script placed before the module script: tells the client which
+// products make up this landing page (ids from the server, in display order;
+// or, when the server could not load products, the sub-category aliases so the
+// client can filter after its own fetch).
+function scopeScript(cfg, ids){
+  const data = { title: cfg.h1, sub: cfg.sub, ids: ids || null, aliases: cfg.aliases };
+  return `<script>window.__SHOP_SCOPE__=${JSON.stringify(data).replace(/</g,'\\u003c')};`
+    + `window.__shopScopeFilter=function(all){var s=window.__SHOP_SCOPE__;`
+    + `if(s.ids){var m={};all.forEach(function(p){m[p.id]=p;});return s.ids.map(function(id){return m[id];}).filter(Boolean);}`
+    + `return all.filter(function(p){return s.aliases.indexOf(String(p.subcategory||'').trim().toLowerCase())!==-1;});};</script>\n`;
+}
+
+// Same "You Might Also Like" handling the shop page has always had.
+function injectSimilar(html, similar, cardFn){
+  if(similar.length){
+    return html
+      .replace('<section class="collection" id="similarSection">', '<section class="collection" id="similarSection">')
+      .replace('<div class="grid" id="similarGrid"></div>', () => `<div class="grid" id="similarGrid">${similar.map((p,i)=>cardFn(p,i,false)).join('')}</div>`);
+  }
+  return html.replace('<section class="collection" id="similarSection">', '<section class="collection" id="similarSection" style="display:none;">');
+}
+
+async function serveLandingPage(req, res, html, cfg){
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  const url = SITE + cfg.path;
+
+  html = applySeoHead(html, { title: cfg.title, desc: cfg.desc }, url);
+  html = setTextById(html, 'pageTitle', 'h1', esc(cfg.h1));
+  html = setTextById(html, 'pageSub', 'p', esc(cfg.sub));
+  html = patchClientForScope(html);
+
+  let products;
+  try{
+    products = await listCollection('products');
+  }catch(e){
+    console.error('SSR landing page products fetch failed:', e);
+    res.setHeader('Cache-Control', 'no-store');
+    const ua = String((req && req.headers && req.headers['user-agent']) || '');
+    if(CRAWLER_UA.test(ua)){
+      res.setHeader('Retry-After', '120');
+      res.status(503).send('Service temporarily unavailable. Please try again shortly.');
+      return;
+    }
+    // Everyone else: correct head/heading from the config, and the client
+    // fetches and filters the products itself (see scopeScript).
+    html = html.replace('<script type="module">', () => scopeScript(cfg, null) + '<script type="module">');
+    html = html.replace('</head>', () => LANDING_CSS + '\n</head>');
+    res.status(200).send(html);
+    return;
+  }
+
+  // In-stock first, then out-of-stock; otherwise the stored order.
+  const items = products
+    .filter(p => inScope(p, cfg))
+    .map((p, idx) => ({ p, idx }))
+    .sort((a, b) => ((a.p.stock === 0) - (b.p.stock === 0)) || (a.idx - b.idx))
+    .map(x => x.p);
+
+  const similar = products.filter(p => !inScope(p, cfg)).sort(() => Math.random() - 0.5).slice(0, 4);
+
+  const head = [LANDING_CSS, landingJsonLd(cfg, items)];
+  // A landing page with no products would be a thin page: keep it out of the index.
+  if(!items.length) head.push('<meta name="robots" content="noindex, follow">');
+  html = html.replace('</head>', () => head.join('\n') + '\n</head>');
+
+  const gridInner = items.map((p, i) => cardMarkup(p, i, i < 2)).join('');
+  html = html.replace('<div class="grid" id="shopGrid"></div>', () => introMarkup(cfg, items.length) + `<div class="grid" id="shopGrid">${gridInner}</div>`);
+  if(!items.length){
+    html = html.replace(
+      '<p class="empty-state" id="emptyState" style="display:none;">No products in this category yet — check back soon.</p>',
+      '<p class="empty-state" id="emptyState">No products in this category yet — check back soon.</p>'
+    );
+  }
+
+  html = html.replace('<section class="collection" id="similarSection">', () => supportingCopyMarkup(cfg, items) + '\n<section class="collection" id="similarSection">');
+  html = injectSimilar(html, similar, cardMarkup);
+
+  html = html.replace('<script type="module">', () => scopeScript(cfg, items.map(p => p.id)) + '<script type="module">');
+  const ssrDataScript = `<script type="application/json" id="__SSR_DATA__">${JSON.stringify({ products, similar }).replace(/</g,'\\u003c')}</script>\n`;
+  html = html.replace('<script type="module">', () => ssrDataScript + '<script type="module">');
+
+  res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=600');
+  res.status(200).send(html);
+}
+
+// Crawlable links from the main shop and Accessories pages to the landing pages.
+const BROWSE_LINKS = `<nav class="cat-links" aria-label="Browse by type">Browse by type: <a href="/bracelets">Bracelets</a><a href="/bandanas">Bandanas</a><a href="/glasses">Glasses</a></nav>`;
+
 module.exports = async function handler(req, res){
   const category = (req.query && req.query.category) || '';
   const templatePath = path.join(__dirname, '..', 'templates', 'shop.html');
@@ -142,6 +488,12 @@ module.exports = async function handler(req, res){
   }catch(e){
     console.error('shop.html template missing:', e);
     res.status(500).send('Template not found');
+    return;
+  }
+
+  const scopeCfg = getScopeConfig(req);
+  if(scopeCfg){
+    await serveLandingPage(req, res, html, scopeCfg);
     return;
   }
 
@@ -182,14 +534,7 @@ module.exports = async function handler(req, res){
   const seo = CATEGORY_SEO[category];
   if(seo){
     const url = category === 'Glasses' ? `${SITE}/glasses` : `${SITE}/shop.html?category=${encodeURIComponent(category)}`;
-    html = html.replace(/<title>[^<]*<\/title>/, `<title>${esc(seo.title)}</title>`);
-    html = setAttrById(html, 'metaDesc', 'content', esc(seo.desc));
-    html = setAttrById(html, 'ogTitle', 'content', esc(seo.title));
-    html = setAttrById(html, 'ogDescription', 'content', esc(seo.desc));
-    html = setAttrById(html, 'ogUrl', 'content', esc(url));
-    html = setAttrById(html, 'twitterTitle', 'content', esc(seo.title));
-    html = setAttrById(html, 'twitterDescription', 'content', esc(seo.desc));
-    html = setAttrById(html, 'canonicalLink', 'href', esc(url));
+    html = applySeoHead(html, seo, url);
   }
 
   // Main grid
@@ -204,14 +549,15 @@ module.exports = async function handler(req, res){
     );
   }
 
-  // "You Might Also Like"
-  if(similar.length){
-    html = html
-      .replace('<section class="collection" id="similarSection">', '<section class="collection" id="similarSection">')
-      .replace('<div class="grid" id="similarGrid"></div>', `<div class="grid" id="similarGrid">${similar.map((p,i)=>cardMarkup(p,i,false)).join('')}</div>`);
-  }else{
-    html = html.replace('<section class="collection" id="similarSection">', '<section class="collection" id="similarSection" style="display:none;">');
+  // Crawlable links to /bracelets, /bandanas and /glasses from the main shop
+  // page and the Accessories page.
+  if(!category || category === 'Accessories'){
+    html = html.replace('</head>', () => LANDING_CSS + '\n</head>');
+    html = html.replace('<section class="collection" id="similarSection">', () => BROWSE_LINKS + '\n<section class="collection" id="similarSection">');
   }
+
+  // "You Might Also Like"
+  html = injectSimilar(html, similar, cardMarkup);
 
   const ssrDataScript = `<script type="application/json" id="__SSR_DATA__">${JSON.stringify({ products, similar }).replace(/</g,'\\u003c')}</script>\n`;
   html = html.replace('<script type="module">', ssrDataScript + '<script type="module">');
@@ -219,3 +565,6 @@ module.exports = async function handler(req, res){
   res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=600');
   res.status(200).send(html);
 };
+
+// Exposed only so the landing-page helpers can be tested locally; Vercel ignores it.
+module.exports.__landing = { SCOPE_PAGES, inScope, highlightsMarkup, supportingCopyMarkup, introMarkup, landingJsonLd, patchClientForScope, scopeScript };
