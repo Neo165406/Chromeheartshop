@@ -340,7 +340,7 @@ function variantSuffix(product, peers){
 
 function buildTitle(label){
   const full = `${label} Price in Bangladesh | FASHIONISTA`;
-  return full.length <= 65 ? full : `${label} Price in BD | FASHIONISTA`;
+  return full.length <= 60 ? full : `${label} Price in BD | FASHIONISTA`;
 }
 
 // Meta description, at most 160 characters: "<n>: <cleaned description>
@@ -447,7 +447,7 @@ function renderSnapshot(product, similar){
     ? `<img id="mainProductImg" src="${esc(images[0])}" alt="${esc(product.name)}" fetchpriority="high" style="${outOfStock?'opacity:0.4;':''}">`
     : '';
   const thumbs = images.length > 1
-    ? `<div class="p-thumbs" id="pThumbs">${images.map((img,i)=>`<img src="${esc(img)}" class="${i===0?'active':''}" data-i="${i}" loading="lazy" decoding="async">`).join('')}</div>`
+    ? `<div class="p-thumbs" id="pThumbs">${images.map((img,i)=>`<img src="${esc(img)}" alt="${esc(product.name)} - photo ${i+1}" class="${i===0?'active':''}" data-i="${i}" loading="lazy" decoding="async">`).join('')}</div>`
     : '';
 
   const actions = outOfStock
