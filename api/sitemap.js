@@ -23,6 +23,14 @@ const STATIC_PAGES = [
   { loc: `${SITE}/track-order.html`, changefreq: 'monthly', priority: '0.3' }
 ];
 
+// Sub-category landing pages (see SCOPE_PAGES in api/shop-page.js — keep the
+// aliases in sync). A page is listed only while at least one product has a
+// matching `subcategory`, because the landing page is noindex when empty.
+const LANDING_PAGES = [
+  { loc: `${SITE}/bracelets`, aliases: ['bracelets', 'bracelet'], changefreq: 'daily', priority: '0.8' },
+  { loc: `${SITE}/bandanas`, aliases: ['bandana', 'bandanas'], changefreq: 'daily', priority: '0.8' }
+];
+
 // Pulls every /products document via the Firestore REST API (paginated,
 // public read). Returns [] on any failure rather than throwing, so a
 // Firestore hiccup degrades to "static pages only" instead of a 500.
@@ -40,7 +48,9 @@ async function fetchAllProducts(){
         const id = doc.name.split('/').pop();
         const stockField = doc.fields && doc.fields.stock;
         const stock = stockField ? Number(stockField.integerValue ?? stockField.doubleValue) : null;
-        products.push({ id, updateTime: doc.updateTime, outOfStock: stock === 0 });
+        const subField = doc.fields && doc.fields.subcategory;
+        const subcategory = subField && typeof subField.stringValue === 'string' ? subField.stringValue.trim().toLowerCase() : '';
+        products.push({ id, updateTime: doc.updateTime, outOfStock: stock === 0, subcategory });
       });
       pageToken = j.nextPageToken || '';
     } while(pageToken);
@@ -64,6 +74,19 @@ module.exports = async function handler(req, res){
   const products = await fetchAllProducts();
 
   const staticUrls = STATIC_PAGES.map(urlTag);
+
+  const landingUrls = LANDING_PAGES.map(page => {
+    const matches = products.filter(p => page.aliases.indexOf(p.subcategory) !== -1);
+    if(!matches.length) return null;
+    const newest = matches.map(p => p.updateTime || '').sort().pop();
+    return urlTag({
+      loc: page.loc,
+      lastmod: newest ? newest.slice(0, 10) : undefined,
+      changefreq: page.changefreq,
+      priority: page.priority
+    });
+  }).filter(Boolean);
+
   const productUrls = products.map(p => urlTag({
     loc: `${SITE}/product.html?id=${encodeURIComponent(p.id)}`,
     lastmod: p.updateTime ? p.updateTime.slice(0, 10) : undefined,
@@ -71,7 +94,7 @@ module.exports = async function handler(req, res){
     priority: p.outOfStock ? '0.4' : '0.6'
   }));
 
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${[...staticUrls, ...productUrls].join('\n')}\n</urlset>`;
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${[...staticUrls, ...landingUrls, ...productUrls].join('\n')}\n</urlset>`;
 
   res.setHeader('Content-Type', 'application/xml; charset=utf-8');
   res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate=86400');
