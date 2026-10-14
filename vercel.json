@@ -15,8 +15,17 @@
       "permanent": true
     }
   ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "max-image-preview:large, max-snippet:-1" }
+      ]
+    }
+  ],
   "rewrites": [
     { "source": "/sitemap.xml", "destination": "/api/sitemap" },
+    { "source": "/merchant-feed.xml", "destination": "/api/merchant-feed" },
     { "source": "/og.png", "destination": "/api/og-image" },
     { "source": "/glasses", "destination": "/glasses.html" },
     { "source": "/product.html", "destination": "/api/product-page" },
