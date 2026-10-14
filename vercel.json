@@ -13,7 +13,9 @@
       "has": [{ "type": "host", "value": "www.fashion1sta.com" }],
       "destination": "https://fashion1sta.com/$1",
       "permanent": true
-    }
+    },
+    { "source": "/bracelet", "destination": "/bracelets", "permanent": true },
+    { "source": "/bandana", "destination": "/bandanas", "permanent": true }
   ],
   "headers": [
     {
@@ -28,6 +30,8 @@
     { "source": "/merchant-feed.xml", "destination": "/api/merchant-feed" },
     { "source": "/og.png", "destination": "/api/og-image" },
     { "source": "/glasses", "destination": "/glasses.html" },
+    { "source": "/bracelets", "destination": "/api/shop-page?scope=bracelets" },
+    { "source": "/bandanas", "destination": "/api/shop-page?scope=bandanas" },
     { "source": "/product.html", "destination": "/api/product-page" },
     { "source": "/shop.html", "destination": "/api/shop-page" },
     { "source": "/", "destination": "/api/home-page" },
