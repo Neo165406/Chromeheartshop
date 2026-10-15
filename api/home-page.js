@@ -135,6 +135,18 @@ function withoutSlideTitles(html){
   return html.split(CLIENT_SLIDE_TITLE_EXPR).join('');
 }
 
+// Adds crawlable "Bracelets" and "Bandanas" pills to the homepage category
+// strip, right after the Accessories pill, so the two landing pages are one
+// click from the homepage. If the template line ever changes, this simply
+// does nothing (the replace finds no match) — it can't break the page.
+const ACCESSORIES_PILL = '<a class="cat" href="shop.html?category=Accessories">Accessories</a>';
+function withLandingPills(html){
+  return html.replace(
+    ACCESSORIES_PILL,
+    () => ACCESSORIES_PILL + '\n  <a class="cat" href="/bracelets">Bracelets</a>\n  <a class="cat" href="/bandanas">Bandanas</a>'
+  );
+}
+
 function cardMarkup(p, i, eagerCount){
   const pid = p.id || String(p.name||'').toLowerCase().replace(/[^a-z0-9]+/g,'-');
   const outOfStock = p.stock === 0;
@@ -290,6 +302,7 @@ module.exports = async function handler(req, res){
 
   html = withShareImage(html, req);
   html = withoutSlideTitles(html);
+  html = withLandingPills(html);
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
 
