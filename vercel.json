@@ -15,7 +15,21 @@
       "permanent": true
     },
     { "source": "/bracelet", "destination": "/bracelets", "permanent": true },
-    { "source": "/bandana", "destination": "/bandanas", "permanent": true }
+    { "source": "/bandana", "destination": "/bandanas", "permanent": true },
+
+    { "source": "/shop.html", "has": [{ "type": "query", "key": "category", "value": "Clothing" }], "destination": "/clothing", "permanent": true },
+    { "source": "/shop.html", "has": [{ "type": "query", "key": "category", "value": "Accessories" }], "destination": "/accessories", "permanent": true },
+    { "source": "/shop.html", "has": [{ "type": "query", "key": "category", "value": "Glasses" }], "destination": "/glasses", "permanent": true },
+    { "source": "/shop.html", "has": [{ "type": "query", "key": "category", "value": "New In" }], "destination": "/shop?category=New%20In", "permanent": true },
+    { "source": "/shop.html", "has": [{ "type": "query", "key": "category", "value": "New%20In" }], "destination": "/shop?category=New%20In", "permanent": true },
+    { "source": "/shop.html", "destination": "/shop", "permanent": true },
+
+    { "source": "/contact.html", "destination": "/contact", "permanent": true },
+    { "source": "/shipping.html", "destination": "/shipping", "permanent": true },
+    { "source": "/return-policy.html", "destination": "/return-policy", "permanent": true },
+    { "source": "/terms.html", "destination": "/terms", "permanent": true },
+    { "source": "/privacy.html", "destination": "/privacy", "permanent": true },
+    { "source": "/track-order.html", "destination": "/track-order", "permanent": true }
   ],
   "headers": [
     {
@@ -32,8 +46,16 @@
     { "source": "/glasses", "destination": "/glasses.html" },
     { "source": "/bracelets", "destination": "/api/shop-page?scope=bracelets" },
     { "source": "/bandanas", "destination": "/api/shop-page?scope=bandanas" },
+    { "source": "/shop", "destination": "/api/shop-page" },
+    { "source": "/clothing", "destination": "/api/shop-page?category=Clothing" },
+    { "source": "/accessories", "destination": "/api/shop-page?category=Accessories" },
+    { "source": "/contact", "destination": "/contact.html" },
+    { "source": "/shipping", "destination": "/shipping.html" },
+    { "source": "/return-policy", "destination": "/return-policy.html" },
+    { "source": "/terms", "destination": "/terms.html" },
+    { "source": "/privacy", "destination": "/privacy.html" },
+    { "source": "/track-order", "destination": "/track-order.html" },
     { "source": "/product.html", "destination": "/api/product-page" },
-    { "source": "/shop.html", "destination": "/api/shop-page" },
     { "source": "/", "destination": "/api/home-page" },
     { "source": "/index.html", "destination": "/api/home-page" }
   ]
