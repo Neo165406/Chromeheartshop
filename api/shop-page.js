@@ -4,17 +4,16 @@
 // Firestore. Also bakes in the right per-category SEO tags server-side.
 //
 // The static template lives at templates/shop.html (not at the public
-// path shop.html) so this function — reached via the /shop.html rewrite
-// in vercel.json — is what actually serves that URL, with no
-// static-file-vs-rewrite conflict. Reads Firestore's public REST API
-// directly (same public web key already used client-side — firestore.rules
-// already allows public read on /products, same access level the
-// storefront pages themselves have).
+// path) so this function is what actually serves the shop URLs. Reached via
+// the rewrites in vercel.json: /shop, /clothing and /accessories (the last two
+// pass ?category=), plus /bracelets and /bandanas (?scope=). Reads Firestore's
+// public REST API directly (same public web key already used client-side —
+// firestore.rules already allows public read on /products, same access level
+// the storefront pages themselves have).
 //
-// Sub-category landing pages (/bracelets, /bandanas) are served by this same
-// function via the rewrites in vercel.json (?scope=bracelets / ?scope=bandanas).
-// They reuse the shop template and add their own title, description, H1,
-// intro, supporting copy, internal links and JSON-LD (see SCOPE_PAGES below).
+// Sub-category landing pages (/bracelets, /bandanas) reuse the shop template and
+// add their own title, description, H1, intro, supporting copy, internal links
+// and JSON-LD (see SCOPE_PAGES below).
 
 const fs = require('fs');
 const path = require('path');
@@ -155,6 +154,24 @@ const CATEGORY_SEO = {
   }
 };
 
+// Clean public path for each category. Categories not listed here (New In)
+// keep using the ?category= query on /shop.
+const CATEGORY_PATHS = {
+  "Glasses": "/glasses",
+  "Clothing": "/clothing",
+  "Accessories": "/accessories"
+};
+
+function categoryPath(name){
+  return Object.prototype.hasOwnProperty.call(CATEGORY_PATHS, name)
+    ? CATEGORY_PATHS[name]
+    : `/shop?category=${encodeURIComponent(name)}`;
+}
+
+function seoForCategory(name){
+  return Object.prototype.hasOwnProperty.call(CATEGORY_SEO, name) ? CATEGORY_SEO[name] : null;
+}
+
 // =====================================================================
 // Sub-category landing pages: /bracelets and /bandanas
 // =====================================================================
@@ -187,20 +204,20 @@ const SCOPE_PAGES = {
     ],
     sections: [
       { h: 'How to choose a bracelet', p: [
-        'Open any listing to see its photos, price and description. Size and finish differ from piece to piece, so check those details on the product page before you order, and message us on WhatsApp through the <a href="/contact.html">contact page</a> if you are unsure about fit.'
+        'Open any listing to see its photos, price and description. Size and finish differ from piece to piece, so check those details on the product page before you order, and message us on WhatsApp through the <a href="/contact">contact page</a> if you are unsure about fit.'
       ]},
       { h: 'Styling a bracelet', p: [
-        'Darker, gothic-leaning designs look sharpest against plain basics such as a black or white tee, a hoodie or a denim jacket. Wear one on its own for a clean look, or stack it with a watch or a second bracelet. Chain necklaces and rings from the wider <a href="/shop.html?category=Accessories">accessories range</a> are an easy match.'
+        'Darker, gothic-leaning designs look sharpest against plain basics such as a black or white tee, a hoodie or a denim jacket. Wear one on its own for a clean look, or stack it with a watch or a second bracelet. Chain necklaces and rings from the wider <a href="/accessories">accessories range</a> are an easy match.'
       ]},
       { h: 'Ordering bracelets in Bangladesh', p: [
-        'We deliver across Bangladesh and every order is cash on delivery, so you pay the courier when the parcel arrives. Delivery charges depend on whether you are inside or outside Dhaka; the <a href="/shipping.html">shipping info page</a> lists the current charges and timelines. After checkout we confirm your order on WhatsApp. If an item arrives damaged or incorrect, our <a href="/return-policy.html">return and exchange policy</a> explains what to do.'
+        'We deliver across Bangladesh and every order is cash on delivery, so you pay the courier when the parcel arrives. Delivery charges depend on whether you are inside or outside Dhaka; the <a href="/shipping">shipping info page</a> lists the current charges and timelines. After checkout we confirm your order on WhatsApp. If an item arrives damaged or incorrect, our <a href="/return-policy">return and exchange policy</a> explains what to do.'
       ]}
     ],
     related: [
       { href: '/bandanas', text: 'Bandanas' },
       { href: '/glasses', text: 'Glasses and sunglasses' },
-      { href: '/shop.html?category=Accessories', text: 'All accessories' },
-      { href: '/shop.html', text: 'Shop everything' }
+      { href: '/accessories', text: 'All accessories' },
+      { href: '/shop', text: 'Shop everything' }
     ]
   },
   bandanas: {
@@ -228,14 +245,14 @@ const SCOPE_PAGES = {
         'Look at the photos on each product page for colour and print, and read the description for any details we have added. Darker, graphic designs suit gothic and streetwear outfits, while a lighter colour gives a strong contrast against all black.'
       ]},
       { h: 'Ordering bandanas in Bangladesh', p: [
-        'Place your order and pay the courier in cash when the parcel reaches you. Delivery charges are different inside and outside Dhaka, and the <a href="/shipping.html">shipping info page</a> has the current charges and timelines. We confirm each order with you on WhatsApp after checkout. Our <a href="/return-policy.html">return and exchange policy</a> covers damaged or incorrect items.'
+        'Place your order and pay the courier in cash when the parcel reaches you. Delivery charges are different inside and outside Dhaka, and the <a href="/shipping">shipping info page</a> has the current charges and timelines. We confirm each order with you on WhatsApp after checkout. Our <a href="/return-policy">return and exchange policy</a> covers damaged or incorrect items.'
       ]}
     ],
     related: [
       { href: '/bracelets', text: 'Bracelets' },
       { href: '/glasses', text: 'Glasses and sunglasses' },
-      { href: '/shop.html?category=Accessories', text: 'All accessories' },
-      { href: '/shop.html', text: 'Shop everything' }
+      { href: '/accessories', text: 'All accessories' },
+      { href: '/shop', text: 'Shop everything' }
     ]
   }
 };
@@ -294,7 +311,7 @@ function introMarkup(cfg, count){
     ? `${count} ${count === 1 ? 'style is' : 'styles are'} listed right now.`
     : 'New styles are being added soon, so check back shortly.';
   return `<div class="cat-intro">
-    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/shop.html?category=Accessories">Accessories</a> / <span>${esc(cfg.label)}</span></nav>
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/accessories">Accessories</a> / <span>${esc(cfg.label)}</span></nav>
     <p>${esc(cfg.intro[0])} ${esc(countLine)}</p>
     <p>${esc(cfg.intro[1])}</p>
   </div>`;
@@ -316,7 +333,7 @@ function landingJsonLd(cfg, items){
     "@type": "BreadcrumbList",
     "itemListElement": [
       { "@type": "ListItem", "position": 1, "name": "Home", "item": `${SITE}/` },
-      { "@type": "ListItem", "position": 2, "name": "Accessories", "item": `${SITE}/shop.html?category=Accessories` },
+      { "@type": "ListItem", "position": 2, "name": "Accessories", "item": `${SITE}/accessories` },
       { "@type": "ListItem", "position": 3, "name": cfg.label, "item": url }
     ]
   };
@@ -379,8 +396,33 @@ const CLIENT_PATCHES = [
   ]
 ];
 
-function patchClientForScope(html){
-  CLIENT_PATCHES.forEach(([from, to]) => {
+// Category pages (/shop, /clothing, /accessories, /glasses, ?category=New In)
+// now live at clean URLs, so the client script can no longer read the category
+// from location.search alone. The server publishes it as window.__SHOP_CATEGORY__
+// (see categoryScript) and these anchors are patched to use it, plus the
+// clean-URL helpers for the drawer, the filter bar and the client-side canonical.
+// Same skip-if-missing behaviour as CLIENT_PATCHES above.
+const CATEGORY_CLIENT_PATCHES = [
+  [
+    "const activeCategory = params.get('category');",
+    "const activeCategory = window.__SHOP_CATEGORY__ !== undefined ? window.__SHOP_CATEGORY__ : params.get('category');"
+  ],
+  [
+    "return name === 'Glasses' ? '/glasses' : `shop.html?category=${encodeURIComponent(name)}`;",
+    "return window.__categoryPath(name);"
+  ],
+  [
+    ": `https://fashion1sta.com/shop.html?category=${encodeURIComponent(cat)}`;",
+    ": window.__categoryCanonical(cat);"
+  ],
+  [
+    "window.location.href = c ? categoryUrl(c) : 'shop.html';",
+    "window.location.href = c ? categoryUrl(c) : '/shop';"
+  ]
+];
+
+function applyClientPatches(html, patches){
+  patches.forEach(([from, to]) => {
     if(html.indexOf(from) === -1){
       console.error('shop-page: client patch anchor not found, skipped:', from);
       return;
@@ -388,6 +430,46 @@ function patchClientForScope(html){
     html = html.replace(from, () => to);
   });
   return html;
+}
+
+function patchClientForScope(html){
+  return applyClientPatches(html, CLIENT_PATCHES);
+}
+
+// Classic script placed before the module script. Publishes the current
+// category and the clean-URL helpers the template's client code calls.
+function categoryScript(category){
+  const data = category || null;
+  return `<script>window.__SHOP_CATEGORY__=${JSON.stringify(data).replace(/</g,'\\u003c')};`
+    + `window.__CATEGORY_PATHS__=${JSON.stringify(CATEGORY_PATHS).replace(/</g,'\\u003c')};`
+    + `window.__categoryPath=function(n){var m=window.__CATEGORY_PATHS__;return Object.prototype.hasOwnProperty.call(m,n)?m[n]:'/shop?category='+encodeURIComponent(n);};`
+    + `window.__categoryCanonical=function(n){return ${JSON.stringify(SITE)}+window.__categoryPath(n);};</script>\n`;
+}
+
+// Head and client setup for the main shop page (/shop, /clothing, /accessories,
+// /shop?category=New In). Runs before the product fetch so the canonical and
+// client hooks are correct even when the fetch fails.
+function prepareMainPage(html, category){
+  const seo = category ? seoForCategory(category) : null;
+  const pagePath = seo ? categoryPath(category) : '/shop';
+  if(seo){
+    html = applySeoHead(html, seo, SITE + pagePath);
+  }else{
+    html = setAttrById(html, 'canonicalLink', 'href', esc(SITE + pagePath));
+    html = setAttrById(html, 'ogUrl', 'content', esc(SITE + pagePath));
+  }
+  html = applyClientPatches(html, CATEGORY_CLIENT_PATCHES);
+  html = html.replace('<script type="module">', () => categoryScript(category) + '<script type="module">');
+  return html;
+}
+
+// Same "You Might Also Like" handling the shop page has always had.
+function injectSimilar(html, similar, cardFn){
+  if(similar.length){
+    return html
+      .replace('<div class="grid" id="similarGrid"></div>', () => `<div class="grid" id="similarGrid">${similar.map((p,i)=>cardFn(p,i,false)).join('')}</div>`);
+  }
+  return html.replace('<section class="collection" id="similarSection">', '<section class="collection" id="similarSection" style="display:none;">');
 }
 
 // Classic script placed before the module script: tells the client which
@@ -402,16 +484,6 @@ function scopeScript(cfg, ids){
     + `return all.filter(function(p){return s.aliases.indexOf(String(p.subcategory||'').trim().toLowerCase())!==-1;});};</script>\n`;
 }
 
-// Same "You Might Also Like" handling the shop page has always had.
-function injectSimilar(html, similar, cardFn){
-  if(similar.length){
-    return html
-      .replace('<section class="collection" id="similarSection">', '<section class="collection" id="similarSection">')
-      .replace('<div class="grid" id="similarGrid"></div>', () => `<div class="grid" id="similarGrid">${similar.map((p,i)=>cardFn(p,i,false)).join('')}</div>`);
-  }
-  return html.replace('<section class="collection" id="similarSection">', '<section class="collection" id="similarSection" style="display:none;">');
-}
-
 async function serveLandingPage(req, res, html, cfg){
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   const url = SITE + cfg.path;
@@ -420,6 +492,8 @@ async function serveLandingPage(req, res, html, cfg){
   html = setTextById(html, 'pageTitle', 'h1', esc(cfg.h1));
   html = setTextById(html, 'pageSub', 'p', esc(cfg.sub));
   html = patchClientForScope(html);
+  html = applyClientPatches(html, CATEGORY_CLIENT_PATCHES);
+  html = html.replace('<script type="module">', () => categoryScript(null) + '<script type="module">');
 
   let products;
   try{
@@ -460,7 +534,7 @@ async function serveLandingPage(req, res, html, cfg){
   if(!items.length){
     html = html.replace(
       '<p class="empty-state" id="emptyState" style="display:none;">No products in this category yet — check back soon.</p>',
-      '<p class="empty-state" id="emptyState">No products in this category yet — check back soon.</p>'
+      () => '<p class="empty-state" id="emptyState">No products in this category yet — check back soon.</p>'
     );
   }
 
@@ -479,7 +553,7 @@ async function serveLandingPage(req, res, html, cfg){
 const BROWSE_LINKS = `<nav class="cat-links" aria-label="Browse by type">Browse by type: <a href="/bracelets">Bracelets</a><a href="/bandanas">Bandanas</a><a href="/glasses">Glasses</a></nav>`;
 
 module.exports = async function handler(req, res){
-  const category = (req.query && req.query.category) || '';
+  const category = String((req.query && req.query.category) || '');
   const templatePath = path.join(__dirname, '..', 'templates', 'shop.html');
 
   let html;
@@ -498,6 +572,7 @@ module.exports = async function handler(req, res){
   }
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  html = prepareMainPage(html, category);
 
   let products;
   try{
@@ -505,7 +580,7 @@ module.exports = async function handler(req, res){
   }catch(e){
     // Fail soft: client-side JS does its own fetch (with its own retry
     // logic) exactly as before this page had SSR. Never block the page.
-    console.error('SSR shop products fetch failed, serving unmodified template:', e);
+    console.error('SSR shop products fetch failed, serving template with client-side fetch:', e);
     res.setHeader('Cache-Control', 'no-store');
     res.status(200).send(html);
     return;
@@ -530,22 +605,15 @@ module.exports = async function handler(req, res){
   html = setTextById(html, 'pageTitle', 'h1', esc(titleText));
   html = setTextById(html, 'pageSub', 'p', esc(subText));
 
-  // Category-specific SEO tags (default /shop.html tags already in the template)
-  const seo = CATEGORY_SEO[category];
-  if(seo){
-    const url = category === 'Glasses' ? `${SITE}/glasses` : `${SITE}/shop.html?category=${encodeURIComponent(category)}`;
-    html = applySeoHead(html, seo, url);
-  }
-
   // Main grid
   const gridInner = filtered.length
     ? filtered.map((p,i)=>cardMarkup(p,i,i<2)).join('')
     : '';
-  html = html.replace('<div class="grid" id="shopGrid"></div>', `<div class="grid" id="shopGrid">${gridInner}</div>`);
+  html = html.replace('<div class="grid" id="shopGrid"></div>', () => `<div class="grid" id="shopGrid">${gridInner}</div>`);
   if(!filtered.length){
     html = html.replace(
       '<p class="empty-state" id="emptyState" style="display:none;">No products in this category yet — check back soon.</p>',
-      '<p class="empty-state" id="emptyState">No products in this category yet — check back soon.</p>'
+      () => '<p class="empty-state" id="emptyState">No products in this category yet — check back soon.</p>'
     );
   }
 
@@ -560,7 +628,7 @@ module.exports = async function handler(req, res){
   html = injectSimilar(html, similar, cardMarkup);
 
   const ssrDataScript = `<script type="application/json" id="__SSR_DATA__">${JSON.stringify({ products, similar }).replace(/</g,'\\u003c')}</script>\n`;
-  html = html.replace('<script type="module">', ssrDataScript + '<script type="module">');
+  html = html.replace('<script type="module">', () => ssrDataScript + '<script type="module">');
 
   res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=600');
   res.status(200).send(html);

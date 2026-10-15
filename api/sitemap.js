@@ -11,16 +11,16 @@ const SITE = 'https://fashion1sta.com';
 
 const STATIC_PAGES = [
   { loc: `${SITE}/`, changefreq: 'daily', priority: '1.0' },
-  { loc: `${SITE}/shop.html`, changefreq: 'daily', priority: '0.9' },
+  { loc: `${SITE}/shop`, changefreq: 'daily', priority: '0.9' },
   { loc: `${SITE}/glasses`, changefreq: 'daily', priority: '0.8' },
-  { loc: `${SITE}/shop.html?category=Accessories`, changefreq: 'daily', priority: '0.7' },
-  { loc: `${SITE}/shop.html?category=Clothing`, changefreq: 'daily', priority: '0.7' },
-  { loc: `${SITE}/contact.html`, changefreq: 'monthly', priority: '0.5' },
-  { loc: `${SITE}/shipping.html`, changefreq: 'monthly', priority: '0.4' },
-  { loc: `${SITE}/return-policy.html`, changefreq: 'monthly', priority: '0.4' },
-  { loc: `${SITE}/terms.html`, changefreq: 'yearly', priority: '0.3' },
-  { loc: `${SITE}/privacy.html`, changefreq: 'yearly', priority: '0.3' },
-  { loc: `${SITE}/track-order.html`, changefreq: 'monthly', priority: '0.3' }
+  { loc: `${SITE}/accessories`, changefreq: 'daily', priority: '0.7' },
+  { loc: `${SITE}/clothing`, changefreq: 'daily', priority: '0.7' },
+  { loc: `${SITE}/contact`, changefreq: 'monthly', priority: '0.5' },
+  { loc: `${SITE}/shipping`, changefreq: 'monthly', priority: '0.4' },
+  { loc: `${SITE}/return-policy`, changefreq: 'monthly', priority: '0.4' },
+  { loc: `${SITE}/terms`, changefreq: 'yearly', priority: '0.3' },
+  { loc: `${SITE}/privacy`, changefreq: 'yearly', priority: '0.3' },
+  { loc: `${SITE}/track-order`, changefreq: 'monthly', priority: '0.3' }
 ];
 
 // Sub-category landing pages (see SCOPE_PAGES in api/shop-page.js — keep the
