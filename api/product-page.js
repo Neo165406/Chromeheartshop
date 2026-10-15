@@ -167,6 +167,56 @@ function esc(s){
   return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+// ---------- Sub-category landing pages (/bracelets, /bandanas) ----------
+// A product whose `subcategory` matches gets an extra breadcrumb step linking
+// to its landing page (keep in sync with SCOPE_PAGES in api/shop-page.js).
+// The visible breadcrumb is drawn by the template's client script after
+// hydration, so withSubcategoryCrumb() below patches that one line too.
+const SUBCATEGORY_PAGES = {
+  bracelets: { path: '/bracelets', label: 'Bracelets' },
+  bracelet: { path: '/bracelets', label: 'Bracelets' },
+  bandana: { path: '/bandanas', label: 'Bandanas' },
+  bandanas: { path: '/bandanas', label: 'Bandanas' }
+};
+function subcategoryPage(product){
+  const key = String((product && product.subcategory) || '').trim().toLowerCase();
+  return Object.prototype.hasOwnProperty.call(SUBCATEGORY_PAGES, key) ? SUBCATEGORY_PAGES[key] : null;
+}
+function crumbSub(product){
+  const sp = subcategoryPage(product);
+  return sp ? ` / <a href="${sp.path}">${esc(sp.label)}</a>` : '';
+}
+function breadcrumbItems(product, url){
+  const items = [
+    { name: 'Shop', item: `${SITE}/shop.html` },
+    { name: product.category || 'Products', item: `${SITE}/shop.html?category=${encodeURIComponent(product.category||'')}` }
+  ];
+  const sp = subcategoryPage(product);
+  if(sp) items.push({ name: sp.label, item: `${SITE}${sp.path}` });
+  items.push({ name: product.name, item: url });
+  return items.map((it, i) => ({ "@type": "ListItem", "position": i + 1, "name": it.name, "item": it.item }));
+}
+
+// The template's renderProduct() rebuilds the breadcrumb in the browser as
+// "Shop / <category>". For every product page this adds the optional
+// sub-category step there (empty for products without a matching
+// subcategory, so other products render exactly as before). One exact anchor;
+// if the template changes and it no longer matches, the patch is skipped and
+// the server-rendered links and structured data still carry the category link.
+const CRUMB_ANCHOR = "\">${product.category||''}</a></div>";
+function withSubcategoryCrumb(html){
+  if(html.indexOf(CRUMB_ANCHOR) === -1){
+    console.error('product-page: breadcrumb anchor not found in template, client-side sub-category crumb skipped');
+    return html;
+  }
+  html = html.replace(CRUMB_ANCHOR, () => "\">${product.category||''}</a>${window.__subcatCrumb ? window.__subcatCrumb(product) : ''}</div>");
+  const script = `<script>window.__SUBCAT_PAGES=${JSON.stringify(SUBCATEGORY_PAGES)};`
+    + `window.__subcatCrumb=function(p){var k=String(p&&p.subcategory||'').trim().toLowerCase();`
+    + `if(!Object.prototype.hasOwnProperty.call(window.__SUBCAT_PAGES,k))return '';`
+    + `var e=window.__SUBCAT_PAGES[k];return ' / <a href="'+e.path+'">'+e.label+'</a>';};</script>\n`;
+  return html.replace('<script type="module">', () => script + '<script type="module">');
+}
+
 // ---------- SEO: keywords / title / description ----------
 // Brand keywords go on every product page (this is what makes searches like
 // "fashionista clothing" land on the site). Category + product-name keywords
@@ -393,6 +443,7 @@ function renderInfoSection(product){
   const outOfStock = product.stock === 0;
   const was = Number(product.was);
   const discount = hasPrice && was > price ? Math.round((1 - price / was) * 100) : 0;
+  const subPage = subcategoryPage(product);
 
   const intro = [
     `${name} ${cat ? `is part of our ${esc(cat)} collection at FASHIONISTA` : 'is available at FASHIONISTA'}`,
@@ -407,6 +458,7 @@ function renderInfoSection(product){
   <h2 id="seoInfoHead" class="display">About ${name}</h2>
   <p>${intro}</p>
   <p>${esc(categoryBlurb(product))}</p>
+  ${subPage ? `<p>Browse all <a href="${subPage.path}">${esc(subPage.label.toLowerCase())}</a> at FASHIONISTA.</p>` : ''}
   <h3>What is the price of ${name} in Bangladesh?</h3>
   <p>${hasPrice ? `${name} costs BDT ${price} at FASHIONISTA. ` : ''}Delivery charges depend on where you live; see our <a href="/shipping.html">shipping info</a> for charges, timelines and how order confirmation works.</p>
   <h3>Can I pay cash on delivery?</h3>
@@ -479,7 +531,7 @@ function renderSnapshot(product, similar){
   }).join('');
 
   return `
-    <div class="breadcrumb"><a href="shop.html">Shop</a> / <a href="shop.html?category=${encodeURIComponent(product.category||'')}">${esc(product.category||'')}</a></div>
+    <div class="breadcrumb"><a href="shop.html">Shop</a> / <a href="shop.html?category=${encodeURIComponent(product.category||'')}">${esc(product.category||'')}</a>${crumbSub(product)}</div>
     <div class="p-frame" id="pFrame">
       ${discount>0 && !outOfStock ? `<span class="discount-badge">-${discount}% OFF</span>` : ''}
       ${outOfStock ? `<span class="discount-badge" style="background:var(--text-dim);">Out of Stock</span>` : ''}
@@ -520,6 +572,11 @@ module.exports = async function handler(req, res){
     res.status(500).send('Template not found');
     return;
   }
+
+  // Adds the optional sub-category step to the client-rendered breadcrumb
+  // (see withSubcategoryCrumb above). Applied before every code path below,
+  // so the template is patched the same way however the page is served.
+  html = withSubcategoryCrumb(html);
 
   // Favicon: the old favicon.svg was removed; the brand logo now lives at
   // /favicon.png (512x512), used for the tab icon and the iOS home-screen icon.
@@ -675,11 +732,7 @@ ${SEO_INFO_CSS}
 <script type="application/ld+json" id="breadcrumbLd">${JSON.stringify({
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Shop", "item": `${SITE}/shop.html` },
-      { "@type": "ListItem", "position": 2, "name": product.category || "Products", "item": `${SITE}/shop.html?category=${encodeURIComponent(product.category||'')}` },
-      { "@type": "ListItem", "position": 3, "name": product.name, "item": url }
-    ]
+    "itemListElement": breadcrumbItems(product, url)
   }).replace(/</g,'\\u003c')}</script>
 </head>`;
   html = html.replace('</head>', jsonLd);
