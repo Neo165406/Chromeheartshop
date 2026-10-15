@@ -1,18 +1,23 @@
-// api/product-page.js — Server-renders product.html so the page arrives
+// api/product-page.js — Server-renders the product page so it arrives
 // with the real product already visible (name, price, image, description)
 // instead of the blank "Loading..." shell that only filled in once
 // client-side JS finished a chain of Firestore round trips.
 //
 // The static template lives at templates/product.html (not at the public
-// path product.html) so this function — reached via the /product.html
-// rewrite in vercel.json — is what actually serves that URL, with no
-// static-file-vs-rewrite conflict. Reads Firestore's public REST API
-// directly (same public web key already used client-side — firestore.rules
-// already allows public read on /products, same access level the
-// storefront pages themselves have).
+// path product.html) so this function is what actually serves the product
+// URLs, with no static-file-vs-rewrite conflict. It is reached two ways
+// (vercel.json): /product/<slug> (the canonical URL, ?slug= below) and the
+// old /product.html?id=<id>. A product that has a slug is only ever served at
+// /product/<slug>; the old URL answers with a 301 to it. A product without a
+// slug keeps its id-based URL until one is added.
+//
+// Reads Firestore's public REST API directly (same public web key already used
+// client-side — firestore.rules already allows public read on /products, same
+// access level the storefront pages themselves have).
 
 const fs = require('fs');
 const path = require('path');
+const { productPath, categoryPath, validSlug } = require('./_urls');
 
 const FIREBASE_API_KEY = 'AIzaSyC_Fgdc_JlFlrPwByNQIa3e-MMGmoRXRWE'; // public web key (same as js/firebase-config.js)
 const PROJECT_ID = 'argentum-3709f';
@@ -26,6 +31,11 @@ const SITE = 'https://fashion1sta.com';
 const PRODUCT_TIMEOUT_MS = 4000;
 const SIMILAR_TIMEOUT_MS = 1500;
 const REVIEWS_TIMEOUT_MS = 1500;
+
+// Search-engine crawlers. If a /product/<slug> page can't be looked up at all,
+// they get a 503 (try again later) instead of a thin page whose canonical
+// would be wrong — same policy as api/home-page.js.
+const CRAWLER_UA = /googlebot|google-inspectiontool|googleother|adsbot-google|bingbot|duckduckbot|yandexbot|baiduspider/i;
 
 // ---------- Firestore REST "fields" -> plain JS value ----------
 function fsValue(v){
@@ -52,6 +62,31 @@ async function fetchProduct(id){
   if(!r.ok) throw new Error('Firestore product fetch failed: ' + r.status);
   const doc = await r.json();
   return { id, ...fsFields(doc.fields || {}) };
+}
+
+// Looks a product up by its `slug` field. Returns null when no product has it,
+// throws when Firestore can't be reached (so the caller can tell "no such
+// product" from "couldn't check").
+async function fetchProductBySlug(slug){
+  const url = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents:runQuery?key=${FIREBASE_API_KEY}`;
+  const body = {
+    structuredQuery: {
+      from: [{ collectionId: 'products' }],
+      where: { fieldFilter: { field: { fieldPath: 'slug' }, op: 'EQUAL', value: { stringValue: slug } } },
+      limit: 1
+    }
+  };
+  const r = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+    signal: AbortSignal.timeout(PRODUCT_TIMEOUT_MS)
+  });
+  if(!r.ok) throw new Error('Firestore product-by-slug query failed: ' + r.status);
+  const rows = await r.json();
+  const row = rows.find(x => x && x.document);
+  if(!row) return null;
+  return { id: row.document.name.split('/').pop(), ...fsFields(row.document.fields || {}) };
 }
 
 async function fetchSimilar(category, excludeId){
@@ -188,8 +223,8 @@ function crumbSub(product){
 }
 function breadcrumbItems(product, url){
   const items = [
-    { name: 'Shop', item: `${SITE}/shop.html` },
-    { name: product.category || 'Products', item: `${SITE}/shop.html?category=${encodeURIComponent(product.category||'')}` }
+    { name: 'Shop', item: `${SITE}/shop` },
+    { name: product.category || 'Products', item: `${SITE}${categoryPath(product.category)}` }
   ];
   const sp = subcategoryPage(product);
   if(sp) items.push({ name: sp.label, item: `${SITE}${sp.path}` });
@@ -460,13 +495,13 @@ function renderInfoSection(product){
   <p>${esc(categoryBlurb(product))}</p>
   ${subPage ? `<p>Browse all <a href="${subPage.path}">${esc(subPage.label.toLowerCase())}</a> at FASHIONISTA.</p>` : ''}
   <h3>What is the price of ${name} in Bangladesh?</h3>
-  <p>${hasPrice ? `${name} costs BDT ${price} at FASHIONISTA. ` : ''}Delivery charges depend on where you live; see our <a href="/shipping.html">shipping info</a> for charges, timelines and how order confirmation works.</p>
+  <p>${hasPrice ? `${name} costs BDT ${price} at FASHIONISTA. ` : ''}Delivery charges depend on where you live; see our <a href="/shipping">shipping info</a> for charges, timelines and how order confirmation works.</p>
   <h3>Can I pay cash on delivery?</h3>
   <p>Yes. We offer cash on delivery nationwide across Bangladesh, so there is nothing to pay online.</p>
   <h3>What if the item is damaged or the wrong size?</h3>
-  <p>Inspect your parcel in front of the delivery person and report any damaged, incorrect or wrong-size item on the spot. Full details are in our <a href="/return-policy.html">return and exchange policy</a>.</p>
+  <p>Inspect your parcel in front of the delivery person and report any damaged, incorrect or wrong-size item on the spot. Full details are in our <a href="/return-policy">return and exchange policy</a>.</p>
   <h3>Have a question before you order?</h3>
-  <p>Message us on WhatsApp or visit our <a href="/contact.html">contact page</a>. We usually reply within a few hours.</p>
+  <p>Message us on WhatsApp or visit our <a href="/contact">contact page</a>. We usually reply within a few hours.</p>
 </section>`;
 }
 
@@ -527,11 +562,11 @@ function renderSnapshot(product, similar){
 
   const similarCards = similar.map(p=>{
     const m = p.imageUrl ? `<img src="${esc(p.imageUrl)}" alt="${esc(p.name)}" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:contain;">` : '';
-    return `<div class="card"><a href="product.html?id=${encodeURIComponent(p.id)}" class="card-link"><div class="frame">${m}</div><h3>${esc(p.name)}</h3></a><div class="price"><span class="now">BDT ${p.price}</span>${p.was?`<span class="was">BDT ${p.was}</span>`:''}</div></div>`;
+    return `<div class="card"><a href="${esc(productPath(p))}" class="card-link"><div class="frame">${m}</div><h3>${esc(p.name)}</h3></a><div class="price"><span class="now">BDT ${p.price}</span>${p.was?`<span class="was">BDT ${p.was}</span>`:''}</div></div>`;
   }).join('');
 
   return `
-    <div class="breadcrumb"><a href="shop.html">Shop</a> / <a href="shop.html?category=${encodeURIComponent(product.category||'')}">${esc(product.category||'')}</a>${crumbSub(product)}</div>
+    <div class="breadcrumb"><a href="/shop">Shop</a> / <a href="${esc(categoryPath(product.category))}">${esc(product.category||'')}</a>${crumbSub(product)}</div>
     <div class="p-frame" id="pFrame">
       ${discount>0 && !outOfStock ? `<span class="discount-badge">-${discount}% OFF</span>` : ''}
       ${outOfStock ? `<span class="discount-badge" style="background:var(--text-dim);">Out of Stock</span>` : ''}
@@ -560,8 +595,23 @@ function renderSnapshot(product, similar){
     </section>`;
 }
 
+// Sends a permanent redirect. Short edge cache so a slug that is later
+// changed in the admin doesn't stay stale for long.
+function redirectPermanent(res, location){
+  res.setHeader('Location', location);
+  res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=3600');
+  res.status(301).end();
+}
+
 module.exports = async function handler(req, res){
-  const id = (req.query && req.query.id) || '';
+  const query = req.query || {};
+  const id = query.id ? String(query.id) : '';
+  // /product/<slug> arrives as ?slug= (see the rewrite in vercel.json).
+  const bySlug = !!query.slug;
+  let slug = '';
+  if(bySlug){
+    try{ slug = decodeURIComponent(String(query.slug)).toLowerCase(); }catch(e){ slug = ''; }
+  }
   const templatePath = path.join(__dirname, '..', 'templates', 'product.html');
 
   let html;
@@ -578,6 +628,12 @@ module.exports = async function handler(req, res){
   // so the template is patched the same way however the page is served.
   html = withSubcategoryCrumb(html);
 
+  // The page can be served from /product/<slug>, one level below the site root,
+  // while the template (and js/cart.js, js/footer.js ...) use root-relative
+  // paths such as "js/cart.js" and "shop.html". <base href="/"> keeps every one
+  // of them resolving against the site root.
+  html = html.replace('<meta charset="UTF-8">', () => '<meta charset="UTF-8">\n<base href="/">');
+
   // Favicon: the old favicon.svg was removed; the brand logo now lives at
   // /favicon.png (512x512), used for the tab icon and the iOS home-screen icon.
   html = html.replace(
@@ -587,7 +643,7 @@ module.exports = async function handler(req, res){
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
 
-  if(!id){
+  if(!id && !bySlug){
     // No id in the URL — serve the template as-is; the client script's own
     // "Product not found" + noindex handling covers this case.
     res.status(200).send(html);
@@ -597,17 +653,39 @@ module.exports = async function handler(req, res){
   let product = null;
   let fetchFailed = false;
   try{
-    product = await fetchProduct(id);
+    if(bySlug){
+      // A slug that could never have been generated can't match a product.
+      product = validSlug(slug) ? await fetchProductBySlug(slug) : null;
+    }else{
+      product = await fetchProduct(id);
+    }
   }catch(e){
     console.error('SSR product fetch failed, serving unmodified template:', e);
     fetchFailed = true;
   }
 
   if(fetchFailed){
+    res.setHeader('Cache-Control', 'no-store');
+    if(bySlug){
+      // Crawlers: come back later rather than indexing a page with no product
+      // in it. Everyone else gets the template and the client-side script
+      // looks the product up by the slug in the URL.
+      const ua = String((req && req.headers && req.headers['user-agent']) || '');
+      if(CRAWLER_UA.test(ua)){
+        res.setHeader('Retry-After', '120');
+        res.status(503).send('Service temporarily unavailable. Please try again shortly.');
+        return;
+      }
+      if(validSlug(slug)){
+        html = html.replace(
+          '<link rel="canonical" id="canonicalLink" href="https://fashion1sta.com/product.html">',
+          () => `<link rel="canonical" id="canonicalLink" href="${SITE}/product/${slug}">`
+        );
+      }
+    }
     // Fail soft: client-side JS does its own fetch (with its own retry
     // logic) exactly as before this project ever had SSR. The page is
     // never blocked on this.
-    res.setHeader('Cache-Control', 'no-store');
     res.status(200).send(html);
     return;
   }
@@ -615,13 +693,20 @@ module.exports = async function handler(req, res){
   if(!product){
     // Firestore positively confirmed there's no such product — a real dead
     // link, so tell crawlers directly instead of leaving the default
-    // "index, follow" in place.
+    // "index, follow" in place. A /product/<slug> URL is a proper 404.
     html = html.replace(
       '<meta name="robots" content="index, follow">',
       '<meta name="robots" content="noindex, follow">'
     );
     res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=3600');
-    res.status(200).send(html);
+    res.status(bySlug ? 404 : 200).send(html);
+    return;
+  }
+
+  // Old id-based URL of a product that now has a slug: one permanent hop to
+  // the slug URL, so links, bookmarks and Google's index all consolidate there.
+  if(!bySlug && validSlug(product.slug)){
+    redirectPermanent(res, productPath(product));
     return;
   }
 
@@ -631,7 +716,7 @@ module.exports = async function handler(req, res){
     fetchCategoryPeers(product.category)
   ]);
 
-  const url = `${SITE}/product.html?id=${encodeURIComponent(product.id)}`;
+  const url = `${SITE}${productPath(product)}`;
   // Name used in <title>/meta: title-cased, plus a differentiator when another
   // product in the category has the very same name.
   const label = `${titleCaseName(product.name) || 'Product'}${variantSuffix(product, peers)}`;
