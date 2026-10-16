@@ -11,6 +11,26 @@ service cloud.firestore {
         && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
 
+    // A new order from the checkout page. Only the fields checkout.html writes
+    // are allowed, with sane sizes, so nobody can stuff random data or huge
+    // documents into /orders. Status must start as 'pending' and the timestamp
+    // must be the server's.
+    function validNewOrder(d) {
+      return d.keys().hasOnly(['orderNumber', 'customerName', 'phone', 'address', 'note', 'items',
+                               'subtotal', 'deliveryZone', 'deliveryCharge', 'couponCode',
+                               'discount', 'total', 'status', 'createdAt'])
+        && d.keys().hasAll(['customerName', 'phone', 'address', 'items', 'total', 'status', 'createdAt'])
+        && d.customerName is string && d.customerName.size() >= 1 && d.customerName.size() <= 100
+        && d.phone is string && d.phone.size() >= 7 && d.phone.size() <= 30
+        && d.address is string && d.address.size() >= 1 && d.address.size() <= 500
+        && (!('note' in d) || (d.note is string && d.note.size() <= 500))
+        && (!('orderNumber' in d) || (d.orderNumber is string && d.orderNumber.size() <= 30))
+        && d.items is list && d.items.size() >= 1 && d.items.size() <= 30
+        && d.total is number && d.total >= 0 && d.total <= 10000000
+        && d.status == 'pending'
+        && d.createdAt == request.time;
+    }
+
     // Storefront content: anyone can read, only signed-in admin can write
     match /products/{doc} {
       allow read: if true;
@@ -35,16 +55,30 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // Coupons: checkout validates codes (read), admin manages (write)
+    // Coupons: checkout looks up ONE code at a time (get). Only the admin can
+    // list them, so nobody can download every coupon code from the browser.
     match /coupons/{doc} {
-      allow read: if true;
+      allow get: if true;
+      allow list: if isAdmin();
       allow write: if isAdmin();
     }
 
     // Orders: customers can place an order; only admin can view/manage
     match /orders/{doc} {
-      allow create: if true;
+      allow create: if validNewOrder(request.resource.data);
       allow read, update, delete: if isAdmin();
+    }
+
+    // Sequential invoice numbers (FN1000, FN1001, ...) used by checkout.html.
+    // The counter can only be created at 1001 and then only ever go up by 1.
+    match /counters/{doc} {
+      allow get: if doc == 'orderNumber';
+      allow create: if doc == 'orderNumber'
+        && request.resource.data.keys().hasOnly(['next'])
+        && request.resource.data.next == 1001;
+      allow update: if doc == 'orderNumber'
+        && request.resource.data.keys().hasOnly(['next'])
+        && request.resource.data.next == resource.data.next + 1;
     }
 
     // Visitor counter: every device writes only its own anonymous tracking doc
