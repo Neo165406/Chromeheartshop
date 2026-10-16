@@ -137,15 +137,15 @@ function cardMarkup(p, i, eager){
 
 const CATEGORY_SEO = {
   "New In": {
-    title: "New Arrivals — Gothic Silver Accessories & Eyewear | FASHIONISTA",
+    title: "New Arrivals: Gothic Accessories & Eyewear | FASHIONISTA",
     desc: "See the latest arrivals at FASHIONISTA — gothic silver accessories, sunglasses and clothing in Bangladesh. Cash on delivery nationwide."
   },
   "Glasses": {
-    title: "Sunglasses Price in Bangladesh — Rimless, Aviator & Round Glasses | FASHIONISTA",
-    desc: "Shop gothic silver sunglasses and glasses in Bangladesh — rimless glasses, aviator sunglasses and round sunglasses for men. Cash on delivery nationwide from FASHIONISTA, Dhaka."
+    title: "Sunglasses Price in Bangladesh | FASHIONISTA",
+    desc: "Shop gothic silver sunglasses in Bangladesh: rimless, aviator and round frames for men. Cash on delivery nationwide from FASHIONISTA, Dhaka."
   },
   "Accessories": {
-    title: "Chain Necklace, Rings, Bracelets & Teeth Grillz in Bangladesh — FASHIONISTA",
+    title: "Chain Necklace, Rings & Bracelets in Bangladesh | FASHIONISTA",
     desc: "Shop chain necklaces, silver rings for men, silver bracelets, bandanas, belts and teeth grillz bd. Gothic jewelry Bangladesh with cash on delivery nationwide."
   },
   "Clothing": {
@@ -549,11 +549,74 @@ async function serveLandingPage(req, res, html, cfg){
   res.status(200).send(html);
 }
 
+// ---------- SEO: category intro text ----------
+// Real, server-rendered copy for each category page, so the pages are not
+// "thin" (just a product grid) when a crawler reads them. Sits between the
+// product grid and "You Might Also Like". The same text for /glasses is kept
+// in glasses.html (a static page) - edit both together.
+const CATEGORY_CONTENT = {
+  "New In": {
+    h2: "New arrivals at FASHIONISTA",
+    paras: [
+      "This page shows our newest and featured pieces across eyewear, accessories and clothing. Prices are in BDT on every product card, and new pieces are added as they arrive, so check back regularly.",
+      "Looking for something specific? Browse our <a href=\"/glasses\">sunglasses</a>, <a href=\"/accessories\">accessories</a> or <a href=\"/clothing\">clothing</a>."
+    ]
+  },
+  "Glasses": {
+    h2: "Sunglasses and glasses in Bangladesh",
+    paras: [
+      "FASHIONISTA's eyewear range is built around gothic, Y2K and streetwear frames: rimless glasses, aviator sunglasses, round sunglasses and retro shapes. The price in BDT is shown on every product card, so you can compare before you order.",
+      "Rimless frames look light and minimal, aviators are a classic shape that many people find easy to wear, and round frames give a retro, rebellious look. Open a product to see more photos, and message us on WhatsApp if you want help choosing a pair."
+    ]
+  },
+  "Accessories": {
+    h2: "Gothic silver accessories in Bangladesh",
+    paras: [
+      "Our accessories range includes chain necklaces, rings, bracelets, bandanas, belts and teeth grillz, styled for gothic and streetwear outfits. Most pieces are easy to layer, so you can mix a chain with a bracelet or a ring for a stacked look.",
+      "Open a product to see more photos, the price in BDT and whether it is in stock. You can also browse our <a href=\"/glasses\">sunglasses</a> or <a href=\"/clothing\">clothing</a>."
+    ]
+  },
+  "Clothing": {
+    h2: "Streetwear clothing in Bangladesh",
+    paras: [
+      "FASHIONISTA's clothing range is built around clean, everyday streetwear: T-shirts and long-sleeve styles that are easy to pair with the accessories on this site. Each product page lists the available sizes (M, L and XL unless a product shows its own) and the price in BDT.",
+      "Not sure which size to pick? Message us on WhatsApp before you order. You can also browse our <a href=\"/glasses\">sunglasses</a> or <a href=\"/accessories\">accessories</a> to finish the outfit."
+    ]
+  }
+};
+
+const CATEGORY_FAQ = [
+  ["Can I pay cash on delivery?", "Yes. We offer cash on delivery nationwide across Bangladesh, so there is nothing to pay online. See our <a href=\"/shipping\">shipping info</a> for delivery charges and timelines."],
+  ["What if an item is damaged or the wrong size?", "Inspect your parcel in front of the delivery person and report any damaged, incorrect or wrong-size item on the spot. Details are in our <a href=\"/return-policy\">return and exchange policy</a>."],
+  ["How do I ask a question before ordering?", "Message us on WhatsApp or visit our <a href=\"/contact\">contact page</a>. We usually reply within a few hours."]
+];
+
+const SEO_INFO_CSS = `<style>
+  .seo-info{padding:6px 22px 40px;max-width:760px;}
+  .seo-info h2{font-family:'Fraunces',serif;font-weight:500;font-size:19px;margin-bottom:14px;padding-bottom:13px;border-bottom:1px solid var(--line);}
+  .seo-info h3{font-size:14px;font-weight:600;color:var(--silver-bright);margin:18px 0 6px;}
+  .seo-info p{font-size:13.5px;color:var(--text-dim);line-height:1.7;margin-bottom:10px;}
+  .seo-info a{color:var(--silver-bright);text-decoration:underline;text-underline-offset:2px;}
+</style>`;
+
+function categoryContentMarkup(category){
+  const c = CATEGORY_CONTENT[category];
+  if(!c) return '';
+  return `
+<section class="seo-info" aria-labelledby="seoInfoHead">
+  <h2 id="seoInfoHead" class="display">${c.h2}</h2>
+${c.paras.map(p => `  <p>${p}</p>`).join('\n')}
+${CATEGORY_FAQ.map(([q, a]) => `  <h3>${q}</h3>\n  <p>${a}</p>`).join('\n')}
+</section>
+`;
+}
+
 // Crawlable links from the main shop and Accessories pages to the landing pages.
 const BROWSE_LINKS = `<nav class="cat-links" aria-label="Browse by type">Browse by type: <a href="/bracelets">Bracelets</a><a href="/bandanas">Bandanas</a><a href="/glasses">Glasses</a></nav>`;
 
 module.exports = async function handler(req, res){
-  const category = String((req.query && req.query.category) || '');
+  let category = String((req.query && req.query.category) || '');
+  if(category === 'New') category = 'New In';   // old links used ?category=New
   const templatePath = path.join(__dirname, '..', 'templates', 'shop.html');
 
   let html;
@@ -624,6 +687,13 @@ module.exports = async function handler(req, res){
     html = html.replace('<section class="collection" id="similarSection">', () => BROWSE_LINKS + '\n<section class="collection" id="similarSection">');
   }
 
+  // Category intro text + FAQ (the four real categories only)
+  const contentHtml = categoryContentMarkup(category);
+  if(contentHtml){
+    html = html.replace('</head>', () => SEO_INFO_CSS + '\n</head>');
+    html = html.replace('<section class="collection" id="similarSection">', () => contentHtml + '<section class="collection" id="similarSection">');
+  }
+
   // "You Might Also Like"
   html = injectSimilar(html, similar, cardMarkup);
 
@@ -635,4 +705,5 @@ module.exports = async function handler(req, res){
 };
 
 // Exposed only so the landing-page helpers can be tested locally; Vercel ignores it.
+module.exports.__content = { categoryContentMarkup, SEO_INFO_CSS, CATEGORY_CONTENT };
 module.exports.__landing = { SCOPE_PAGES, inScope, highlightsMarkup, supportingCopyMarkup, introMarkup, landingJsonLd, patchClientForScope, scopeScript };
