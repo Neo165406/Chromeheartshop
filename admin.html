@@ -320,6 +320,40 @@
 import { db, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, getDoc, setDoc, serverTimestamp, auth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from './js/firebase-config.js';
 import { uploadToImgbb } from './js/imgbb.js';
 
+// ---------- Product URL slugs ----------
+// Every product gets a `slug` (its page lives at /product/<slug>). Keep slugify()
+// and SLUG_RE identical to api/_urls.js and scripts/backfill-slugs.mjs.
+const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+function slugify(name){
+  const s = String(name == null ? '' : name)
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/&/g, ' and ')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 80)
+    .replace(/-+$/, '');
+  return s || 'product';
+}
+function validSlug(s){
+  return typeof s === 'string' && s.length <= 100 && SLUG_RE.test(s);
+}
+// A slug no other product uses: the plain one, or -2, -3 ... when the name is
+// already taken. `excludeId` is the product being edited (it may keep its own).
+async function uniqueSlug(name, excludeId){
+  const base = slugify(name);
+  const snap = await getDocs(collection(db,'products'));
+  const taken = new Set();
+  snap.docs.forEach(d=>{
+    const s = d.data().slug;
+    if(d.id !== excludeId && validSlug(s)) taken.add(s);
+  });
+  let slug = base, n = 2;
+  while(taken.has(slug)){ slug = `${base}-${n}`; n++; }
+  return slug;
+}
+
 // ---------- Firebase Auth gate ----------
 window.tryLogin = async function(){
   const email = document.getElementById('emailInput').value.trim();
@@ -482,6 +516,7 @@ async function loadCollageList(){
 
 // ---------- Products ----------
 let editingProductId = null;
+let editingProductSlug = null;
 let editingProductExistingImages = [];
 
 function fillProductForm(p){
@@ -521,6 +556,7 @@ function renderExistingImages(){
 
 window.editProduct = function(id, p){
   editingProductId = id;
+  editingProductSlug = validSlug(p.slug) ? p.slug : null;
   editingProductExistingImages = p.images && p.images.length ? [...p.images] : (p.imageUrl ? [p.imageUrl] : []);
   fillProductForm(p);
   document.getElementById('productFormTitle').textContent = 'Edit product';
@@ -534,6 +570,7 @@ window.editProduct = function(id, p){
 
 window.cancelEditProduct = function(){
   editingProductId = null;
+  editingProductSlug = null;
   editingProductExistingImages = [];
   ['pName','pPrice','pWas','pSub','pSold','pStock','pDescription'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('pCategory').value = 'Glasses';
@@ -578,15 +615,20 @@ window.saveProduct = async function(){
       const images = [...editingProductExistingImages, ...newImages];
       data.images = images;
       data.imageUrl = images[0] || null;
+      // A product's slug (its public URL) is set once and then kept, even if the
+      // name is edited, so links and Google's index don't break. Only a product
+      // that has no slug yet gets one here.
+      if(!editingProductSlug) data.slug = await uniqueSlug(name, editingProductId);
       await updateDoc(doc(db,'products',editingProductId), data);
       status.textContent = 'Updated.';
       window.cancelEditProduct();
     } else {
       data.images = newImages;
       data.imageUrl = newImages[0] || null;
+      data.slug = await uniqueSlug(name, null);
       data.createdAt = serverTimestamp();
       await addDoc(collection(db,'products'), data);
-      status.textContent = 'Saved.';
+      status.textContent = 'Saved — page address: /product/' + data.slug;
       ['pName','pPrice','pWas','pSub','pSold','pStock','pDescription'].forEach(id=>document.getElementById(id).value='');
       document.getElementById('pFeatured').checked = false;
       document.getElementById('pImage').value='';
