@@ -189,7 +189,7 @@
   <div class="lightbox-close" id="lightboxClose">✕</div>
   <div class="lightbox-nav lightbox-prev" id="lightboxPrev">‹</div>
   <div class="lightbox-img-wrap" id="lightboxImgWrap">
-    <img id="lightboxImg" src="">
+    <img id="lightboxImg" src="" alt="Enlarged product photo">
   </div>
   <div class="lightbox-nav lightbox-next" id="lightboxNext">›</div>
   <div class="lightbox-hint">Double-tap or pinch to zoom</div>
@@ -208,22 +208,6 @@ let favApi = null;  // { isFavorite, toggleFavorite }
 let galleryImages = [];
 let galleryIndex = 0;
 
-// ---------- Public URLs (keep in sync with api/_urls.js) ----------
-// A product with a valid `slug` lives at /product/<slug>; one without a slug
-// yet keeps the old /product.html?id=<id> URL. Category pages have clean paths
-// (/glasses, /clothing, /accessories); anything else goes through /shop?category=.
-const SITE_URL = 'https://fashion1sta.com';
-const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-const CATEGORY_PATHS = { 'Glasses':'/glasses', 'Clothing':'/clothing', 'Accessories':'/accessories' };
-function productPath(p){
-  if(p && typeof p.slug === 'string' && p.slug.length <= 100 && SLUG_RE.test(p.slug)) return `/product/${p.slug}`;
-  return `/product.html?id=${encodeURIComponent(p && p.id)}`;
-}
-function categoryPath(name){
-  if(!name) return '/shop';
-  return Object.prototype.hasOwnProperty.call(CATEGORY_PATHS, name) ? CATEGORY_PATHS[name] : `/shop?category=${encodeURIComponent(name)}`;
-}
-
 // ---------- SEO: per-product <head> tags + JSON-LD. Normally these already
 // arrive correct from the server (see api/product-page.js), which fetches
 // the product server-side and bakes real tags into the HTML before the
@@ -231,7 +215,7 @@ function categoryPath(name){
 // harmless when they're already right, and the only source of truth on the
 // rare page load that reaches this script without server-rendered data. ----------
 function updateSEOTags(product){
-  const url = SITE_URL + productPath(product);
+  const url = `https://fashion1sta.com/product.html?id=${encodeURIComponent(product.id)}`;
   // SEO override for this exact product only. Describes the style instead of
   // naming a third-party brand (must match api/product-page.js).
   const isSilverRimlessOverride = product.id === 'hRTjTVeGAcjWuwFAMwcs';
@@ -299,8 +283,8 @@ function updateSEOTags(product){
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       "itemListElement": [
-        { "@type": "ListItem", "position": 1, "name": "Shop", "item": `${SITE_URL}/shop` },
-        { "@type": "ListItem", "position": 2, "name": product.category || "Products", "item": `${SITE_URL}${categoryPath(product.category)}` },
+        { "@type": "ListItem", "position": 1, "name": "Shop", "item": "https://fashion1sta.com/shop.html" },
+        { "@type": "ListItem", "position": 2, "name": product.category || "Products", "item": `https://fashion1sta.com/shop.html?category=${encodeURIComponent(product.category||'')}` },
         { "@type": "ListItem", "position": 3, "name": product.name, "item": url }
       ]
     });
@@ -491,34 +475,6 @@ async function loadProductById(id){
   }
 }
 
-// Same idea for a /product/<slug> URL: one small query on the `slug` field,
-// with the same retry and the same { product, failed } result.
-async function fetchProductBySlugOnce(slug){
-  const q = fbApi.query(
-    fbApi.collection(fbApi.db,'products'),
-    fbApi.where('slug','==',slug),
-    fbApi.limit(1)
-  );
-  const snap = await fbApi.getDocs(q);
-  if(snap.empty) return null;
-  const d = snap.docs[0];
-  return { id: d.id, ...d.data() };
-}
-async function loadProductBySlug(slug){
-  if(!fbApi || !slug) return { product:null, failed:true };
-  try{
-    return { product: await fetchProductBySlugOnce(slug), failed:false };
-  }catch(e){
-    console.error('Product (slug) load failed, retrying once:', e);
-    try{
-      return { product: await fetchProductBySlugOnce(slug), failed:false };
-    }catch(e2){
-      console.error('Product (slug) load failed on retry:', e2);
-      return { product:null, failed:true };
-    }
-  }
-}
-
 // ---------- "Similar products" — a small, targeted query (same category,
 // excludes this product) instead of pulling every product in the store.
 // Fallback only — normally the server already embedded these too. ----------
@@ -544,7 +500,7 @@ function miniCard(p,i){
     : iconFor(p.iconType);
   return `
     <div class="card">
-      <a href="${productPath(p)}" class="card-link">
+      <a href="product.html?id=${encodeURIComponent(p.id)}" class="card-link">
         <div class="frame">${media}</div>
         <h3>${p.name}</h3>
       </a>
@@ -601,13 +557,13 @@ function renderProduct(product, similar, reviews){
     : iconFor(product.iconType);
 
   root.innerHTML = `
-    <div class="breadcrumb"><a href="/shop">Shop</a> / <a href="${categoryPath(product.category)}">${product.category||''}</a></div>
+    <div class="breadcrumb"><a href="shop.html">Shop</a> / <a href="shop.html?category=${encodeURIComponent(product.category||'')}">${product.category||''}</a></div>
     <div class="p-frame" id="pFrame">
       ${discount>0 && !outOfStock ? `<span class="discount-badge">-${discount}% OFF</span>` : ''}
       ${outOfStock ? `<span class="discount-badge" style="background:var(--text-dim);">Out of Stock</span>` : ''}
       ${media}
     </div>
-    ${images.length>1 ? `<div class="p-thumbs" id="pThumbs">${images.map((img,i)=>`<img src="${img}" class="${i===0?'active':''}" data-i="${i}" loading="lazy" decoding="async">`).join('')}</div>` : ''}
+    ${images.length>1 ? `<div class="p-thumbs" id="pThumbs">${images.map((img,i)=>`<img src="${img}" alt="${product.name} - photo ${i+1}" class="${i===0?'active':''}" data-i="${i}" loading="lazy" decoding="async">`).join('')}</div>` : ''}
     <div class="p-info">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
         <h1 class="display">${product.name}</h1>
@@ -755,12 +711,6 @@ function updateFavButton(){
 async function init(){
   const params = new URLSearchParams(window.location.search);
   const id = params.get('id');
-  // /product/<slug> — used only when the server could not embed the product.
-  const slugMatch = window.location.pathname.match(/^\/product\/([^/]+)\/?$/);
-  let slugFromPath = null;
-  if(slugMatch){
-    try{ slugFromPath = decodeURIComponent(slugMatch[1]).toLowerCase(); }catch(e){ slugFromPath = null; }
-  }
   const root = document.getElementById('productRoot');
 
   // If the server already fetched and embedded this product (see
@@ -816,14 +766,14 @@ async function init(){
     console.error('Firebase module failed to load:', e);
   }
 
-  if(!id && !slugFromPath){
-    root.innerHTML = `<p class="not-found">Product not found. <a href="/shop" style="color:var(--silver-bright);">Back to shop →</a></p>`;
+  if(!id){
+    root.innerHTML = `<p class="not-found">Product not found. <a href="shop.html" style="color:var(--silver-bright);">Back to shop →</a></p>`;
     const robotsMeta = document.querySelector('meta[name="robots"]');
     if(robotsMeta) robotsMeta.setAttribute('content','noindex, follow');
     return;
   }
 
-  const { product, failed } = slugFromPath ? await loadProductBySlug(slugFromPath) : await loadProductById(id);
+  const { product, failed } = await loadProductById(id);
 
   if(product){
     const similar = await loadSimilarProducts(product.category, product.id);
@@ -832,12 +782,12 @@ async function init(){
     // Couldn't confirm either way (network/Firestore hiccup) — never tell a
     // visitor or a crawler the product is gone just because a request was
     // slow. Offer a retry and leave the default "index, follow" alone.
-    root.innerHTML = `<p class="not-found">Having trouble loading this product. <a href="javascript:location.reload()" style="color:var(--silver-bright);">Try again</a>, or <a href="/shop" style="color:var(--silver-bright);">back to shop →</a></p>`;
+    root.innerHTML = `<p class="not-found">Having trouble loading this product. <a href="javascript:location.reload()" style="color:var(--silver-bright);">Try again</a>, or <a href="shop.html" style="color:var(--silver-bright);">back to shop →</a></p>`;
   } else {
     // Firestore positively confirmed there's no such document — this really
     // is a dead link, so tell crawlers not to index it instead of leaving
     // the default "index, follow" on an empty page.
-    root.innerHTML = `<p class="not-found">Product not found. <a href="/shop" style="color:var(--silver-bright);">Back to shop →</a></p>`;
+    root.innerHTML = `<p class="not-found">Product not found. <a href="shop.html" style="color:var(--silver-bright);">Back to shop →</a></p>`;
     const robotsMeta = document.querySelector('meta[name="robots"]');
     if(robotsMeta) robotsMeta.setAttribute('content','noindex, follow');
   }
@@ -846,7 +796,7 @@ init().catch(e=>{
   console.error('Product page failed to load:', e);
   const root = document.getElementById('productRoot');
   if(!currentProduct){
-    root.innerHTML = `<p class="not-found">Something went wrong loading this product. <a href="javascript:location.reload()" style="color:var(--silver-bright);">Try again</a>, or <a href="/shop" style="color:var(--silver-bright);">back to shop →</a></p>`;
+    root.innerHTML = `<p class="not-found">Something went wrong loading this product. <a href="javascript:location.reload()" style="color:var(--silver-bright);">Try again</a>, or <a href="shop.html" style="color:var(--silver-bright);">back to shop →</a></p>`;
   }
 });
 </script>
