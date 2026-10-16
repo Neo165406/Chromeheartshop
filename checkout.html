@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
 <title>Checkout — FASHIONISTA</title>
 <meta name="theme-color" content="#0a0b0d">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -87,6 +88,7 @@
   .confirm-icon{width:56px;height:56px;margin:0 auto 20px;border:1px solid var(--silver);border-radius:50%;display:flex;align-items:center;justify-content:center;}
   .confirm-icon svg{width:26px;height:26px;color:var(--silver-bright);}
   .link-btn{display:inline-block;padding:13px 26px;border:1px solid var(--silver-deep);color:var(--silver-bright);border-radius:var(--radius);font-size:13px;font-weight:600;}
+  .save-warn{color:#e0b65a !important;border:1px solid rgba(224,182,90,0.4);border-radius:var(--radius);padding:12px 14px;text-align:left;}
 
   /* ---------- Invoice (shown after an order is placed) ---------- */
   .invoice{
@@ -148,8 +150,8 @@
 <body>
 
 <header>
-  <a href="index.html"><svg class="navicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 6l-6 6 6 6"/></svg></a>
-  <a href="index.html" class="logo">FASHIONISTA</a>
+  <a href="/" aria-label="Back to the shop"><svg class="navicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 6l-6 6 6 6"/></svg></a>
+  <a href="/" class="logo">FASHIONISTA</a>
   <span style="width:20px;"></span>
 </header>
 
@@ -164,6 +166,14 @@ let currentCart = [];
 
 function money(n){ return `BDT ${n}`; }
 
+// Everything that comes from the cart (saved in the browser) or from the
+// form is put through esc() before it goes into the page as HTML.
+function esc(s){
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
 // A cart line is identified by product id + size; older entries fall back to id.
 function lineKey(c){ return c.key || c.id; }
 
@@ -171,7 +181,7 @@ function renderEmpty(){
   document.getElementById('root').innerHTML = `
     <div class="empty-state">
       <p>Your cart is empty — add something first.</p>
-      <a class="link-btn" href="shop.html">Browse the shop →</a>
+      <a class="link-btn" href="/shop">Browse the shop →</a>
     </div>`;
 }
 
@@ -214,9 +224,9 @@ async function generateOrderNumber(){
 function invoiceMarkup(inv){
   const itemsRows = inv.items.map(c=>`
     <tr>
-      <td>${c.name}${c.size?` <span style="color:var(--text-dim);">(Size ${c.size})</span>`:''}</td>
-      <td style="text-align:center;">${c.qty}</td>
-      <td style="text-align:right;">${money(c.price)}</td>
+      <td>${esc(c.name)}${c.size?` <span style="color:var(--text-dim);">(Size ${esc(c.size)})</span>`:''}</td>
+      <td style="text-align:center;">${esc(c.qty)}</td>
+      <td style="text-align:right;">${money(esc(c.price))}</td>
       <td style="text-align:right;">${money(c.price*c.qty)}</td>
     </tr>`).join('');
   return `
@@ -227,15 +237,15 @@ function invoiceMarkup(inv){
           <div class="inv-sub">Invoice</div>
         </div>
         <div class="inv-meta">
-          <div><b>Order #${inv.orderNumber}</b></div>
-          <div>${inv.date}</div>
+          <div><b>Order #${esc(inv.orderNumber)}</b></div>
+          <div>${esc(inv.date)}</div>
         </div>
       </div>
       <div class="inv-customer">
-        <div><b>${inv.name}</b></div>
-        <div>${inv.phone}</div>
-        <div>${inv.address}</div>
-        ${inv.note ? `<div>Note: ${inv.note}</div>` : ''}
+        <div><b>${esc(inv.name)}</b></div>
+        <div>${esc(inv.phone)}</div>
+        <div>${esc(inv.address)}</div>
+        ${inv.note ? `<div>Note: ${esc(inv.note)}</div>` : ''}
       </div>
       <table class="inv-table">
         <thead><tr><th>Item</th><th style="text-align:center;">Qty</th><th style="text-align:right;">Price</th><th style="text-align:right;">Total</th></tr></thead>
@@ -243,8 +253,8 @@ function invoiceMarkup(inv){
       </table>
       <div class="inv-totals">
         <div><span>Subtotal</span><span>${money(inv.subtotal)}</span></div>
-        <div><span>Delivery (${inv.deliveryZone})</span><span>${money(inv.deliveryCharge)}</span></div>
-        ${inv.discount > 0 ? `<div><span>Discount${inv.couponCode?` (${inv.couponCode})`:''}</span><span>-${money(inv.discount)}</span></div>` : ''}
+        <div><span>Delivery (${esc(inv.deliveryZone)})</span><span>${money(inv.deliveryCharge)}</span></div>
+        ${inv.discount > 0 ? `<div><span>Discount${inv.couponCode?` (${esc(inv.couponCode)})`:''}</span><span>-${money(inv.discount)}</span></div>` : ''}
         <div class="inv-grand"><span>Total</span><span>${money(inv.total)}</span></div>
       </div>
       <p class="inv-note">Cash on delivery — pay when your order arrives.</p>
@@ -254,15 +264,17 @@ function invoiceMarkup(inv){
 
 // waUrl opens WhatsApp with the order details pre-filled, so the buyer
 // only has to tap "Send" to message the shop. inv (optional) is the invoice
-// to render below the confirmation message.
-function renderConfirm(waUrl, inv){
+// to render below the confirmation message. saveError (optional) is the exact
+// error text when the order could not be saved online.
+function renderConfirm(waUrl, inv, saveError){
   document.getElementById('root').innerHTML = `
     <div class="confirm-state">
       <div class="confirm-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></div>
       <h2 class="display">Order placed</h2>
+      ${saveError ? `<p class="save-warn">We could not save your order online (${esc(saveError)}). Please tap the WhatsApp button below and send it — that is how we will confirm it.</p>` : ''}
       <p>Thank you! Please tap the button below and send your order on WhatsApp so we can confirm it. Cash on delivery.</p>
-      ${waUrl ? `<a class="place-btn" href="${waUrl}" target="_blank" rel="noopener" style="display:block;text-decoration:none;margin-bottom:16px;">Send order on WhatsApp</a>` : ''}
-      <a class="link-btn" href="shop.html">Continue shopping →</a>
+      ${waUrl ? `<a class="place-btn" href="${esc(waUrl)}" target="_blank" rel="noopener" style="display:block;text-decoration:none;margin-bottom:16px;">Send order on WhatsApp</a>` : ''}
+      <a class="link-btn" href="/shop">Continue shopping →</a>
       ${inv ? invoiceMarkup(inv) : ''}
     </div>`;
   const printBtn = document.getElementById('printInvoiceBtn');
@@ -279,14 +291,14 @@ function getSubtotal(){
 
 function itemsMarkup(cart){
   return cart.map(c=>`
-    <div class="summary-item" data-id="${lineKey(c)}">
-      <div class="si-media">${c.imageUrl?`<img src="${c.imageUrl}" loading="lazy" decoding="async">`:''}</div>
+    <div class="summary-item" data-id="${esc(lineKey(c))}">
+      <div class="si-media">${c.imageUrl?`<img src="${esc(c.imageUrl)}" loading="lazy" decoding="async" alt="">`:''}</div>
       <div class="si-info">
-        <h4>${c.name}</h4>
-        <p>${money(c.price)} each${c.size?` · Size ${c.size}`:''}</p>
+        <h4>${esc(c.name)}</h4>
+        <p>${money(esc(c.price))} each${c.size?` · Size ${esc(c.size)}`:''}</p>
         <div class="si-qty">
           <button type="button" class="qty-btn" data-action="dec" aria-label="Decrease quantity">−</button>
-          <span>${c.qty}</span>
+          <span>${esc(c.qty)}</span>
           <button type="button" class="qty-btn" data-action="inc" aria-label="Increase quantity">+</button>
         </div>
       </div>
@@ -329,10 +341,10 @@ function renderCheckout(cart){
     <div class="section">
       <div class="section-label">Your order</div>
       <div id="itemsList">${itemsMarkup(cart)}</div>
-      <a class="add-more" href="shop.html">+ Add more items</a>
+      <a class="add-more" href="/shop">+ Add more items</a>
 
       <div style="display:flex;gap:8px;margin-top:16px;">
-        <input type="text" id="couponInput" placeholder="Coupon code" style="flex:1;padding:11px 14px;background:var(--card);border:1px solid var(--line);color:var(--text);border-radius:var(--radius);font-size:13px;text-transform:uppercase;">
+        <input type="text" id="couponInput" maxlength="40" placeholder="Coupon code" style="flex:1;padding:11px 14px;background:var(--card);border:1px solid var(--line);color:var(--text);border-radius:var(--radius);font-size:13px;text-transform:uppercase;">
         <button id="couponApplyBtn" style="padding:11px 18px;border:1px solid var(--silver-deep);color:var(--silver-bright);background:none;border-radius:var(--radius);font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;">Apply</button>
       </div>
       <p id="couponMsg" style="font-size:11.5px;margin-top:6px;display:none;"></p>
@@ -355,17 +367,17 @@ function renderCheckout(cart){
       <div class="section-label">Delivery details</div>
       <div class="field" id="fName">
         <label>Full name</label>
-        <input type="text" id="inName" placeholder="Your name">
+        <input type="text" id="inName" maxlength="100" placeholder="Your name" autocomplete="name">
         <p class="err">Name is required.</p>
       </div>
       <div class="field" id="fPhone">
         <label>Phone number</label>
-        <input type="tel" id="inPhone" placeholder="01XXXXXXXXX">
+        <input type="tel" id="inPhone" maxlength="20" placeholder="01XXXXXXXXX" autocomplete="tel">
         <p class="err">A valid phone number is required.</p>
       </div>
       <div class="field" id="fAddress">
         <label>Delivery address</label>
-        <textarea id="inAddress" placeholder="House, road, area, city"></textarea>
+        <textarea id="inAddress" maxlength="300" placeholder="House, road, area, city" autocomplete="street-address"></textarea>
         <p class="err">Address is required.</p>
       </div>
 
@@ -385,7 +397,7 @@ function renderCheckout(cart){
 
       <div class="field">
         <label>Order note (optional)</label>
-        <textarea id="inNote" placeholder="Anything we should know?"></textarea>
+        <textarea id="inNote" maxlength="300" placeholder="Anything we should know?"></textarea>
       </div>
 
       <div class="pay-note">
@@ -448,13 +460,15 @@ async function applyCoupon(){
   msg.style.color = 'var(--text-dim)';
   msg.textContent = 'Checking code...';
   try{
+    // Coupon codes are document ids. Slashes would point at a different path.
+    if(code.indexOf('/') !== -1) throw Object.assign(new Error('invalid code'), { code: 'invalid-code' });
     const fb = await ensureFbApi();
     const snap = await fb.getDoc(fb.doc(fb.db,'coupons',code));
     if(snap.exists && snap.exists()){
       const d = snap.data();
-      appliedCoupon = { code, type: d.type, value: d.value };
+      appliedCoupon = { code, type: d.type, value: Number(d.value) || 0 };
       msg.style.color = 'var(--silver-bright)';
-      msg.textContent = `"${code}" applied — ${d.type==='percent' ? d.value+'% off' : 'BDT '+d.value+' off'}.`;
+      msg.textContent = `"${code}" applied — ${d.type==='percent' ? Number(d.value)+'% off' : 'BDT '+Number(d.value)+' off'}.`;
     } else {
       appliedCoupon = null;
       msg.style.color = '#e08a8a';
@@ -464,7 +478,9 @@ async function applyCoupon(){
     console.error('Coupon check failed:', e);
     appliedCoupon = null;
     msg.style.color = '#e08a8a';
-    msg.textContent = 'Could not check that code — try again.';
+    msg.textContent = e && e.code === 'invalid-code'
+      ? 'That code isn\'t valid.'
+      : 'Could not check that code (' + ((e && e.code) || 'error') + ') — try again.';
   }
   updateTotals();
 }
@@ -532,8 +548,11 @@ async function placeOrder(){
   const orderNumber = await generateOrderNumber();
 
   // Try to log the order to Firestore. If this fails for any reason, we
-  // still continue so the buyer can send the order on WhatsApp.
+  // still continue so the buyer can send the order on WhatsApp — but we keep
+  // the exact error, show it on the confirmation screen and include it in the
+  // owner notification so a lost order is never silent.
   let orderId = '';
+  let saveError = '';
   try{
     const fb = await ensureFbApi();
     const orderRef = await fb.addDoc(fb.collection(fb.db,'orders'), {
@@ -555,6 +574,7 @@ async function placeOrder(){
     orderId = orderRef.id;
   }catch(e){
     console.error('Order logging failed (continuing anyway):', e);
+    saveError = (((e && e.code) ? e.code : 'error') + ': ' + ((e && e.message) ? e.message : String(e))).slice(0, 200);
   }
 
   // Background ping to the owner (email, plus WhatsApp if it is configured on
@@ -567,6 +587,7 @@ async function placeOrder(){
       body: JSON.stringify({
         orderId,
         orderNumber,
+        saveError,
         customerName: details.name,
         phone: details.phone,
         address: details.address,
@@ -602,7 +623,7 @@ async function placeOrder(){
   if(cartApi) cartApi.clearCart();
   // WhatsApp does NOT open automatically — the buyer taps the
   // "Send order on WhatsApp" button on this confirmation screen if they want to.
-  renderConfirm(waUrl, invoice);
+  renderConfirm(waUrl, invoice, saveError);
 }
 
 async function loadDeliverySettings(){

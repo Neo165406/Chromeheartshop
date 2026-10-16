@@ -15,6 +15,36 @@
 //
 // The order itself is always saved to Firestore by the checkout page first — this
 // function is only the "ping the owner" step, so if it fails no order is lost.
+//
+// Abuse protection (this endpoint is public, so anyone could otherwise spam your
+// WhatsApp/email and burn your Resend / CallMeBot quota):
+//   * requests must come from this site (Origin / Referer check)
+//   * a small per-IP limit (best effort: it is remembered per running server instance)
+
+const ALLOWED_HOSTS = ['fashion1sta.com', 'www.fashion1sta.com', 'localhost'];
+
+function originOk(req){
+  const src = req.headers.origin || req.headers.referer || '';
+  if(!src) return false;
+  try{
+    const host = new URL(src).hostname.toLowerCase();
+    return ALLOWED_HOSTS.includes(host) || host.endsWith('.vercel.app');
+  }catch(e){ return false; }
+}
+
+const RATE_WINDOW_MS = 10 * 60 * 1000;
+const RATE_MAX = 10;
+const hits = new Map();
+function rateLimited(ip){
+  const now = Date.now();
+  const recent = (hits.get(ip) || []).filter(t => now - t < RATE_WINDOW_MS);
+  recent.push(now);
+  hits.set(ip, recent);
+  if(hits.size > 500){
+    for(const [k, v] of hits){ if(!v.some(t => now - t < RATE_WINDOW_MS)) hits.delete(k); }
+  }
+  return recent.length > RATE_MAX;
+}
 
 function str(v, max){ return String(v == null ? '' : v).trim().slice(0, max); }
 function num(v){ const n = Number(v); return Number.isFinite(n) ? n : 0; }
@@ -36,6 +66,8 @@ function cleanOrder(body){
   if(!items.length || !name || !phone || !address) return null;
   return {
     id: str(body.orderId, 60),
+    number: str(body.orderNumber, 30),
+    saveError: str(body.saveError, 200),
     name, phone, address,
     note: str(body.note, 300),
     items,
@@ -49,7 +81,12 @@ function cleanOrder(body){
 }
 
 function buildText(o){
-  const head = '🛍️ New order — FASHIONISTA' + (o.id ? '\nOrder ID: ' + o.id : '');
+  const warn = o.saveError
+    ? '⚠️ NOT SAVED in the admin Orders list (' + o.saveError + ') — keep this message, it is the only record.\n\n'
+    : '';
+  const head = '🛍️ New order — FASHIONISTA' +
+    (o.number ? '\nOrder #: ' + o.number : '') +
+    (o.id ? '\nOrder ID: ' + o.id : '');
   const lines = o.items.map(i => `• ${i.name} x${i.qty} — BDT ${i.price * i.qty}`).join('\n');
   const totals = [
     `Subtotal: BDT ${o.subtotal}`,
@@ -63,7 +100,7 @@ function buildText(o){
     `Address: ${o.address}`,
     o.note ? `Note: ${o.note}` : ''
   ].filter(Boolean).join('\n');
-  return [head, lines, totals, customer].join('\n\n');
+  return warn + [head, lines, totals, customer].join('\n\n');
 }
 
 async function sendEmail(o, text){
@@ -76,7 +113,9 @@ async function sendEmail(o, text){
   ).join('');
   const html = `
     <div style="font-family:Arial,sans-serif;max-width:520px;">
+      ${o.saveError ? `<p style="background:#fff3cd;padding:10px;margin:0 0 14px;"><b>NOT SAVED in the admin Orders list</b> (${esc(o.saveError)}) — keep this email, it is the only record.</p>` : ''}
       <h2 style="margin:0 0 4px;">New order — FASHIONISTA</h2>
+      ${o.number ? `<p style="color:#777;margin:0 0 4px;">Order #: ${esc(o.number)}</p>` : ''}
       ${o.id ? `<p style="color:#777;margin:0 0 14px;">Order ID: ${esc(o.id)}</p>` : ''}
       <table style="border-collapse:collapse;width:100%;font-size:14px;">${rows}</table>
       <p style="margin:14px 0 0;font-size:14px;line-height:1.7;">
@@ -98,7 +137,7 @@ async function sendEmail(o, text){
     body: JSON.stringify({
       from: process.env.NOTIFY_FROM || 'FASHIONISTA Orders <onboarding@resend.dev>',
       to: [to],
-      subject: `New order — BDT ${o.total} — ${o.name}`,
+      subject: `${o.saveError ? '[NOT SAVED] ' : ''}New order — BDT ${o.total} — ${o.name}`,
       html,
       text
     }),
@@ -136,6 +175,10 @@ async function sendWhatsApp(text){
 module.exports = async function handler(req, res){
   res.setHeader('Cache-Control', 'no-store');
   if(req.method !== 'POST') return res.status(405).json({ error: 'Use POST.' });
+
+  if(!originOk(req)) return res.status(403).json({ error: 'Forbidden: request did not come from this site.' });
+  const ip = String((req.headers['x-forwarded-for'] || '').split(',')[0] || req.socket && req.socket.remoteAddress || 'unknown').trim();
+  if(rateLimited(ip)) return res.status(429).json({ error: 'Too many orders from this connection. Please wait a few minutes.' });
 
   const emailReady = !!(process.env.RESEND_API_KEY && process.env.NOTIFY_EMAIL);
   const waReady = waRecipients().length > 0;
