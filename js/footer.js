@@ -61,7 +61,7 @@
   var s = 'none', st = 'var(--silver,#b8bcc4)';
   var HTML = ''
     + '<div class="sf-logo">FASHIONISTA</div>'
-    + '<p class="sf-tagline">Gothic-luxury accessories and eyewear for the after-dark wardrobe. Follow us on Instagram.</p>'
+    + '<p class="sf-tagline">Y2K and retro accessories and eyewear from Dhaka, Bangladesh. Follow us on Instagram.</p>'
     + '<div class="sf-socials">'
     +   '<a href="https://www.instagram.com/FASHIONISTA_bd?stkn=OWJlYzFmOWoyZnlr" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="' + st + '" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.8" fill="' + st + '"/></svg></a>'
     +   '<a href="https://www.facebook.com/share/19EjoiggcT/" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="' + st + '" stroke-width="1.6"><path d="M14 9h3V6h-3c-2 0-3 1-3 3v2H8v3h3v6h3v-6h3l1-3h-4V9c0-.6.4-1 1-1z"/></svg></a>'
