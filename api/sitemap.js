@@ -5,6 +5,8 @@
 // no admin credentials needed, since firestore.rules already allows public
 // read on /products (same access level as the storefront pages themselves).
 
+const { productPath } = require('./_urls');
+
 const FIREBASE_API_KEY = 'AIzaSyC_Fgdc_JlFlrPwByNQIa3e-MMGmoRXRWE'; // public web key (same as js/firebase-config.js)
 const PROJECT_ID = 'argentum-3709f';
 const SITE = 'https://fashion1sta.com';
@@ -50,7 +52,9 @@ async function fetchAllProducts(){
         const stock = stockField ? Number(stockField.integerValue ?? stockField.doubleValue) : null;
         const subField = doc.fields && doc.fields.subcategory;
         const subcategory = subField && typeof subField.stringValue === 'string' ? subField.stringValue.trim().toLowerCase() : '';
-        products.push({ id, updateTime: doc.updateTime, outOfStock: stock === 0, subcategory });
+        const slugField = doc.fields && doc.fields.slug;
+        const slug = slugField && typeof slugField.stringValue === 'string' ? slugField.stringValue : '';
+        products.push({ id, slug, updateTime: doc.updateTime, outOfStock: stock === 0, subcategory });
       });
       pageToken = j.nextPageToken || '';
     } while(pageToken);
@@ -87,8 +91,10 @@ module.exports = async function handler(req, res){
     });
   }).filter(Boolean);
 
+  // /product/<slug> for products that have a slug, the old id URL until they do
+  // (the same rule api/product-page.js uses for its canonical).
   const productUrls = products.map(p => urlTag({
-    loc: `${SITE}/product.html?id=${encodeURIComponent(p.id)}`,
+    loc: `${SITE}${productPath(p)}`,
     lastmod: p.updateTime ? p.updateTime.slice(0, 10) : undefined,
     changefreq: 'weekly',
     priority: p.outOfStock ? '0.4' : '0.6'

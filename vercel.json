@@ -55,6 +55,7 @@
     { "source": "/terms", "destination": "/terms.html" },
     { "source": "/privacy", "destination": "/privacy.html" },
     { "source": "/track-order", "destination": "/track-order.html" },
+    { "source": "/product/:slug", "destination": "/api/product-page?slug=:slug" },
     { "source": "/product.html", "destination": "/api/product-page" },
     { "source": "/", "destination": "/api/home-page" },
     { "source": "/index.html", "destination": "/api/home-page" }
