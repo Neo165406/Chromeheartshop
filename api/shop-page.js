@@ -17,6 +17,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { productPath } = require('./_urls');
 
 const FIREBASE_API_KEY = 'AIzaSyC_Fgdc_JlFlrPwByNQIa3e-MMGmoRXRWE'; // public web key (same as js/firebase-config.js)
 const PROJECT_ID = 'argentum-3709f';
@@ -118,7 +119,7 @@ function cardMarkup(p, i, eager){
        <button class="order buy-now-btn" data-id="${esc(p.id)}" data-name="${esc(p.name)}" data-price="${p.price}" data-image="${esc(p.imageUrl||'')}">Buy Now</button>`;
   return `
     <div class="card reveal ${dir}" style="transition-delay:${delay}s">
-      <a href="product.html?id=${encodeURIComponent(p.id)}" class="card-link">
+      <a href="${esc(productPath(p))}" class="card-link">
         <div class="frame">
           ${discount>0 && !outOfStock ? `<span class="discount-badge">-${discount}%</span>` : ''}
           ${outOfStock ? `<span class="discount-badge" style="background:var(--text-dim);">Out of Stock</span>` : ''}
@@ -284,7 +285,7 @@ const LANDING_CSS = `<style>
 function productLink(p){
   const out = p.stock === 0 ? ' (out of stock)' : '';
   const price = Number.isFinite(Number(p.price)) ? ` — BDT ${esc(p.price)}` : '';
-  return `<li><a href="/product.html?id=${encodeURIComponent(p.id)}">${esc(p.name)}</a>${price}${out}</li>`;
+  return `<li><a href="${esc(productPath(p))}">${esc(p.name)}</a>${price}${out}</li>`;
 }
 
 // "Silver cross bracelets" / "Printed bandanas" ... blocks, built only from
@@ -343,7 +344,7 @@ function landingJsonLd(cfg, items){
     const entry = {
       "@type": "ListItem",
       "position": listItems.length + 1,
-      "url": `${SITE}/product.html?id=${encodeURIComponent(p.id)}`,
+      "url": `${SITE}${productPath(p)}`,
       "name": p.name
     };
     if(typeof p.imageUrl === 'string' && /^https?:\/\//i.test(p.imageUrl)) entry.image = p.imageUrl;
