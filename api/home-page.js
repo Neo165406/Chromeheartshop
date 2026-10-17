@@ -13,6 +13,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { productPath } = require('./_urls');
 
 const FIREBASE_API_KEY = 'AIzaSyC_Fgdc_JlFlrPwByNQIa3e-MMGmoRXRWE'; // public web key (same as js/firebase-config.js)
 const PROJECT_ID = 'argentum-3709f';
@@ -166,7 +167,7 @@ function cardMarkup(p, i, eagerCount){
          <button class="order buy-now-btn" data-id="${esc(pid)}" data-name="${esc(p.name)}" data-price="${p.price}" data-image="${esc(p.imageUrl||'')}">Buy Now</button>`;
   return `
       <div class="card reveal ${dir}" style="transition-delay:${delay}s">
-        <a href="product.html?id=${encodeURIComponent(pid)}" class="card-link">
+        <a href="${esc(productPath(p))}" class="card-link">
           <div class="frame">
             ${discount>0 && !outOfStock ? `<span class="discount-badge">-${discount}%</span>` : ''}
             ${outOfStock ? `<span class="discount-badge" style="background:var(--text-dim);">Out of Stock</span>` : ''}
@@ -273,7 +274,7 @@ function itemListJsonLd(products){
     items.push({
       "@type": "ListItem",
       "position": items.length + 1,
-      "url": `${SITE}/product.html?id=${encodeURIComponent(pid)}`,
+      "url": `${SITE}${productPath(p)}`,
       "name": p.name,
       "image": p.imageUrl
     });

@@ -14,9 +14,9 @@ const SITE = 'https://fashion1sta.com';
 const STATIC_PAGES = [
   { loc: `${SITE}/`, changefreq: 'daily', priority: '1.0' },
   { loc: `${SITE}/shop`, changefreq: 'daily', priority: '0.9' },
-  { loc: `${SITE}/glasses`, changefreq: 'daily', priority: '0.8' },
-  { loc: `${SITE}/accessories`, changefreq: 'daily', priority: '0.7' },
-  { loc: `${SITE}/clothing`, changefreq: 'daily', priority: '0.7' },
+  { loc: `${SITE}/glasses`, requiredCategory: 'Glasses', changefreq: 'daily', priority: '0.8' },
+  { loc: `${SITE}/accessories`, requiredCategory: 'Accessories', changefreq: 'daily', priority: '0.7' },
+  { loc: `${SITE}/clothing`, requiredCategory: 'Clothing', changefreq: 'daily', priority: '0.7' },
   { loc: `${SITE}/contact`, changefreq: 'monthly', priority: '0.5' },
   { loc: `${SITE}/shipping`, changefreq: 'monthly', priority: '0.4' },
   { loc: `${SITE}/return-policy`, changefreq: 'monthly', priority: '0.4' },
@@ -54,7 +54,9 @@ async function fetchAllProducts(){
         const subcategory = subField && typeof subField.stringValue === 'string' ? subField.stringValue.trim().toLowerCase() : '';
         const slugField = doc.fields && doc.fields.slug;
         const slug = slugField && typeof slugField.stringValue === 'string' ? slugField.stringValue : '';
-        products.push({ id, slug, updateTime: doc.updateTime, outOfStock: stock === 0, subcategory });
+        const categoryField = doc.fields && doc.fields.category;
+        const category = categoryField && typeof categoryField.stringValue === 'string' ? categoryField.stringValue.trim() : '';
+        products.push({ id, slug, updateTime: doc.updateTime, outOfStock: stock === 0, subcategory, category });
       });
       pageToken = j.nextPageToken || '';
     } while(pageToken);
@@ -77,7 +79,11 @@ function urlTag({ loc, lastmod, changefreq, priority }){
 module.exports = async function handler(req, res){
   const products = await fetchAllProducts();
 
-  const staticUrls = STATIC_PAGES.map(urlTag);
+  // Don't advertise category pages that currently have no matching products;
+  // api/shop-page.js marks empty category pages noindex, follow.
+  const staticUrls = STATIC_PAGES
+    .filter(page => !page.requiredCategory || products.some(p => p.category === page.requiredCategory))
+    .map(urlTag);
 
   const landingUrls = LANDING_PAGES.map(page => {
     const matches = products.filter(p => page.aliases.indexOf(p.subcategory) !== -1);

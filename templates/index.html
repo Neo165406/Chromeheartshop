@@ -6,10 +6,10 @@
 <link rel="icon" type="image/svg+xml" sizes="any" href="/favicon.svg">
 <link rel="shortcut icon" type="image/svg+xml" href="/favicon.svg">
 <meta name="google-site-verification" content="qpPh9ovC9WDyz4GYHje5bpqpxvVpQ8ylJoPrxz3At0k" />
-<title>FASHIONISTA | Y2K &amp; Retro Accessories in Bangladesh</title>
+<title>FASHIONISTA Clothing &amp; Streetwear in Bangladesh</title>
 
 <meta name="description"
-      content="Fashionista is a Bangladesh based accessories brand inspired by y2k, retro culture and modern street fashion. Cash on delivery nationwide.">
+      content="Shop streetwear clothing, sunglasses, bracelets and accessories at FASHIONISTA Bangladesh. Explore Y2K and retro styles with cash on delivery nationwide.">
 
 <meta name="keywords"
       content="fashionista clothing, fashionista bd, fashionista bangladesh, online clothing store bangladesh, online fashion store bangladesh, y2k clothing bangladesh, men's clothing bd, men's t-shirt bangladesh, retro t-shirt bd, y2k accessories bd, men's accessories bangladesh, sunglasses bangladesh, men's sunglasses bd, chain necklace bangladesh, men's chain necklace bd, men's rings bangladesh, silver ring bd, men's bracelet bangladesh, silver bracelet bd, retro jewelry bangladesh, teeth grillz bangladesh, bandana bangladesh, men's watches bangladesh, cash on delivery bangladesh">
@@ -18,13 +18,13 @@
 <link rel="canonical" href="https://fashion1sta.com/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="FASHIONISTA">
-<meta property="og:title" content="FASHIONISTA">
-<meta property="og:description" content="Fashionista is a Bangladesh based accessories brand inspired by y2k, retro culture and modern street fashion. Cash on delivery nationwide.">
+<meta property="og:title" content="FASHIONISTA Clothing &amp; Streetwear in Bangladesh">
+<meta property="og:description" content="Shop streetwear clothing, sunglasses, bracelets and accessories at FASHIONISTA Bangladesh. Explore Y2K and retro styles with cash on delivery nationwide.">
 <meta property="og:url" content="https://fashion1sta.com/">
 <meta property="og:image" content="https://fashion1sta.com/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="FASHIONISTA | Y2K &amp; Retro Accessories in Bangladesh">
-<meta name="twitter:description" content="Fashionista is a Bangladesh based accessories brand inspired by y2k, retro culture and modern street fashion. Cash on delivery nationwide.">
+<meta name="twitter:title" content="FASHIONISTA Clothing &amp; Streetwear in Bangladesh">
+<meta name="twitter:description" content="Shop streetwear clothing, sunglasses, bracelets and accessories at FASHIONISTA Bangladesh. Explore Y2K and retro styles with cash on delivery nationwide.">
 <meta name="twitter:image" content="https://fashion1sta.com/og-image.png">
 <script type="application/ld+json">
 {
@@ -32,7 +32,7 @@
   "@type": "OnlineStore",
   "name": "FASHIONISTA",
   "url": "https://fashion1sta.com/",
-  "description": "Fashionista is a Bangladesh based accessories brand inspired by y2k, retro culture and modern street fashion. Cash on delivery nationwide.",
+  "description": "Shop streetwear clothing, sunglasses, bracelets and accessories at FASHIONISTA Bangladesh. Explore Y2K and retro styles with cash on delivery nationwide.",
   "areaServed": "BD",
   "sameAs": [
     "https://www.instagram.com/FASHIONISTA_bd",
@@ -510,6 +510,12 @@ function slideIcon(type){
   if(type==="bottle") return `<svg viewBox="0 0 60 80" fill="none">${grad}<rect x="14" y="24" width="32" height="48" rx="3" stroke="url(#sg)" stroke-width="2.5"/><rect x="22" y="8" width="16" height="16" rx="2" stroke="url(#sg)" stroke-width="2.5"/></svg>`;
   return `<svg viewBox="0 0 90 50" fill="none">${grad}<ellipse cx="22" cy="25" rx="14" ry="9" stroke="url(#sg)" stroke-width="2.5"/><ellipse cx="46" cy="25" rx="14" ry="9" stroke="url(#sg)" stroke-width="2.5"/><ellipse cx="70" cy="25" rx="14" ry="9" stroke="url(#sg)" stroke-width="2.5"/></svg>`;
 }
+function productPath(p){
+  const slug = p && p.slug;
+  if(typeof slug === 'string' && slug.length <= 100 && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) return '/product/' + slug;
+  const id = p && p.id ? p.id : (p && p.name ? p.name.toLowerCase().replace(/[^a-z0-9]+/g,'-') : '');
+  return 'product.html?id=' + encodeURIComponent(id);
+}
 const slidesEl = document.getElementById('slides');
 const dotsEl = document.getElementById('dots');
 let heroSlides = [];
@@ -604,7 +610,7 @@ function renderCards(id, items, failed, eagerCount){
          <button class="order buy-now-btn" data-id="${pid}" data-name="${p.name}" data-price="${p.price}" data-image="${p.imageUrl||''}">Buy Now</button>`;
     grid.innerHTML += `
       <div class="card reveal ${dir}" style="transition-delay:${delay}s">
-        <a href="product.html?id=${encodeURIComponent(pid)}" class="card-link">
+        <a href="${productPath(p)}" class="card-link">
           <div class="frame">
             ${discount>0 && !outOfStock ? `<span class="discount-badge">-${discount}%</span>` : ''}
             ${outOfStock ? `<span class="discount-badge" style="background:var(--text-dim);">Out of Stock</span>` : ''}
