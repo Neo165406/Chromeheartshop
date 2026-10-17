@@ -243,7 +243,7 @@ function withShareImage(html, req){
         + `<meta property="og:image:type" content="image/jpeg">\n`
         + `<meta property="og:image:width" content="1200">\n`
         + `<meta property="og:image:height" content="630">\n`
-        + `<meta property="og:image:alt" content="FASHIONISTA — gothic silver accessories">`
+        + `<meta property="og:image:alt" content="FASHIONISTA — Y2K and retro accessories">`
     )
     .replace(
       '<meta name="twitter:image" content="https://fashion1sta.com/og-image.png">',
