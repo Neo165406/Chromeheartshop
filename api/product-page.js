@@ -425,7 +425,21 @@ function variantSuffix(product, peers){
 
 function buildTitle(label){
   const full = `${label} Price in Bangladesh | FASHIONISTA`;
-  return full.length <= 60 ? full : `${label} Price in BD | FASHIONISTA`;
+  if(full.length <= 60) return full;
+
+  // Keep the product name and store brand within a predictable title length.
+  // The shorter Bangladesh price suffix is preferred before truncating a long
+  // product name; if the name itself is still too long, cut at a word boundary.
+  const suffix = ' Price in BD | FASHIONISTA';
+  const maxLabelLength = 60 - suffix.length;
+  let shortLabel = String(label || 'Product').trim();
+  if(shortLabel.length > maxLabelLength){
+    const head = shortLabel.slice(0, maxLabelLength - 1);
+    const boundary = head.lastIndexOf(' ');
+    const cut = boundary >= Math.floor(maxLabelLength * 0.45) ? head.slice(0, boundary) : head;
+    shortLabel = cut.replace(/[\\s,;:\\-—–]+$/, '') + '…';
+  }
+  return `${shortLabel}${suffix}`;
 }
 
 // Meta description, at most 160 characters: "<n>: <cleaned description>
