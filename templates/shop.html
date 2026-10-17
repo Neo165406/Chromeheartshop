@@ -363,6 +363,12 @@ function iconFor(type){
   return crossSVG();
 }
 
+function productPath(p){
+  const slug = p && p.slug;
+  if(typeof slug === 'string' && slug.length <= 100 && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) return '/product/' + slug;
+  return 'product.html?id=' + encodeURIComponent(p && p.id ? p.id : '');
+}
+
 async function loadAllProducts(){
   try{
     const fetchPromise = getDocs(collection(db,'products'));
@@ -397,7 +403,7 @@ function cardHTML(p, i, eager){
        <button class="order buy-now-btn" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-image="${p.imageUrl||''}">Buy Now</button>`;
   return `
     <div class="card reveal ${dir}" style="transition-delay:${delay}s">
-      <a href="product.html?id=${encodeURIComponent(p.id)}" class="card-link">
+      <a href="${productPath(p)}" class="card-link">
         <div class="frame">
           ${discount>0 && !outOfStock ? `<span class="discount-badge">-${discount}%</span>` : ''}
           ${outOfStock ? `<span class="discount-badge" style="background:var(--text-dim);">Out of Stock</span>` : ''}
