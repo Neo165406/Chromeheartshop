@@ -389,6 +389,7 @@ function cleanDescription(raw){
 // Shortens text to at most `room` characters at a sentence end when possible,
 // otherwise at a word boundary, never leaving a dangling "with a" / "and the".
 function cutAtBoundary(text, room){
+  if(room <= 0) return '';
   if(text.length <= room) return text;
   const head = text.slice(0, room);
   const sentEnd = Math.max(head.lastIndexOf('. '), head.lastIndexOf('! '), head.lastIndexOf('? '));
@@ -425,7 +426,21 @@ function variantSuffix(product, peers){
 
 function buildTitle(label){
   const full = `${label} Price in Bangladesh | FASHIONISTA`;
-  return full.length <= 60 ? full : `${label} Price in BD | FASHIONISTA`;
+  if(full.length <= 60) return full;
+
+  // Keep the product name and store brand within a predictable title length.
+  // The shorter Bangladesh price suffix is preferred before truncating a long
+  // product name; if the name itself is still too long, cut at a word boundary.
+  const suffix = ' Price in BD | FASHIONISTA';
+  const maxLabelLength = 60 - suffix.length;
+  let shortLabel = String(label || 'Product').trim();
+  if(shortLabel.length > maxLabelLength){
+    const head = shortLabel.slice(0, maxLabelLength - 1);
+    const boundary = head.lastIndexOf(' ');
+    const cut = boundary > 0 ? head.slice(0, boundary) : head;
+    shortLabel = cut.replace(/[\s,;:—–-]+$/, '') + '…';
+  }
+  return `${shortLabel}${suffix}`;
 }
 
 // Meta description, at most 160 characters: "<n>: <cleaned description>
@@ -436,7 +451,8 @@ function buildDescription(product, label){
   const cleaned = cleanDescription(product.description);
   if(!cleaned){
     const cat = product.category ? `${product.category} from FASHIONISTA` : 'from FASHIONISTA';
-    return `${label} — BDT ${product.price}. ${cat}, price in Bangladesh, cash on delivery nationwide.`;
+    const fallback = `${label} — BDT ${product.price}. ${cat}, price in Bangladesh, cash on delivery nationwide.`;
+    return fallback.length <= 160 ? fallback : cutAtBoundary(fallback, 160);
   }
   // Lead with the product name unless the description already opens with it
   // (at least 3 of every 4 name words in its first 80 characters). Products
@@ -451,7 +467,10 @@ function buildDescription(product, label){
   const room = 160 - lead.length - suffix.length - 1;   // -1: possible closing period
   const body = cutAtBoundary(cleaned, room);
   const tail = /[.!?…]$/.test(body) ? '' : '.';
-  return `${lead}${body}${tail}${suffix}`;
+  const result = `${lead}${body}${tail}${suffix}`;
+  // Extremely long product names can otherwise make the generated meta
+  // description exceed the intended 160-character limit.
+  return result.length <= 160 ? result : cutAtBoundary(result, 160);
 }
 
 // Short category-aware sentence for the on-page copy. Deliberately makes no
