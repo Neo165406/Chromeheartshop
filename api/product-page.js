@@ -436,8 +436,8 @@ function buildTitle(label){
   if(shortLabel.length > maxLabelLength){
     const head = shortLabel.slice(0, maxLabelLength - 1);
     const boundary = head.lastIndexOf(' ');
-    const cut = boundary >= Math.floor(maxLabelLength * 0.45) ? head.slice(0, boundary) : head;
-    shortLabel = cut.replace(/[\\s,;:\\-—–]+$/, '') + '…';
+    const cut = boundary > 0 ? head.slice(0, boundary) : head;
+    shortLabel = cut.replace(/[\s,;:—–-]+$/, '') + '…';
   }
   return `${shortLabel}${suffix}`;
 }
