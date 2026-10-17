@@ -146,7 +146,7 @@ const CATEGORY_SEO = {
   },
   "Accessories": {
     title: "Gothic & Streetwear Accessories in Bangladesh | FASHIONISTA",
-    desc: "Shop bracelets, rings, chain necklaces, bandanas and belts at FASHIONISTA. Explore gothic and Y2K accessories with BDT prices and cash on delivery across Bangladesh."
+    desc: "Shop bracelets, rings, chain necklaces, bandanas and belts at FASHIONISTA. Gothic and Y2K styles, BDT prices and cash on delivery across Bangladesh."
   },
   "Clothing": {
     title: "Streetwear T-Shirts & Clothing in Bangladesh | FASHIONISTA",
