@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>Shop Gothic Silver Accessories in Bangladesh | FASHIONISTA</title>
-<meta id="metaDesc" name="description" content="Shop FASHIONISTA's gothic silver accessories: sunglasses, chain necklaces, rings, bracelets and teeth grillz. Cash on delivery across Bangladesh.">
-<meta name="keywords" content="fashionista bd, gothic accessories bd, silver accessories shop bd, sunglasses price in bangladesh, chain necklace bd, silver ring for men bd, silver bracelet men bd, teeth grillz bd, gothic jewelry bangladesh, cash on delivery accessories bd">
+<title>Accessories & Streetwear in Bangladesh | FASHIONISTA</title>
+<meta id="metaDesc" name="description" content="Shop gothic and Y2K accessories, sunglasses and streetwear at FASHIONISTA. Compare BDT prices and stock status. Cash on delivery across Bangladesh.">
+<meta name="keywords" content="fashionista bd, gothic accessories bangladesh, streetwear accessories bd, sunglasses price in bangladesh, chain necklace bd, bracelets bd, bandanas bd, cash on delivery bangladesh">
 <meta name="theme-color" content="#0a0b0d">
 <link rel="canonical" id="canonicalLink" href="https://fashion1sta.com/shop.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="FASHIONISTA">
-<meta id="ogTitle" property="og:title" content="Shop Gothic Silver Accessories in Bangladesh | FASHIONISTA">
-<meta id="ogDescription" property="og:description" content="Gothic silver accessories — sunglasses, chain necklaces, rings, bracelets, teeth grillz. Cash on delivery across Bangladesh.">
+<meta id="ogTitle" property="og:title" content="Accessories & Streetwear in Bangladesh | FASHIONISTA">
+<meta id="ogDescription" property="og:description" content="Shop gothic and Y2K accessories, sunglasses and streetwear at FASHIONISTA. BDT prices and cash on delivery across Bangladesh.">
 <meta id="ogUrl" property="og:url" content="https://fashion1sta.com/shop.html">
 <meta property="og:image" content="https://fashion1sta.com/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -320,20 +320,20 @@ categoryTree.forEach(cat=>{
 // harmless when already right. ----------
 const CATEGORY_SEO = {
   "New In": {
-    title: "New Arrivals: Gothic Accessories & Eyewear | FASHIONISTA",
-    desc: "See the latest arrivals at FASHIONISTA — gothic silver accessories, sunglasses and clothing in Bangladesh. Cash on delivery nationwide."
+    title: "New Arrivals in Bangladesh | FASHIONISTA",
+    desc: "Explore new and featured sunglasses, accessories and streetwear at FASHIONISTA. See BDT prices and stock status, with cash on delivery across Bangladesh."
   },
   "Glasses": {
-    title: "Sunglasses Price in Bangladesh | FASHIONISTA",
-    desc: "Shop gothic silver sunglasses in Bangladesh: rimless, aviator and round frames for men. Cash on delivery nationwide from FASHIONISTA, Dhaka."
+    title: "Sunglasses & Glasses in Bangladesh | FASHIONISTA",
+    desc: "Shop rimless, aviator and round sunglasses at FASHIONISTA. Explore gothic, Y2K and streetwear eyewear with BDT prices and cash on delivery across Bangladesh."
   },
   "Accessories": {
-    title: "Chain Necklace, Rings & Bracelets in Bangladesh | FASHIONISTA",
-    desc: "Shop chain necklaces, silver rings for men, silver bracelets, bandanas, belts and teeth grillz bd. Gothic jewelry Bangladesh with cash on delivery nationwide."
+    title: "Gothic & Streetwear Accessories in Bangladesh | FASHIONISTA",
+    desc: "Shop bracelets, rings, chain necklaces, bandanas and belts at FASHIONISTA. Gothic and Y2K styles, BDT prices and cash on delivery across Bangladesh."
   },
   "Clothing": {
-    title: "Streetwear Clothing & T-shirts in Bangladesh — FASHIONISTA",
-    desc: "Shop premium streetwear T-shirts and clothing from FASHIONISTA, Dhaka. Cash on delivery across Bangladesh."
+    title: "Streetwear T-Shirts & Clothing in Bangladesh | FASHIONISTA",
+    desc: "Explore streetwear T-shirts and clothing at FASHIONISTA, Dhaka. Check product pages for sizes and BDT prices. Cash on delivery across Bangladesh."
   }
 };
 function applyCategorySEO(cat){
@@ -361,6 +361,12 @@ function iconFor(type){
   if(type==="glasses") return glassesSVG();
   if(type==="chain") return chainSVG();
   return crossSVG();
+}
+
+function productPath(p){
+  const slug = p && p.slug;
+  if(typeof slug === 'string' && slug.length <= 100 && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) return '/product/' + slug;
+  return 'product.html?id=' + encodeURIComponent(p && p.id ? p.id : '');
 }
 
 async function loadAllProducts(){
@@ -397,7 +403,7 @@ function cardHTML(p, i, eager){
        <button class="order buy-now-btn" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-image="${p.imageUrl||''}">Buy Now</button>`;
   return `
     <div class="card reveal ${dir}" style="transition-delay:${delay}s">
-      <a href="product.html?id=${encodeURIComponent(p.id)}" class="card-link">
+      <a href="${productPath(p)}" class="card-link">
         <div class="frame">
           ${discount>0 && !outOfStock ? `<span class="discount-badge">-${discount}%</span>` : ''}
           ${outOfStock ? `<span class="discount-badge" style="background:var(--text-dim);">Out of Stock</span>` : ''}

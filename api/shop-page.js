@@ -17,6 +17,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { productPath } = require('./_urls');
 
 const FIREBASE_API_KEY = 'AIzaSyC_Fgdc_JlFlrPwByNQIa3e-MMGmoRXRWE'; // public web key (same as js/firebase-config.js)
 const PROJECT_ID = 'argentum-3709f';
@@ -118,7 +119,7 @@ function cardMarkup(p, i, eager){
        <button class="order buy-now-btn" data-id="${esc(p.id)}" data-name="${esc(p.name)}" data-price="${p.price}" data-image="${esc(p.imageUrl||'')}">Buy Now</button>`;
   return `
     <div class="card reveal ${dir}" style="transition-delay:${delay}s">
-      <a href="product.html?id=${encodeURIComponent(p.id)}" class="card-link">
+      <a href="${esc(productPath(p))}" class="card-link">
         <div class="frame">
           ${discount>0 && !outOfStock ? `<span class="discount-badge">-${discount}%</span>` : ''}
           ${outOfStock ? `<span class="discount-badge" style="background:var(--text-dim);">Out of Stock</span>` : ''}
@@ -137,20 +138,20 @@ function cardMarkup(p, i, eager){
 
 const CATEGORY_SEO = {
   "New In": {
-    title: "New Arrivals: Gothic Accessories & Eyewear | FASHIONISTA",
-    desc: "See the latest arrivals at FASHIONISTA — gothic silver accessories, sunglasses and clothing in Bangladesh. Cash on delivery nationwide."
+    title: "New Arrivals in Bangladesh | FASHIONISTA",
+    desc: "Explore new and featured sunglasses, accessories and streetwear at FASHIONISTA. See BDT prices and stock status, with cash on delivery across Bangladesh."
   },
   "Glasses": {
-    title: "Sunglasses Price in Bangladesh | FASHIONISTA",
-    desc: "Shop gothic silver sunglasses in Bangladesh: rimless, aviator and round frames for men. Cash on delivery nationwide from FASHIONISTA, Dhaka."
+    title: "Sunglasses & Glasses in Bangladesh | FASHIONISTA",
+    desc: "Shop rimless, aviator and round sunglasses at FASHIONISTA. Explore gothic, Y2K and streetwear eyewear with BDT prices and cash on delivery across Bangladesh."
   },
   "Accessories": {
-    title: "Chain Necklace, Rings & Bracelets in Bangladesh | FASHIONISTA",
-    desc: "Shop chain necklaces, silver rings for men, silver bracelets, bandanas, belts and teeth grillz bd. Gothic jewelry Bangladesh with cash on delivery nationwide."
+    title: "Gothic & Streetwear Accessories in Bangladesh | FASHIONISTA",
+    desc: "Shop bracelets, rings, chain necklaces, bandanas and belts at FASHIONISTA. Gothic and Y2K styles, BDT prices and cash on delivery across Bangladesh."
   },
   "Clothing": {
-    title: "Streetwear Clothing & T-shirts in Bangladesh — FASHIONISTA",
-    desc: "Shop premium streetwear T-shirts and clothing from FASHIONISTA, Dhaka. Cash on delivery across Bangladesh."
+    title: "Streetwear T-Shirts & Clothing in Bangladesh | FASHIONISTA",
+    desc: "Explore streetwear T-shirts and clothing at FASHIONISTA, Dhaka. Check product pages for sizes and BDT prices. Cash on delivery across Bangladesh."
   }
 };
 
@@ -284,7 +285,7 @@ const LANDING_CSS = `<style>
 function productLink(p){
   const out = p.stock === 0 ? ' (out of stock)' : '';
   const price = Number.isFinite(Number(p.price)) ? ` — BDT ${esc(p.price)}` : '';
-  return `<li><a href="/product.html?id=${encodeURIComponent(p.id)}">${esc(p.name)}</a>${price}${out}</li>`;
+  return `<li><a href="${esc(productPath(p))}">${esc(p.name)}</a>${price}${out}</li>`;
 }
 
 // "Silver cross bracelets" / "Printed bandanas" ... blocks, built only from
@@ -343,7 +344,7 @@ function landingJsonLd(cfg, items){
     const entry = {
       "@type": "ListItem",
       "position": listItems.length + 1,
-      "url": `${SITE}/product.html?id=${encodeURIComponent(p.id)}`,
+      "url": `${SITE}${productPath(p)}`,
       "name": p.name
     };
     if(typeof p.imageUrl === 'string' && /^https?:\/\//i.test(p.imageUrl)) entry.image = p.imageUrl;
@@ -558,29 +559,29 @@ const CATEGORY_CONTENT = {
   "New In": {
     h2: "New arrivals at FASHIONISTA",
     paras: [
-      "This page shows our newest and featured pieces across eyewear, accessories and clothing. Prices are in BDT on every product card, and new pieces are added as they arrive, so check back regularly.",
+      "Browse newly added and featured pieces from FASHIONISTA, including eyewear, accessories and streetwear. Product cards show current prices in BDT and indicate when an item is out of stock.",
       "Looking for something specific? Browse our <a href=\"/glasses\">sunglasses</a>, <a href=\"/accessories\">accessories</a> or <a href=\"/clothing\">clothing</a>."
     ]
   },
   "Glasses": {
     h2: "Sunglasses and glasses in Bangladesh",
     paras: [
-      "FASHIONISTA's eyewear range is built around gothic, Y2K and streetwear frames: rimless glasses, aviator sunglasses, round sunglasses and retro shapes. The price in BDT is shown on every product card, so you can compare before you order.",
-      "Rimless frames look light and minimal, aviators are a classic shape that many people find easy to wear, and round frames give a retro, rebellious look. Open a product to see more photos, and message us on WhatsApp if you want help choosing a pair."
+      "Explore sunglasses and glasses in Bangladesh, including rimless, aviator and round styles selected for gothic, Y2K and streetwear outfits. Each product card shows its current BDT price; open a listing to check photos and availability before ordering.",
+      "Rimless frames offer a minimal look, aviator shapes feel classic, and round frames add a retro accent. Compare the photos and details on each product page, or contact us if you need help choosing a pair. Browse our <a href=\"/accessories\">accessories</a> to complete the look."
     ]
   },
   "Accessories": {
-    h2: "Gothic silver accessories in Bangladesh",
+    h2: "Gothic and streetwear accessories in Bangladesh",
     paras: [
-      "Our accessories range includes chain necklaces, rings, bracelets, bandanas, belts and teeth grillz, styled for gothic and streetwear outfits. Most pieces are easy to layer, so you can mix a chain with a bracelet or a ring for a stacked look.",
-      "Open a product to see more photos, the price in BDT and whether it is in stock. You can also browse our <a href=\"/glasses\">sunglasses</a> or <a href=\"/clothing\">clothing</a>."
+      "Explore accessories for gothic, Y2K and streetwear outfits, including chain necklaces, rings, bracelets, bandanas and belts where available. Layer a necklace with a bracelet or pair an accessory with a plain tee to make it stand out. Product pages show the current BDT price and stock status.",
+      "Browse our dedicated <a href=\"/bracelets\">bracelet collection</a> and <a href=\"/bandanas\">bandanas</a>, or explore <a href=\"/glasses\">sunglasses</a> and <a href=\"/clothing\">streetwear clothing</a>. Open any listing for product photos, current price and availability."
     ]
   },
   "Clothing": {
     h2: "Streetwear clothing in Bangladesh",
     paras: [
-      "FASHIONISTA's clothing range is built around clean, everyday streetwear: T-shirts and long-sleeve styles that are easy to pair with the accessories on this site. Each product page lists the available sizes (M, L and XL unless a product shows its own) and the price in BDT.",
-      "Not sure which size to pick? Message us on WhatsApp before you order. You can also browse our <a href=\"/glasses\">sunglasses</a> or <a href=\"/accessories\">accessories</a> to finish the outfit."
+      "Explore everyday streetwear clothing from FASHIONISTA, including T-shirts and other styles currently listed in the shop. Product pages show the available size options and current price in BDT, so check each listing before placing an order.",
+      "Check the size details on the product page and contact us if you need help before ordering. Complete the outfit with <a href=\"/glasses\">sunglasses</a>, <a href=\"/bracelets\">bracelets</a> or other <a href=\"/accessories\">accessories</a>."
     ]
   }
 };
