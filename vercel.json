@@ -14,6 +14,8 @@
       "destination": "https://fashion1sta.com/$1",
       "permanent": true
     },
+    { "source": "/index.html", "destination": "/", "permanent": true },
+    { "source": "/glasses.html", "destination": "/glasses", "permanent": true },
     { "source": "/bracelet", "destination": "/bracelets", "permanent": true },
     { "source": "/bandana", "destination": "/bandanas", "permanent": true },
 
