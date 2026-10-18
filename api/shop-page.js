@@ -6,14 +6,14 @@
 // The static template lives at templates/shop.html (not at the public
 // path) so this function is what actually serves the shop URLs. Reached via
 // the rewrites in vercel.json: /shop, /clothing and /accessories (the last two
-// pass ?category=), plus /bracelets and /bandanas (?scope=). Reads Firestore's
-// public REST API directly (same public web key already used client-side —
-// firestore.rules already allows public read on /products, same access level
-// the storefront pages themselves have).
+// pass ?category=), plus /bracelets, /rings, /bandanas and /t-shirts (?scope=).
+// Reads Firestore's public REST API directly (same public web key already used
+// client-side — firestore.rules already allows public read on /products, same
+// access level the storefront pages themselves have).
 //
-// Sub-category landing pages (/bracelets, /bandanas) reuse the shop template and
-// add their own title, description, H1, intro, supporting copy, internal links
-// and JSON-LD (see SCOPE_PAGES below).
+// Sub-category landing pages (/bracelets, /rings, /bandanas, /t-shirts) reuse
+// the shop template and add their own title, description, H1, intro,
+// supporting copy, internal links and JSON-LD (see SCOPE_PAGES below).
 
 const fs = require('fs');
 const path = require('path');
@@ -174,11 +174,17 @@ function seoForCategory(name){
 }
 
 // =====================================================================
-// Sub-category landing pages: /bracelets and /bandanas
+// Sub-category landing pages: /bracelets, /rings, /bandanas and /t-shirts
 // =====================================================================
 // A product belongs to a landing page when its Firestore `subcategory` field
 // matches one of `aliases` (case-insensitive, trimmed) — the same field the
 // shop's filter drawer uses. Nothing here is guessed from product names.
+// Keep the aliases in sync with LANDING_PAGES in api/sitemap.js and
+// SUBCATEGORY_PAGES in api/product-page.js.
+//
+// `parent` (optional) is the category the page sits under, used for the
+// breadcrumb and its structured data. Without it, the page sits under
+// Accessories.
 //
 // Copy rules: no claims about materials, authenticity, sizing, reviews or
 // delivery times beyond what the site already states (see shipping.html and
@@ -217,6 +223,7 @@ const SCOPE_PAGES = {
     related: [
       { href: '/bandanas', text: 'Bandanas' },
       { href: '/rings', text: 'Rings' },
+      { href: '/t-shirts', text: 'T-shirts' },
       { href: '/glasses', text: 'Glasses and sunglasses' },
       { href: '/accessories', text: 'All accessories' },
       { href: '/shop', text: 'Shop everything' }
@@ -252,6 +259,7 @@ const SCOPE_PAGES = {
     related: [
       { href: '/bracelets', text: 'Bracelets' },
       { href: '/bandanas', text: 'Bandanas' },
+      { href: '/t-shirts', text: 'T-shirts' },
       { href: '/glasses', text: 'Glasses and sunglasses' },
       { href: '/accessories', text: 'All accessories' },
       { href: '/shop', text: 'Shop everything' }
@@ -288,7 +296,45 @@ const SCOPE_PAGES = {
     related: [
       { href: '/bracelets', text: 'Bracelets' },
       { href: '/rings', text: 'Rings' },
+      { href: '/t-shirts', text: 'T-shirts' },
       { href: '/glasses', text: 'Glasses and sunglasses' },
+      { href: '/accessories', text: 'All accessories' },
+      { href: '/shop', text: 'Shop everything' }
+    ]
+  },
+  tshirts: {
+    path: '/t-shirts',
+    label: 'T-Shirts',
+    parent: { path: '/clothing', label: 'Clothing' },
+    aliases: ['t-shirt', 't-shirts', 'tshirt', 'tshirts'],
+    title: 'Streetwear T-Shirts in Bangladesh | FASHIONISTA',
+    desc: 'Shop streetwear T-shirts at FASHIONISTA. See size options and BDT prices on each product page, with cash on delivery across Bangladesh.',
+    h1: 'T-Shirts in Bangladesh',
+    sub: 'Streetwear T-shirts, priced in BDT',
+    intro: [
+      'FASHIONISTA is a Bangladesh-based fashion brand inspired by retro, Y2K and street style. This page collects the T-shirts currently listed in our shop, with the price in BDT and a clear out-of-stock label on anything that has sold through.',
+      'Pay cash on delivery anywhere in Bangladesh, with nothing to pay online.'
+    ],
+    highlights: [
+      { heading: 'Raglan and long sleeve T-shirts', text: 'These listings mention a raglan or long sleeve cut in their name or description:', test: s => /raglan|long.?sleeve/i.test(s) },
+      { heading: 'Printed and graphic T-shirts', text: 'These listings mention a print or graphic in their name or description:', test: s => /print|graphic/i.test(s) },
+      { heading: 'Y2K and retro T-shirts', text: 'These listings mention Y2K or retro styling in their name or description:', test: s => /y2k|retro/i.test(s) }
+    ],
+    sections: [
+      { h: 'How to choose a T-shirt size', p: [
+        'Open any listing to see its photos, price, description and the available size options, and pick your size before adding it to the cart. If you are unsure which size to choose, message us on WhatsApp through the <a href="/contact">contact page</a> before ordering.'
+      ]},
+      { h: 'Styling a T-shirt', p: [
+        'A plain tee is the easiest base for a streetwear outfit. Wear it under an open jacket or hoodie, or on its own with jeans or cargo pants. Add <a href="/glasses">sunglasses</a>, a <a href="/bracelets">bracelet</a> or a <a href="/bandanas">bandana</a> from the <a href="/accessories">accessories range</a> to finish the look.'
+      ]},
+      { h: 'Ordering T-shirts in Bangladesh', p: [
+        'Place your order and pay the courier in cash when the parcel arrives. Delivery charges depend on whether you are inside or outside Dhaka; the <a href="/shipping">shipping info page</a> lists the current charges and timelines. If an item arrives damaged or in the wrong size, our <a href="/return-policy">return and exchange policy</a> explains what to do.'
+      ]}
+    ],
+    related: [
+      { href: '/clothing', text: 'All clothing' },
+      { href: '/glasses', text: 'Glasses and sunglasses' },
+      { href: '/bracelets', text: 'Bracelets' },
       { href: '/accessories', text: 'All accessories' },
       { href: '/shop', text: 'Shop everything' }
     ]
@@ -302,6 +348,11 @@ function getScopeConfig(req){
 
 function inScope(p, cfg){
   return cfg.aliases.indexOf(String(p.subcategory || '').trim().toLowerCase()) !== -1;
+}
+
+// The category a landing page sits under (breadcrumb + structured data).
+function parentOf(cfg){
+  return cfg.parent || { path: '/accessories', label: 'Accessories' };
 }
 
 const LANDING_CSS = `<style>
@@ -345,11 +396,12 @@ function relatedMarkup(cfg){
 }
 
 function introMarkup(cfg, count){
+  const parent = parentOf(cfg);
   const countLine = count > 0
     ? `${count} ${count === 1 ? 'style is' : 'styles are'} listed right now.`
     : 'New styles are being added soon, so check back shortly.';
   return `<div class="cat-intro">
-    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/accessories">Accessories</a> / <span>${esc(cfg.label)}</span></nav>
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="${esc(parent.path)}">${esc(parent.label)}</a> / <span>${esc(cfg.label)}</span></nav>
     <p>${esc(cfg.intro[0])} ${esc(countLine)}</p>
     <p>${esc(cfg.intro[1])}</p>
   </div>`;
@@ -366,12 +418,13 @@ function supportingCopyMarkup(cfg, items){
 
 function landingJsonLd(cfg, items){
   const url = SITE + cfg.path;
+  const parent = parentOf(cfg);
   const crumbs = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
       { "@type": "ListItem", "position": 1, "name": "Home", "item": `${SITE}/` },
-      { "@type": "ListItem", "position": 2, "name": "Accessories", "item": `${SITE}/accessories` },
+      { "@type": "ListItem", "position": 2, "name": parent.label, "item": `${SITE}${parent.path}` },
       { "@type": "ListItem", "position": 3, "name": cfg.label, "item": url }
     ]
   };
@@ -611,13 +664,13 @@ const CATEGORY_CONTENT = {
     h2: "Gothic and streetwear accessories in Bangladesh",
     paras: [
       "Explore accessories for gothic, Y2K and streetwear outfits, including chain necklaces, rings, bracelets, bandanas and belts where available. Layer a necklace with a bracelet or pair an accessory with a plain tee to make it stand out. Product pages show the current BDT price and stock status.",
-      "Browse our dedicated <a href=\"/bracelets\">bracelet collection</a> and <a href=\"/bandanas\">bandanas</a>, or explore <a href=\"/glasses\">sunglasses</a> and <a href=\"/clothing\">streetwear clothing</a>. Open any listing for product photos, current price and availability."
+      "Browse our dedicated <a href=\"/bracelets\">bracelet collection</a>, <a href=\"/rings\">rings</a> and <a href=\"/bandanas\">bandanas</a>, or explore <a href=\"/glasses\">sunglasses</a> and <a href=\"/clothing\">streetwear clothing</a>. Open any listing for product photos, current price and availability."
     ]
   },
   "Clothing": {
     h2: "Streetwear clothing in Bangladesh",
     paras: [
-      "Explore everyday streetwear clothing from FASHIONISTA, including T-shirts and other styles currently listed in the shop. Product pages show the available size options and current price in BDT, so check each listing before placing an order.",
+      "Explore everyday streetwear clothing from FASHIONISTA, including <a href=\"/t-shirts\">T-shirts</a> and other styles currently listed in the shop. Product pages show the available size options and current price in BDT, so check each listing before placing an order.",
       "Check the size details on the product page and contact us if you need help before ordering. Complete the outfit with <a href=\"/glasses\">sunglasses</a>, <a href=\"/bracelets\">bracelets</a> or other <a href=\"/accessories\">accessories</a>."
     ]
   }
@@ -649,8 +702,8 @@ ${CATEGORY_FAQ.map(([q, a]) => `  <h3>${q}</h3>\n  <p>${a}</p>`).join('\n')}
 `;
 }
 
-// Crawlable links from the main shop and Accessories pages to the landing pages.
-const BROWSE_LINKS = `<nav class="cat-links" aria-label="Browse by type">Browse by type: <a href="/bracelets">Bracelets</a><a href="/bandanas">Bandanas</a><a href="/glasses">Glasses</a></nav>`;
+// Crawlable links from the main shop, Accessories and Clothing pages to the landing pages.
+const BROWSE_LINKS = `<nav class="cat-links" aria-label="Browse by type">Browse by type: <a href="/bracelets">Bracelets</a><a href="/rings">Rings</a><a href="/bandanas">Bandanas</a><a href="/t-shirts">T-shirts</a><a href="/glasses">Glasses</a></nav>`;
 
 module.exports = async function handler(req, res){
   let category = String((req.query && req.query.category) || '');
@@ -718,9 +771,10 @@ module.exports = async function handler(req, res){
     );
   }
 
-  // Crawlable links to /bracelets, /bandanas and /glasses from the main shop
-  // page and the Accessories page.
-  if(!category || category === 'Accessories'){
+  // Crawlable links to the landing pages (/bracelets, /rings, /bandanas,
+  // /t-shirts) and /glasses from the main shop page, the Accessories page and
+  // the Clothing page.
+  if(!category || category === 'Accessories' || category === 'Clothing'){
     html = html.replace('</head>', () => LANDING_CSS + '\n</head>');
     html = html.replace('<section class="collection" id="similarSection">', () => BROWSE_LINKS + '\n<section class="collection" id="similarSection">');
   }
