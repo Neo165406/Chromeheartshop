@@ -478,6 +478,7 @@ function buildDescription(product, label){
 function categoryBlurb(product){
   const hay = `${product.category || ''} ${product.name || ''}`.toLowerCase();
   if(/bandana/.test(hay)) return 'A versatile accessory you can wear as a headband, around your neck, on your waist or hooked onto your jeans.';
+  if(product && product.id === 'hRTjTVeGAcjWuwFAMwcs') return 'These silver rimless glasses bring a minimalist eyewear look to Y2K outfits and everyday streetwear. Review the product photos and current BDT price before ordering.';
   if(/glass|eyewear/.test(hay)) return 'It belongs to our eyewear range, built around gothic, Y2K and streetwear styling. Wear the frames with a plain tee or an all-black outfit to make the look stand out.';
   if(/cloth|t-?shirt|\btee\b|shirt|hoodie|jersey/.test(hay)) return 'It belongs to our clothing range: clean, everyday streetwear cuts that are easy to style. Check the size options on this page before ordering, and message us on WhatsApp if you are unsure which size to pick.';
   if(/bracelet|bangle|\brings?\b|chain|necklace|pendant|grill/.test(hay)) return 'It belongs to our jewellery and accessories range for gothic and streetwear outfits. Pieces like this are easy to layer and easy to match with the rest of your look.';
@@ -743,7 +744,7 @@ module.exports = async function handler(req, res){
   // naming a third-party brand.
   const isSilverRimlessOverride = product.id === 'hRTjTVeGAcjWuwFAMwcs';
   const desc = isSilverRimlessOverride
-    ? 'Shop silver rimless glasses at FASHIONISTA. Stylish silver-tone eyewear for everyday streetwear. Price in Bangladesh — cash on delivery.'
+    ? 'Shop silver rimless glasses in Bangladesh at FASHIONISTA. Silver-tone eyewear for Y2K and streetwear looks, with cash on delivery nationwide.'
     : buildDescription(product, label);
   const image = (product.images && product.images[0]) || product.imageUrl || `${SITE}/og-image.jpg`;
   const titleTag = isSilverRimlessOverride
