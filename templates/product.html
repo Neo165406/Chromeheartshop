@@ -247,7 +247,7 @@ function updateSEOTags(product){
 
   // When the server already baked in the title and descriptions (api/product-page.js
   // builds the unique, cleaned versions), keep them as they are: overwriting them
-  // here would put the old "<n> — FASHIONISTA" title and raw description back
+  // here would put the old "<name> — FASHIONISTA" title and raw description back
   // into the rendered page that search engines index. Only a page that reached
   // this script without server-rendered data gets them set here.
   const serverRendered = !!document.getElementById('__SSR_DATA__');
