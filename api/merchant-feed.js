@@ -89,6 +89,14 @@ function itemXml(p){
   if(isHttpUrl(p.imageUrl) && !imgs.includes(p.imageUrl)) imgs.unshift(p.imageUrl);
   if(!imgs.length) return ''; // Merchant Center requires an image
 
+  // Google gets each photo from our own domain (api/product-image.js), not
+  // from the image host directly: free image hosts often refuse Google's
+  // crawler, which shows up as "broken image link" / "In progress". The index
+  // here matches the order of imageList() in api/product-image.js.
+  const photoUrls = imgs.map((u, i) =>
+    `${SITE}/product-image/${encodeURIComponent(p.id)}.jpg` + (i ? `?n=${i}` : '')
+  );
+
   const category = clean(p.category);
   let title = titleCase(p.name);
   // A stripped third-party brand name would leave a bare "Bracelet": lead with our own brand instead.
@@ -113,9 +121,9 @@ function itemXml(p){
     `<title>${xmlEscape(title)}</title>`,
     `<description>${xmlEscape(desc)}</description>`,
     `<link>${xmlEscape(`${SITE}/product.html?id=${encodeURIComponent(p.id)}`)}</link>`,
-    `<g:image_link>${xmlEscape(imgs[0])}</g:image_link>`
+    `<g:image_link>${xmlEscape(photoUrls[0])}</g:image_link>`
   ];
-  imgs.slice(1, 11).forEach(u => lines.push(`<g:additional_image_link>${xmlEscape(u)}</g:additional_image_link>`));
+  photoUrls.slice(1, 11).forEach(u => lines.push(`<g:additional_image_link>${xmlEscape(u)}</g:additional_image_link>`));
   lines.push(
     `<g:availability>${inStock ? 'in_stock' : 'out_of_stock'}</g:availability>`,
     `<g:price>${money(onSale ? was : price)}</g:price>`
