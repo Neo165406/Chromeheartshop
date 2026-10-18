@@ -293,13 +293,14 @@ const CATEGORY_KEYWORDS = [
   ]},
   { match: /bracelet|bangle/, words: [
     "men's bracelet bangladesh", 'silver bracelet bd', 'silver bracelet men bd',
-    'gothic jewelry bangladesh', 'bracelet price in bangladesh'
+    'gothic bracelet bangladesh', 'gothic jewelry bangladesh', 'bracelet price in bangladesh'
   ]},
   { match: /grill|grillz|teeth/, words: [
     'teeth grillz bangladesh', 'teeth grillz bd', 'grillz price in bangladesh'
   ]},
   { match: /bandana/, words: [
-    'bandana bangladesh', 'bandana bd', 'bandana price in bangladesh'
+    'bandana bangladesh', 'bandana bd', 'bandana price in bangladesh',
+    'printed bandana bangladesh', 'streetwear bandana bd', 'gothic bandana bangladesh'
   ]},
   { match: /watch/, words: [
     "men's watches bangladesh", 'watch price in bangladesh', 'watch bd'
@@ -315,6 +316,8 @@ const NAME_KEYWORDS = [
   { match: /gold/, words: ['gold sunglasses bangladesh'] },
   { match: /silver/, words: ['silver accessories shop bd'] },
   { match: /black/, words: ['black sunglasses bd'] },
+  { match: /cross/, words: ['gothic cross accessories bangladesh', 'silver cross bracelet bd'] },
+  { match: /printed|print/, words: ['printed fashion accessories bangladesh'] },
   { match: /raglan|long sleeve/, words: ['raglan t-shirt bd', 'long sleeve t-shirt bangladesh'] }
 ];
 
@@ -481,7 +484,8 @@ function categoryBlurb(product){
   if(product && product.id === 'hRTjTVeGAcjWuwFAMwcs') return 'These silver rimless glasses bring a minimalist eyewear look to Y2K outfits and everyday streetwear. Review the product photos and current BDT price before ordering.';
   if(/glass|eyewear/.test(hay)) return 'It belongs to our eyewear range, built around gothic, Y2K and streetwear styling. Wear the frames with a plain tee or an all-black outfit to make the look stand out.';
   if(/cloth|t-?shirt|\btee\b|shirt|hoodie|jersey/.test(hay)) return 'It belongs to our clothing range: clean, everyday streetwear cuts that are easy to style. Check the size options on this page before ordering, and message us on WhatsApp if you are unsure which size to pick.';
-  if(/bracelet|bangle|\brings?\b|chain|necklace|pendant|grill/.test(hay)) return 'It belongs to our jewellery and accessories range for gothic and streetwear outfits. Pieces like this are easy to layer and easy to match with the rest of your look.';
+  if(/bracelet|bangle/.test(hay)) return 'Style this bracelet with a watch or other accessories for a layered gothic or streetwear look. Check the product photos and current BDT price for the exact design before ordering.';
+  if(/\brings?\b|chain|necklace|pendant|grill/.test(hay)) return 'It belongs to our jewellery and accessories range for gothic and streetwear outfits. Pieces like this are easy to layer and easy to match with the rest of your look.';
   return "It belongs to FASHIONISTA's gothic and streetwear accessories collection.";
 }
 
