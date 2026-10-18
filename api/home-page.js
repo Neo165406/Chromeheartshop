@@ -109,7 +109,7 @@ function isDirectVideo(url){
 
 // ---------- Section markup (mirrors the client's render functions) ----------
 // Hero slides intentionally render no title <h1>: the page's single h1 is the
-// static visually-hidden one in the template (id="staticH1").
+// visible homepage category heading in the template's .home-seo section.
 function slidesMarkup(slides){
   return slides.map(s=>{
     const bg = s.imageUrl ? ` style="background-image:url('${esc(s.imageUrl)}');"` : '';
