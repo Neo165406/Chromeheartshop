@@ -1,0 +1,18 @@
+name: Check live sitemap
+
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch and validate sitemap
+        run: |
+          curl -fsS https://fashion1sta.com/sitemap.xml -o sitemap.xml
+          grep -q '<urlset' sitemap.xml
+          COUNT=$(grep -o '<loc>' sitemap.xml | wc -l)
+          echo "মোট URL: $COUNT"
+          test "$COUNT" -gt 5
