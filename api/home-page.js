@@ -136,16 +136,57 @@ function withoutSlideTitles(html){
   return html.split(CLIENT_SLIDE_TITLE_EXPR).join('');
 }
 
-// Adds crawlable "Bracelets" and "Bandanas" pills to the homepage category
-// strip, right after the Accessories pill, so the two landing pages are one
-// click from the homepage. If the template line ever changes, this simply
+// Adds crawlable "Bracelets", "Rings" and "Bandanas" pills to the homepage
+// category strip, right after the Accessories pill, so the landing pages are
+// one click from the homepage. If the template line ever changes, this simply
 // does nothing (the replace finds no match) — it can't break the page.
 const ACCESSORIES_PILL = '<a class="cat" href="shop.html?category=Accessories">Accessories</a>';
 function withLandingPills(html){
   return html.replace(
     ACCESSORIES_PILL,
-    () => ACCESSORIES_PILL + '\n  <a class="cat" href="/bracelets">Bracelets</a>\n  <a class="cat" href="/bandanas">Bandanas</a>'
+    () => ACCESSORIES_PILL + '\n  <a class="cat" href="/bracelets">Bracelets</a>\n  <a class="cat" href="/rings">Rings</a>\n  <a class="cat" href="/bandanas">Bandanas</a>'
   );
+}
+
+// ---------- SEO tweaks applied to the template ----------
+// Homepage title + description, links that point straight at the clean URLs
+// (instead of old shop.html?category=... addresses that 301-redirect), more
+// crawlable links, and removal of the placeholder TikTok icon (it linked to
+// "#"). Each piece is an exact-text replace: if the template text ever
+// changes, that piece does nothing — it can't break the page.
+const HOME_TITLE = 'Fashionista | Y2K Accessories &amp; Clothing in Bangladesh';
+const HOME_DESC = 'Shop Y2K-inspired glasses, bracelets, rings, bandanas and clothing at Fashionista. Prices in BDT with cash on delivery across Bangladesh.';
+const OLD_TITLE_TAG = '<title>Fashionista</title>';
+const OLD_SOCIAL_TITLE = 'Fashionista | Fashion Accessories in Bangladesh';
+const OLD_DESC = 'Shop glasses, bracelets, rings and bandanas at Fashionista. Discover Y2K-inspired accessories and streetwear styles in Bangladesh.';
+
+// The drawer's category link builder in the template's client script.
+const CATEGORY_URL_EXPR = "return name === 'Glasses' ? '/glasses' : `shop.html?category=${encodeURIComponent(name)}`;";
+const CATEGORY_URL_NEW = "return ({Glasses:'/glasses',Clothing:'/clothing',Accessories:'/accessories'})[name] || '/shop?category=' + encodeURIComponent(name);";
+// Drawer sub-category links: Bracelets, Bandana and Rings go to their own pages.
+const DRAWER_SUB_EXPR = '<a href="${categoryUrl(cat.name)}">${s}</a>';
+const DRAWER_SUB_NEW = '<a href="${({bracelets:\'/bracelets\',bandana:\'/bandanas\',rings:\'/rings\'})[s.toLowerCase()] || categoryUrl(cat.name)}">${s}</a>';
+
+const LINK_REWRITES = [
+  ['href="shop.html?category=Clothing"', 'href="/clothing"'],
+  ['href="shop.html?category=Accessories"', 'href="/accessories"'],
+  ['href="shop.html?category=New"', 'href="/shop?category=New%20In"'],
+  ['class="viewall" href="shop.html"', 'class="viewall" href="/shop"'],
+  ['href="shop.html?filter=1"', 'href="/shop?filter=1"'],
+  [CATEGORY_URL_EXPR, CATEGORY_URL_NEW],
+  [DRAWER_SUB_EXPR, DRAWER_SUB_NEW],
+  // Intro links under the homepage heading: give Rings its own link and add Clothing.
+  ['<a href="/accessories">Rings &amp; Accessories</a>', '<a href="/rings">Rings</a>\n    <a href="/accessories">Accessories</a>'],
+  ['<a href="/bandanas">Bandanas</a>', '<a href="/bandanas">Bandanas</a>\n    <a href="/clothing">Clothing</a>']
+];
+
+function withSeoTweaks(html){
+  html = html.replace(OLD_TITLE_TAG, () => `<title>${HOME_TITLE}</title>`);
+  html = html.split(OLD_SOCIAL_TITLE).join(HOME_TITLE);
+  html = html.split(OLD_DESC).join(HOME_DESC);
+  LINK_REWRITES.forEach(([from, to]) => { html = html.split(from).join(to); });
+  html = html.replace(/\s*<a href="#" aria-label="TikTok">[\s\S]*?<\/a>/, '');
+  return html;
 }
 
 function cardMarkup(p, i, eagerCount){
@@ -304,6 +345,7 @@ module.exports = async function handler(req, res){
   html = withShareImage(html, req);
   html = withoutSlideTitles(html);
   html = withLandingPills(html);
+  html = withSeoTweaks(html);
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
 
