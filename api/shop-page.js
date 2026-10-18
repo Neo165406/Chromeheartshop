@@ -216,6 +216,42 @@ const SCOPE_PAGES = {
     ],
     related: [
       { href: '/bandanas', text: 'Bandanas' },
+      { href: '/rings', text: 'Rings' },
+      { href: '/glasses', text: 'Glasses and sunglasses' },
+      { href: '/accessories', text: 'All accessories' },
+      { href: '/shop', text: 'Shop everything' }
+    ]
+  },
+  rings: {
+    path: '/rings',
+    label: 'Rings',
+    aliases: ['rings', 'ring'],
+    title: 'Fashion Rings in Bangladesh | Silver & Gothic Rings | FASHIONISTA',
+    desc: 'Explore fashion rings at FASHIONISTA, from silver-tone and gothic-inspired styles to everyday streetwear accessories. Prices in BDT and cash on delivery across Bangladesh.',
+    h1: 'Fashion Rings in Bangladesh',
+    sub: 'Silver-tone, gothic and streetwear rings, priced in BDT',
+    intro: [
+      'Discover the rings currently listed at FASHIONISTA, a Bangladesh-based fashion and accessories store. Each listing includes product photos, a current BDT price and stock status so you can check the details before ordering.',
+      'Order from anywhere in Bangladesh and pay cash on delivery.'
+    ],
+    highlights: [
+      { heading: 'Silver rings', text: 'These listings mention silver in their name or description:', test: s => /silver/i.test(s) },
+      { heading: 'Gothic rings', text: 'These listings mention gothic or gothic-inspired styling:', test: s => /goth/i.test(s) }
+    ],
+    sections: [
+      { h: 'How to choose a ring', p: [
+        'Review each product photo and description for the design, finish and any available sizing information. Ring sizes and fit can vary, so check the product details and contact us through the <a href="/contact">contact page</a> if you need clarification before ordering.'
+      ]},
+      { h: 'Styling fashion rings', p: [
+        'A single ring adds a small detail to a minimal outfit, while stacking rings can create a stronger streetwear or gothic look. Silver-tone rings can pair with bracelets, chain necklaces and dark everyday basics.'
+      ]},
+      { h: 'Ordering rings in Bangladesh', p: [
+        'Place your order online and pay the courier in cash when the parcel arrives. Delivery charges depend on whether you are inside or outside Dhaka; see the <a href="/shipping">shipping information</a> for current details. Our <a href="/return-policy">return and exchange policy</a> explains what to do if an item arrives damaged or incorrect.'
+      ]}
+    ],
+    related: [
+      { href: '/bracelets', text: 'Bracelets' },
+      { href: '/bandanas', text: 'Bandanas' },
       { href: '/glasses', text: 'Glasses and sunglasses' },
       { href: '/accessories', text: 'All accessories' },
       { href: '/shop', text: 'Shop everything' }
@@ -251,6 +287,7 @@ const SCOPE_PAGES = {
     ],
     related: [
       { href: '/bracelets', text: 'Bracelets' },
+      { href: '/rings', text: 'Rings' },
       { href: '/glasses', text: 'Glasses and sunglasses' },
       { href: '/accessories', text: 'All accessories' },
       { href: '/shop', text: 'Shop everything' }

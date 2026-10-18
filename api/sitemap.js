@@ -30,6 +30,7 @@ const STATIC_PAGES = [
 // matching `subcategory`, because the landing page is noindex when empty.
 const LANDING_PAGES = [
   { loc: `${SITE}/bracelets`, aliases: ['bracelets', 'bracelet'], changefreq: 'daily', priority: '0.8' },
+  { loc: `${SITE}/rings`, aliases: ['rings', 'ring'], changefreq: 'daily', priority: '0.8' },
   { loc: `${SITE}/bandanas`, aliases: ['bandana', 'bandanas'], changefreq: 'daily', priority: '0.8' }
 ];
 

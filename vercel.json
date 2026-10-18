@@ -17,6 +17,8 @@
     { "source": "/index.html", "destination": "/", "permanent": true },
     { "source": "/glasses.html", "destination": "/glasses", "permanent": true },
     { "source": "/bracelet", "destination": "/bracelets", "permanent": true },
+    { "source": "/ring", "destination": "/rings", "permanent": true },
+    { "source": "/rings.html", "destination": "/rings", "permanent": true },
     { "source": "/bandana", "destination": "/bandanas", "permanent": true },
 
     { "source": "/shop.html", "has": [{ "type": "query", "key": "category", "value": "Clothing" }], "destination": "/clothing", "permanent": true },
@@ -52,6 +54,7 @@
     { "source": "/og.png", "destination": "/api/og-image" },
     { "source": "/glasses", "destination": "/glasses.html" },
     { "source": "/bracelets", "destination": "/api/shop-page?scope=bracelets" },
+    { "source": "/rings", "destination": "/api/shop-page?scope=rings" },
     { "source": "/bandanas", "destination": "/api/shop-page?scope=bandanas" },
     { "source": "/shop", "destination": "/api/shop-page" },
     { "source": "/clothing", "destination": "/api/shop-page?category=Clothing" },
