@@ -300,7 +300,6 @@ const SCOPE_PAGES = {
     ],
     related: [
       { href: '/bracelets', text: 'Bracelets' },
-      { href: '/rings', text: 'Rings' },
       { href: '/glasses', text: 'Glasses and sunglasses' },
       { href: '/accessories', text: 'All accessories' },
       { href: '/shop', text: 'Shop everything' }
