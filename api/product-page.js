@@ -287,10 +287,6 @@ const CATEGORY_KEYWORDS = [
     'chain necklace bangladesh', "men's chain necklace bd", 'chain necklace bd',
     'gothic jewelry bangladesh', 'silver chain price in bangladesh'
   ]},
-  { match: /\brings?\b/, words: [
-    "men's rings bangladesh", 'silver ring bd', 'silver ring for men bd',
-    'gothic jewelry bangladesh', 'ring price in bangladesh'
-  ]},
   { match: /bracelet|bangle/, words: [
     "men's bracelet bangladesh", 'silver bracelet bd', 'silver bracelet men bd',
     'gothic bracelet bangladesh', 'gothic jewelry bangladesh', 'bracelet price in bangladesh'
