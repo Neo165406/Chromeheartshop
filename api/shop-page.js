@@ -143,17 +143,30 @@ const CATEGORY_SEO = {
     desc: "Explore new and featured sunglasses, accessories and streetwear at FASHIONISTA. See BDT prices and stock status, with cash on delivery across Bangladesh."
   },
   "Glasses": {
-    title: "Sunglasses & Glasses in Bangladesh | FASHIONISTA",
-    desc: "Shop rimless, aviator and round sunglasses at FASHIONISTA. Explore gothic, Y2K and streetwear eyewear with BDT prices and cash on delivery across Bangladesh."
+    title: "Glasses & Sunglasses in Bangladesh | FASHIONISTA",
+    desc: "Shop glasses and sunglasses in Bangladesh at FASHIONISTA. Explore rimless, aviator and round styles, BDT prices and cash on delivery nationwide."
   },
   "Accessories": {
-    title: "Gothic & Streetwear Accessories in Bangladesh | FASHIONISTA",
-    desc: "Shop bracelets, rings, chain necklaces, bandanas and belts at FASHIONISTA. Gothic and Y2K styles, BDT prices and cash on delivery across Bangladesh."
+    title: "Bracelets & Streetwear Accessories in Bangladesh | FASHIONISTA",
+    desc: "Shop bracelets, chain necklaces and bandanas at FASHIONISTA. Explore gothic and streetwear accessories, BDT prices and cash on delivery in Bangladesh."
   },
   "Clothing": {
-    title: "Streetwear T-Shirts & Clothing in Bangladesh | FASHIONISTA",
-    desc: "Explore streetwear T-shirts and clothing at FASHIONISTA, Dhaka. Check product pages for sizes and BDT prices. Cash on delivery across Bangladesh."
+    title: "T-Shirts & Streetwear Clothing in Bangladesh | FASHIONISTA",
+    desc: "Shop T-shirts and streetwear clothing in Bangladesh at FASHIONISTA. Check sizes, BDT prices and stock status. Cash on delivery nationwide."
   }
+};
+
+const CATEGORY_HEADINGS = {
+  "New In": "New Arrivals in Bangladesh",
+  "Glasses": "Glasses & Sunglasses in Bangladesh",
+  "Accessories": "Bracelets & Streetwear Accessories",
+  "Clothing": "T-Shirts & Streetwear Clothing in Bangladesh"
+};
+const CATEGORY_SUBHEADINGS = {
+  "New In": "Recently added glasses, accessories and streetwear",
+  "Glasses": "Rimless, aviator and round eyewear at FASHIONISTA",
+  "Accessories": "Browse bracelets, bandanas and chain necklaces",
+  "Clothing": "T-shirts and streetwear styles, with BDT prices"
 };
 
 // Clean public path for each category. Categories not listed here (New In)
@@ -447,6 +460,14 @@ const CATEGORY_CLIENT_PATCHES = [
     "const activeCategory = window.__SHOP_CATEGORY__ !== undefined ? window.__SHOP_CATEGORY__ : params.get('category');"
   ],
   [
+    "document.getElementById('pageTitle').textContent = activeCategory || 'Shop All';",
+    "document.getElementById('pageTitle').textContent = activeCategory ? window.__categoryHeading(activeCategory) : 'Shop All';"
+  ],
+  [
+    "document.getElementById('pageSub').textContent = activeCategory\n    ? `Everything in ${activeCategory}`\n    : 'Every FASHIONISTA piece in one place';",
+    "document.getElementById('pageSub').textContent = window.__categorySubheading(activeCategory);"
+  ],
+  [
     "return name === 'Glasses' ? '/glasses' : `shop.html?category=${encodeURIComponent(name)}`;",
     "return window.__categoryPath(name);"
   ],
@@ -482,6 +503,10 @@ function categoryScript(category){
   return `<script>window.__SHOP_CATEGORY__=${JSON.stringify(data).replace(/</g,'\\u003c')};`
     + `window.__CATEGORY_PATHS__=${JSON.stringify(CATEGORY_PATHS).replace(/</g,'\\u003c')};`
     + `window.__categoryPath=function(n){var m=window.__CATEGORY_PATHS__;return Object.prototype.hasOwnProperty.call(m,n)?m[n]:'/shop?category='+encodeURIComponent(n);};`
+    + `window.__CATEGORY_HEADINGS__=${JSON.stringify(CATEGORY_HEADINGS).replace(/</g,'\\u003c')};`
+    + `window.__CATEGORY_SUBHEADINGS__=${JSON.stringify(CATEGORY_SUBHEADINGS).replace(/</g,'\\u003c')};`
+    + `window.__categoryHeading=function(n){return window.__CATEGORY_HEADINGS__[n]||n||'Shop All';};`
+    + `window.__categorySubheading=function(n){return window.__CATEGORY_SUBHEADINGS__[n]||(n?'Browse current '+n.toLowerCase()+' listings at FASHIONISTA':'Every FASHIONISTA piece in one place');};`
     + `window.__categoryCanonical=function(n){return ${JSON.stringify(SITE)}+window.__categoryPath(n);};</script>\n`;
 }
 
@@ -602,23 +627,23 @@ const CATEGORY_CONTENT = {
     ]
   },
   "Glasses": {
-    h2: "Sunglasses and glasses in Bangladesh",
+    h2: "Glasses and sunglasses in Bangladesh",
     paras: [
-      "Explore sunglasses and glasses in Bangladesh, including rimless, aviator and round styles selected for gothic, Y2K and streetwear outfits. Each product card shows its current BDT price; open a listing to check photos and availability before ordering.",
-      "Rimless frames offer a minimal look, aviator shapes feel classic, and round frames add a retro accent. Compare the photos and details on each product page, or contact us if you need help choosing a pair. Browse our <a href=\"/accessories\">accessories</a> to complete the look."
+      "Shop glasses and sunglasses in Bangladesh at FASHIONISTA, including rimless, aviator and round styles for gothic, Y2K and streetwear outfits. Product cards show current BDT prices; open a listing to check photos, details and availability before ordering.",
+      "Compare rimless glasses for a minimal look, aviator frames for a classic shape and round glasses for a retro accent. Check each product page for photos, details and current availability. Browse our <a href=\"/accessories\">accessories</a> to complete the look."
     ]
   },
   "Accessories": {
-    h2: "Gothic and streetwear accessories in Bangladesh",
+    h2: "Bracelets and streetwear accessories in Bangladesh",
     paras: [
-      "Explore accessories for gothic, Y2K and streetwear outfits, including chain necklaces, rings, bracelets, bandanas and belts where available. Layer a necklace with a bracelet or pair an accessory with a plain tee to make it stand out. Product pages show the current BDT price and stock status.",
+      "Explore bracelets, chain necklaces and bandanas for gothic, Y2K and streetwear outfits at FASHIONISTA. Each product listing shows photos, the current BDT price and stock status, so you can compare styles before ordering.",
       "Browse our dedicated <a href=\"/bracelets\">bracelet collection</a> and <a href=\"/bandanas\">bandanas</a>, or explore <a href=\"/glasses\">sunglasses</a> and <a href=\"/clothing\">streetwear clothing</a>. Open any listing for product photos, current price and availability."
     ]
   },
   "Clothing": {
-    h2: "Streetwear clothing in Bangladesh",
+    h2: "T-shirts and streetwear clothing in Bangladesh",
     paras: [
-      "Explore everyday streetwear clothing from FASHIONISTA, including T-shirts and other styles currently listed in the shop. Product pages show the available size options and current price in BDT, so check each listing before placing an order.",
+      "Shop T-shirts and streetwear clothing in Bangladesh at FASHIONISTA. Product pages show available sizes, current BDT prices and stock status, so check each listing before placing an order.",
       "Check the size details on the product page and contact us if you need help before ordering. Complete the outfit with <a href=\"/glasses\">sunglasses</a>, <a href=\"/bracelets\">bracelets</a> or other <a href=\"/accessories\">accessories</a>."
     ]
   }
@@ -738,8 +763,8 @@ module.exports = async function handler(req, res){
   const similar = [...pool].sort(()=>Math.random()-0.5).slice(0, 4);
 
   // Page title/subtitle
-  const titleText = category || 'Shop All';
-  const subText = category ? `Everything in ${category}` : 'Every FASHIONISTA piece in one place';
+  const titleText = category ? (CATEGORY_HEADINGS[category] || category) : 'Shop All';
+  const subText = CATEGORY_SUBHEADINGS[category] || (category ? `Browse current ${category.toLowerCase()} listings at FASHIONISTA` : 'Every FASHIONISTA piece in one place');
   html = setTextById(html, 'pageTitle', 'h1', esc(titleText));
   html = setTextById(html, 'pageSub', 'p', esc(subText));
 
