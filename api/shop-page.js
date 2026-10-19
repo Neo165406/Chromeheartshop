@@ -222,7 +222,7 @@ const SCOPE_PAGES = {
         'Open any listing to see its photos, price and description. Size and finish differ from piece to piece, so check those details on the product page before you order, and message us on WhatsApp through the <a href="/contact">contact page</a> if you are unsure about fit.'
       ]},
       { h: 'Styling a bracelet', p: [
-        'Darker, gothic-leaning designs look sharpest against plain basics such as a black or white tee, a hoodie or a denim jacket. Wear one on its own for a clean look, or stack it with a watch or a second bracelet. Chain necklaces and rings from the wider <a href="/accessories">accessories range</a> are an easy match.'
+        'Darker, gothic-leaning designs look sharpest against plain basics such as a black or white tee, a hoodie or a denim jacket. Wear one on its own for a clean look, or stack it with a watch or a second bracelet. Chain necklaces from the wider <a href="/accessories">accessories range</a> are an easy match.'
       ]},
       { h: 'Ordering bracelets in Bangladesh', p: [
         'We deliver across Bangladesh and every order is cash on delivery, so you pay the courier when the parcel arrives. Delivery charges depend on whether you are inside or outside Dhaka; the <a href="/shipping">shipping info page</a> lists the current charges and timelines. After checkout we confirm your order on WhatsApp. If an item arrives damaged or incorrect, our <a href="/return-policy">return and exchange policy</a> explains what to do.'
@@ -230,7 +230,6 @@ const SCOPE_PAGES = {
     ],
     related: [
       { href: '/bandanas', text: 'Bandanas' },
-      { href: '/rings', text: 'Rings' },
       { href: '/glasses', text: 'Glasses and sunglasses' },
       { href: '/accessories', text: 'All accessories' },
       { href: '/shop', text: 'Shop everything' }
@@ -676,7 +675,7 @@ ${CATEGORY_FAQ.map(([q, a]) => `  <h3>${q}</h3>\n  <p>${a}</p>`).join('\n')}
 }
 
 // Crawlable links from the main shop, Accessories and Glasses pages to the landing pages.
-const BROWSE_ITEMS = [['/bracelets', 'Bracelets'], ['/rings', 'Rings'], ['/bandanas', 'Bandanas'], ['/glasses', 'Glasses']];
+const BROWSE_ITEMS = [['/bracelets', 'Bracelets'], ['/bandanas', 'Bandanas'], ['/glasses', 'Glasses']];
 function browseLinks(excludePath){
   const links = BROWSE_ITEMS.filter(([href]) => href !== excludePath)
     .map(([href, text]) => `<a href="${href}">${text}</a>`).join('');
@@ -780,7 +779,7 @@ module.exports = async function handler(req, res){
     );
   }
 
-  // Crawlable links to /bracelets, /rings, /bandanas and /glasses from the main
+  // Crawlable links to /bracelets, /bandanas and /glasses from the main
   // shop page, the Accessories page and the Glasses page.
   if(!category || category === 'Accessories' || category === 'Glasses'){
     html = html.replace('</head>', () => LANDING_CSS + '\n</head>');
