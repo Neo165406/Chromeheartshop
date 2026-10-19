@@ -144,15 +144,15 @@ const CATEGORY_SEO = {
   },
   "Glasses": {
     title: "Glasses & Sunglasses in Bangladesh | FASHIONISTA",
-    desc: "Shop glasses and sunglasses in Bangladesh at FASHIONISTA, including rimless, aviator and round eyewear for Y2K and streetwear looks. Compare BDT prices and stock availability, with cash on delivery nationwide."
+    desc: "Shop glasses and sunglasses in Bangladesh at FASHIONISTA. Explore rimless, aviator and round styles, BDT prices and cash on delivery nationwide."
   },
   "Accessories": {
     title: "Bracelets & Streetwear Accessories in Bangladesh | FASHIONISTA",
-    desc: "Explore bracelets, chain necklaces and bandanas at FASHIONISTA in Bangladesh. Discover gothic, Y2K and streetwear accessories, with BDT prices and cash on delivery nationwide."
+    desc: "Shop bracelets, chain necklaces and bandanas at FASHIONISTA. Explore gothic and streetwear accessories, BDT prices and cash on delivery in Bangladesh."
   },
   "Clothing": {
     title: "T-Shirts & Streetwear Clothing in Bangladesh | FASHIONISTA",
-    desc: "Shop T-shirts and streetwear clothing in Bangladesh at FASHIONISTA. Check each product page for available sizes, current BDT prices and stock, with cash on delivery nationwide."
+    desc: "Shop T-shirts and streetwear clothing in Bangladesh at FASHIONISTA. Check sizes, BDT prices and stock status. Cash on delivery nationwide."
   }
 };
 
