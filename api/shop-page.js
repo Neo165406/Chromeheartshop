@@ -5,13 +5,14 @@
 //
 // The static template lives at templates/shop.html (not at the public
 // path) so this function is what actually serves the shop URLs. Reached via
-// the rewrites in vercel.json: /shop, /clothing and /accessories (the last two
-// pass ?category=), plus /bracelets and /bandanas (?scope=). Reads Firestore's
+// the rewrites in vercel.json: /shop, /clothing, /accessories and /glasses (the
+// last three pass ?category=), plus /bracelets, /rings and /bandanas (?scope=).
+// Reads Firestore's
 // public REST API directly (same public web key already used client-side —
 // firestore.rules already allows public read on /products, same access level
 // the storefront pages themselves have).
 //
-// Sub-category landing pages (/bracelets, /bandanas) reuse the shop template and
+// Sub-category landing pages (/bracelets, /rings, /bandanas) reuse the shop template and
 // add their own title, description, H1, intro, supporting copy, internal links
 // and JSON-LD (see SCOPE_PAGES below).
 
@@ -590,8 +591,8 @@ async function serveLandingPage(req, res, html, cfg){
 // ---------- SEO: category intro text ----------
 // Real, server-rendered copy for each category page, so the pages are not
 // "thin" (just a product grid) when a crawler reads them. Sits between the
-// product grid and "You Might Also Like". The same text for /glasses is kept
-// in glasses.html (a static page) - edit both together.
+// product grid and "You Might Also Like". /glasses is served by this
+// function too (vercel.json rewrite), so this is the only copy to edit.
 const CATEGORY_CONTENT = {
   "New In": {
     h2: "New arrivals at FASHIONISTA",
@@ -649,8 +650,41 @@ ${CATEGORY_FAQ.map(([q, a]) => `  <h3>${q}</h3>\n  <p>${a}</p>`).join('\n')}
 `;
 }
 
-// Crawlable links from the main shop and Accessories pages to the landing pages.
-const BROWSE_LINKS = `<nav class="cat-links" aria-label="Browse by type">Browse by type: <a href="/bracelets">Bracelets</a><a href="/bandanas">Bandanas</a><a href="/glasses">Glasses</a></nav>`;
+// Crawlable links from the main shop, Accessories and Glasses pages to the landing pages.
+const BROWSE_ITEMS = [['/bracelets', 'Bracelets'], ['/rings', 'Rings'], ['/bandanas', 'Bandanas'], ['/glasses', 'Glasses']];
+function browseLinks(excludePath){
+  const links = BROWSE_ITEMS.filter(([href]) => href !== excludePath)
+    .map(([href, text]) => `<a href="${href}">${text}</a>`).join('');
+  return `<nav class="cat-links" aria-label="Browse by type">Browse by type: ${links}</nav>`;
+}
+
+// JSON-LD for the four real category pages: breadcrumb + product list (same
+// shape as landingJsonLd, minus the Accessories crumb).
+function categoryJsonLd(category, items){
+  const url = SITE + categoryPath(category);
+  const crumbs = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": `${SITE}/` },
+      { "@type": "ListItem", "position": 2, "name": category, "item": url }
+    ]
+  };
+  const listItems = [];
+  for(const p of items){
+    if(!p || !p.name) continue;
+    const entry = { "@type": "ListItem", "position": listItems.length + 1, "url": `${SITE}${productPath(p)}`, "name": p.name };
+    if(typeof p.imageUrl === 'string' && /^https?:\/\//i.test(p.imageUrl)) entry.image = p.imageUrl;
+    listItems.push(entry);
+    if(listItems.length >= 30) break;
+  }
+  const tags = [`<script type="application/ld+json" id="breadcrumbLd">${JSON.stringify(crumbs).replace(/</g,'\\u003c')}</script>`];
+  if(listItems.length){
+    const list = { "@context": "https://schema.org", "@type": "ItemList", "name": category, "url": url, "numberOfItems": listItems.length, "itemListElement": listItems };
+    tags.push(`<script type="application/ld+json" id="itemListLd">${JSON.stringify(list).replace(/</g,'\\u003c')}</script>`);
+  }
+  return tags.join('\n');
+}
 
 module.exports = async function handler(req, res){
   let category = String((req.query && req.query.category) || '');
@@ -665,6 +699,9 @@ module.exports = async function handler(req, res){
     res.status(500).send('Template not found');
     return;
   }
+
+  // The repo's og-image.png is base64 text, not a real PNG; /og.png serves a real one.
+  html = html.split(`${SITE}/og-image.png`).join(`${SITE}/og.png?v=3`);
 
   const scopeCfg = getScopeConfig(req);
   if(scopeCfg){
@@ -718,11 +755,20 @@ module.exports = async function handler(req, res){
     );
   }
 
-  // Crawlable links to /bracelets, /bandanas and /glasses from the main shop
-  // page and the Accessories page.
-  if(!category || category === 'Accessories'){
+  // Crawlable links to /bracelets, /rings, /bandanas and /glasses from the main
+  // shop page, the Accessories page and the Glasses page.
+  if(!category || category === 'Accessories' || category === 'Glasses'){
     html = html.replace('</head>', () => LANDING_CSS + '\n</head>');
-    html = html.replace('<section class="collection" id="similarSection">', () => BROWSE_LINKS + '\n<section class="collection" id="similarSection">');
+    html = html.replace('<section class="collection" id="similarSection">', () => browseLinks(category === 'Glasses' ? '/glasses' : null) + '\n<section class="collection" id="similarSection">');
+  }
+
+  // Structured data for the real category pages; an empty category (or an
+  // unknown ?category=) would be a thin page, so keep it out of the index.
+  if(category){
+    const head = [];
+    if(filtered.length && seoForCategory(category)) head.push(categoryJsonLd(category, filtered));
+    if(!filtered.length) head.push('<meta name="robots" content="noindex, follow">');
+    if(head.length) html = html.replace('</head>', () => head.join('\n') + '\n</head>');
   }
 
   // Category intro text + FAQ (the four real categories only)

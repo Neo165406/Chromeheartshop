@@ -52,7 +52,7 @@
     { "source": "/merchant-feed.xml", "destination": "/api/merchant-feed" },
     { "source": "/product-image/:id", "destination": "/api/product-image?id=:id" },
     { "source": "/og.png", "destination": "/api/og-image" },
-    { "source": "/glasses", "destination": "/glasses.html" },
+    { "source": "/glasses", "destination": "/api/shop-page?category=Glasses" },
     { "source": "/bracelets", "destination": "/api/shop-page?scope=bracelets" },
     { "source": "/rings", "destination": "/api/shop-page?scope=rings" },
     { "source": "/bandanas", "destination": "/api/shop-page?scope=bandanas" },
