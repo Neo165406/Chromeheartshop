@@ -241,6 +241,7 @@ function updateSEOTags(product){
       ? product.description.replace(/\s+/g,' ').trim().slice(0,155)
       : `${product.name} — BDT ${product.price}. Neon silver accessories and eyewear from FASHIONISTA, cash on delivery across Bangladesh.`);
   const image = (product.images && product.images[0]) || product.imageUrl || 'https://fashion1sta.com/og-image.png';
+  const productImages = [...new Set([...(Array.isArray(product.images) ? product.images : []), product.imageUrl, image].filter(src => typeof src === 'string' && /^https?:\/\//i.test(src)))];
   const seoTitle = isSilverRimlessOverride
     ? 'Silver Rimless Glasses | FASHIONISTA'
     : `${product.name} — FASHIONISTA`;
@@ -276,8 +277,10 @@ function updateSEOTags(product){
       "@context": "https://schema.org",
       "@type": "Product",
       "name": product.name,
+      "sku": String(product.id),
+      "brand": { "@type": "Brand", "name": "FASHIONISTA" },
       "url": url,
-      "image": image ? [image] : undefined,
+      "image": productImages.length ? productImages : undefined,
       "description": desc,
       "category": product.category || undefined,
       "offers": {
@@ -285,7 +288,9 @@ function updateSEOTags(product){
         "url": url,
         "priceCurrency": "BDT",
         "price": product.price,
-        "availability": product.stock === 0 ? "https://schema.org/OutOfStock" : "https://schema.org/InStock"
+        "availability": product.stock === 0 ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
+        "itemCondition": "https://schema.org/NewCondition",
+        "seller": { "@type": "Organization", "name": "FASHIONISTA", "url": SITE_URL }
       }
     });
     document.head.appendChild(ld);

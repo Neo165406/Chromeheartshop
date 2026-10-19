@@ -751,6 +751,7 @@ module.exports = async function handler(req, res){
     ? 'Shop silver rimless glasses in Bangladesh at FASHIONISTA. Silver-tone eyewear for Y2K and streetwear looks, with cash on delivery nationwide.'
     : buildDescription(product, label);
   const image = (product.images && product.images[0]) || product.imageUrl || `${SITE}/og-image.jpg`;
+  const productImages = [...new Set([...(Array.isArray(product.images) ? product.images : []), product.imageUrl, image].filter(src => typeof src === 'string' && /^https?:\/\//i.test(src)))];
   const titleTag = isSilverRimlessOverride
     ? 'Silver Rimless Glasses Price in Bangladesh | FASHIONISTA'
     : esc(buildTitle(label));
@@ -803,8 +804,10 @@ module.exports = async function handler(req, res){
     "@context": "https://schema.org",
     "@type": "Product",
     "name": product.name,
+    "sku": String(product.id),
+    "brand": { "@type": "Brand", "name": "FASHIONISTA" },
     "url": url,
-    "image": image ? [image] : undefined,
+    "image": productImages.length ? productImages : undefined,
     "description": desc,
     "category": product.category || undefined,
     "offers": {
@@ -812,7 +815,9 @@ module.exports = async function handler(req, res){
       "url": url,
       "priceCurrency": "BDT",
       "price": product.price,
-      "availability": product.stock === 0 ? "https://schema.org/OutOfStock" : "https://schema.org/InStock"
+      "availability": product.stock === 0 ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
+      "itemCondition": "https://schema.org/NewCondition",
+      "seller": { "@type": "Organization", "name": "FASHIONISTA", "url": SITE }
     }
   };
   // Only real customer reviews ever go into the schema: products with no
