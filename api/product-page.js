@@ -23,6 +23,28 @@ const FIREBASE_API_KEY = 'AIzaSyC_Fgdc_JlFlrPwByNQIa3e-MMGmoRXRWE'; // public we
 const PROJECT_ID = 'argentum-3709f';
 const SITE = 'https://fashion1sta.com';
 
+// Delivery terms for the Product schema's offers.shippingDetails. These must
+// match shipping.html exactly (charges, zones, delivery times); update both
+// together. Orders are confirmed the same business day (after 8 PM / Fridays /
+// holidays: the next one), so handling is 0-1 days.
+const OUTSIDE_DHAKA_REGIONS = ['Chattogram', 'Barishal', 'Khulna', 'Rajshahi', 'Rangpur', 'Sylhet', 'Mymensingh'];
+function shippingOption(rate, regions, minDays, maxDays){
+  return {
+    "@type": "OfferShippingDetails",
+    "shippingRate": { "@type": "MonetaryAmount", "value": rate, "currency": "BDT" },
+    "shippingDestination": regions.map(r => ({ "@type": "DefinedRegion", "addressCountry": "BD", "addressRegion": r })),
+    "deliveryTime": {
+      "@type": "ShippingDeliveryTime",
+      "handlingTime": { "@type": "QuantitativeValue", "minValue": 0, "maxValue": 1, "unitCode": "DAY" },
+      "transitTime": { "@type": "QuantitativeValue", "minValue": minDays, "maxValue": maxDays, "unitCode": "DAY" }
+    }
+  };
+}
+const SHIPPING_DETAILS = [
+  shippingOption(70, ['Dhaka'], 1, 2),
+  shippingOption(130, OUTSIDE_DHAKA_REGIONS, 2, 5)
+];
+
 // Hard time limits on the Firestore calls so a slow database can never hold
 // the whole page hostage. The product itself gets a generous limit (if it
 // times out we fall back to the client-side loader). "Similar products" is
@@ -813,7 +835,8 @@ module.exports = async function handler(req, res){
       "price": product.price,
       "availability": product.stock === 0 ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
       "itemCondition": "https://schema.org/NewCondition",
-      "seller": { "@type": "Organization", "name": "FASHIONISTA", "url": SITE }
+      "seller": { "@type": "Organization", "name": "FASHIONISTA", "url": SITE },
+      "shippingDetails": SHIPPING_DETAILS
     }
   };
   // Only real customer reviews ever go into the schema: products with no
