@@ -6,6 +6,9 @@
 // Scheduled fetch) is what lets Google show each product with its image and
 // price in Shopping / Search free listings.
 //
+// Use the same canonical product path as the sitemap and product page.
+const { productPath } = require('./_urls');
+
 // Reads Firestore's public REST API directly (same public web key already used
 // client-side; firestore.rules already allows public read on /products).
 
@@ -120,7 +123,7 @@ function itemXml(p){
     `<g:id>${xmlEscape(p.id)}</g:id>`,
     `<title>${xmlEscape(title)}</title>`,
     `<description>${xmlEscape(desc)}</description>`,
-    `<link>${xmlEscape(`${SITE}/product.html?id=${encodeURIComponent(p.id)}`)}</link>`,
+    `<link>${xmlEscape(`${SITE}${productPath(p)}`)}</link>`,
     `<g:image_link>${xmlEscape(photoUrls[0])}</g:image_link>`
   ];
   photoUrls.slice(1, 11).forEach(u => lines.push(`<g:additional_image_link>${xmlEscape(u)}</g:additional_image_link>`));
