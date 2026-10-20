@@ -36,8 +36,8 @@ const LANDING_PAGES = [
 ];
 
 // Pulls every /products document via the Firestore REST API (paginated,
-// public read). Returns [] on any failure rather than throwing, so a
-// Firestore hiccup degrades to "static pages only" instead of a 500.
+// public read). Throws on any failed page so the handler can return a temporary
+// 503 instead of serving a misleading, incomplete sitemap.
 async function fetchAllProducts(){
   const products = [];
   let pageToken = '';
@@ -46,7 +46,7 @@ async function fetchAllProducts(){
       const url = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/products?pageSize=300&key=${FIREBASE_API_KEY}`
         + (pageToken ? `&pageToken=${encodeURIComponent(pageToken)}` : '');
       const r = await fetch(url);
-      if(!r.ok) break;
+      if(!r.ok) throw new Error('Sitemap Firestore fetch failed: ' + r.status);
       const j = await r.json();
       (j.documents || []).forEach(doc => {
         const id = doc.name.split('/').pop();
@@ -63,8 +63,10 @@ async function fetchAllProducts(){
       pageToken = j.nextPageToken || '';
     } while(pageToken);
   }catch(e){
-    console.error('Sitemap: product fetch failed, falling back to static pages only:', e);
-    return [];
+    // Never return a successful but incomplete sitemap after a database error.
+    // Let the handler return 503 so crawlers can retry the sitemap later.
+    console.error('Sitemap: product fetch failed:', e);
+    throw e;
   }
   return products;
 }
@@ -79,7 +81,16 @@ function urlTag({ loc, lastmod, changefreq, priority }){
 }
 
 module.exports = async function handler(req, res){
-  const products = await fetchAllProducts();
+  let products;
+  try{
+    products = await fetchAllProducts();
+  }catch(e){
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-store');
+    res.setHeader('Retry-After', '120');
+    res.status(503).send('Sitemap temporarily unavailable. Please try again shortly.');
+    return;
+  }
 
   // Don't advertise category pages that currently have no matching products;
   // api/shop-page.js marks empty category pages noindex, follow.
