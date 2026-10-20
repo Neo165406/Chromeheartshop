@@ -318,6 +318,7 @@ const CATEGORY_KEYWORDS = [
   ]},
   { match: /bandana/, words: [
     'bandana bangladesh', 'bandana bd', 'bandana price in bangladesh',
+    'bandana price in bd', 'bandana bd price',
     'printed bandana bangladesh', 'streetwear bandana bd', 'gothic bandana bangladesh'
   ]},
   { match: /watch/, words: [
@@ -464,9 +465,10 @@ function buildTitle(label){
   return `${shortLabel}${suffix}`;
 }
 
-// Meta description, at most 160 characters: "<n>: <cleaned description>
-// Price in Bangladesh — cash on delivery." The name leads so products that
-// share the same stored description (the bandana colours, say) still differ.
+// Meta description, at most 160 characters: "<name> — BDT <price>: <cleaned
+// description> Price in Bangladesh — cash on delivery." The name and price
+// lead, so products that share the same stored description (the bandana
+// colours, say) still differ, and the price shows up in search snippets.
 function buildDescription(product, label){
   const suffix = ' Price in Bangladesh — cash on delivery.';
   const cleaned = cleanDescription(product.description);
@@ -484,7 +486,11 @@ function buildDescription(product, label){
   const opening = cleaned.slice(0, 80).toLowerCase();
   const hits = nameWords.filter(w => opening.includes(w)).length;
   const alreadyNamed = nameWords.length > 0 && hits / nameWords.length >= 0.75;
-  const lead = (alreadyNamed && !variant) ? '' : `${label}: `;
+  // The BDT price goes into the lead for every product (a differentiator
+  // label already carries its own price, so it is not repeated).
+  const hasPrice = !variant && product.price != null && product.price !== '';
+  const priceTxt = hasPrice ? ` — BDT ${product.price}` : '';
+  const lead = (alreadyNamed && !variant && !hasPrice) ? '' : `${label}${priceTxt}: `;
   const room = 160 - lead.length - suffix.length - 1;   // -1: possible closing period
   const body = cutAtBoundary(cleaned, room);
   const tail = /[.!?…]$/.test(body) ? '' : '.';
