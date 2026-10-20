@@ -163,3 +163,8 @@ function render(){
 import('./admin-visitors.js').catch(function(e){
   console.error('admin-visitors load error:', (e && e.code) ? e.code + ' — ' + e.message : e);
 });
+
+// The "Categories" tab (menu categories and sub-categories) is loaded the same way.
+import('./admin-categories.js').catch(function(e){
+  console.error('admin-categories load error:', (e && e.code) ? e.code + ' — ' + e.message : e);
+});
