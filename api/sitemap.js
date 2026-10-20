@@ -36,8 +36,8 @@ const LANDING_PAGES = [
 ];
 
 // Pulls every /products document via the Firestore REST API (paginated,
-// public read). Returns [] on any failure rather than throwing, so a
-// Firestore hiccup degrades to "static pages only" instead of a 500.
+// public read). Throws on any failed page so the handler can return a temporary
+// 503 instead of serving a misleading, incomplete sitemap.
 async function fetchAllProducts(){
   const products = [];
   let pageToken = '';
