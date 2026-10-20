@@ -240,8 +240,17 @@ function updateSEOTags(product){
     : (product.description
       ? product.description.replace(/\s+/g,' ').trim().slice(0,155)
       : `${product.name} — BDT ${product.price}. Neon silver accessories and eyewear from FASHIONISTA, cash on delivery across Bangladesh.`);
-  const image = (product.images && product.images[0]) || product.imageUrl || 'https://fashion1sta.com/og-image.png';
-  const productImages = [...new Set([...(Array.isArray(product.images) ? product.images : []), product.imageUrl, image].filter(src => typeof src === 'string' && /^https?:\/\//i.test(src)))];
+  // Use first-party image URLs for search/social metadata. Keep the order
+  // aligned with api/product-image.js (imageUrl first, then images array).
+  const originalImages = [];
+  if(typeof product.imageUrl === 'string' && /^https?:\/\//i.test(product.imageUrl)) originalImages.push(product.imageUrl);
+  if(Array.isArray(product.images)) product.images.forEach(src => {
+    if(typeof src === 'string' && /^https?:\/\//i.test(src) && !originalImages.includes(src)) originalImages.push(src);
+  });
+  const productImages = originalImages.length
+    ? originalImages.map((src, i) => `${SITE_URL}/product-image/${encodeURIComponent(product.id)}.jpg${i ? `?n=${i}` : ''}`)
+    : [`${SITE_URL}/og-image.png`];
+  const image = productImages[0];
   const seoTitle = isSilverRimlessOverride
     ? 'Silver Rimless Glasses | FASHIONISTA'
     : `${product.name} — FASHIONISTA`;
@@ -290,7 +299,13 @@ function updateSEOTags(product){
         "price": product.price,
         "availability": product.stock === 0 ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
         "itemCondition": "https://schema.org/NewCondition",
-        "seller": { "@type": "Organization", "name": "FASHIONISTA", "url": SITE_URL }
+        "seller": { "@type": "Organization", "name": "FASHIONISTA", "url": SITE_URL },
+        "hasMerchantReturnPolicy": {
+          "@type": "MerchantReturnPolicy",
+          "applicableCountry": "BD",
+          "returnPolicyCategory": "https://schema.org/MerchantReturnNotPermitted",
+          "merchantReturnLink": `${SITE_URL}/return-policy`
+        }
       }
     });
     document.head.appendChild(ld);
