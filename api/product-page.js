@@ -769,8 +769,18 @@ module.exports = async function handler(req, res){
   const desc = isSilverRimlessOverride
     ? 'Shop silver rimless glasses in Bangladesh at FASHIONISTA. Silver-tone eyewear for Y2K and streetwear looks, with cash on delivery nationwide.'
     : buildDescription(product, label);
-  const image = (product.images && product.images[0]) || product.imageUrl || `${SITE}/og-image.jpg`;
-  const productImages = [...new Set([...(Array.isArray(product.images) ? product.images : []), product.imageUrl, image].filter(src => typeof src === 'string' && /^https?:\/\//i.test(src)))];
+  // Use first-party image URLs in metadata/schema so Google can crawl the photos
+  // without depending on the external image host. Keep order identical to
+  // api/product-image.js: imageUrl first, then the remaining images array.
+  const originalImages = [];
+  if(typeof product.imageUrl === 'string' && /^https?:\/\//i.test(product.imageUrl)) originalImages.push(product.imageUrl);
+  if(Array.isArray(product.images)) product.images.forEach(src => {
+    if(typeof src === 'string' && /^https?:\/\//i.test(src) && !originalImages.includes(src)) originalImages.push(src);
+  });
+  const productImages = originalImages.length
+    ? originalImages.map((src, i) => `${SITE}/product-image/${encodeURIComponent(product.id)}.jpg${i ? `?n=${i}` : ''}`)
+    : [`${SITE}/og-image.png`];
+  const image = productImages[0];
   const titleTag = isSilverRimlessOverride
     ? 'Silver Rimless Glasses Price in Bangladesh | FASHIONISTA'
     : esc(buildTitle(label));
@@ -837,7 +847,13 @@ module.exports = async function handler(req, res){
       "availability": product.stock === 0 ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
       "itemCondition": "https://schema.org/NewCondition",
       "seller": { "@type": "Organization", "name": "FASHIONISTA", "url": SITE },
-      "shippingDetails": SHIPPING_DETAILS
+      "shippingDetails": SHIPPING_DETAILS,
+      "hasMerchantReturnPolicy": {
+        "@type": "MerchantReturnPolicy",
+        "applicableCountry": "BD",
+        "returnPolicyCategory": "https://schema.org/MerchantReturnNotPermitted",
+        "merchantReturnLink": `${SITE}/return-policy`
+      }
     }
   };
   // Only real customer reviews ever go into the schema: products with no
