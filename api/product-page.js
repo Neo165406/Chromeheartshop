@@ -772,11 +772,12 @@ module.exports = async function handler(req, res){
   // Use first-party image URLs in metadata/schema so Google can crawl the photos
   // without depending on the external image host. Keep order identical to
   // api/product-image.js: imageUrl first, then the remaining images array.
-  const originalImages = [];
-  if(typeof product.imageUrl === 'string' && /^https?:\/\//i.test(product.imageUrl)) originalImages.push(product.imageUrl);
-  if(Array.isArray(product.images)) product.images.forEach(src => {
-    if(typeof src === 'string' && /^https?:\/\//i.test(src) && !originalImages.includes(src)) originalImages.push(src);
-  });
+  const originalImages = Array.isArray(product.images)
+    ? product.images.filter(src => typeof src === 'string' && /^https?:\/\//i.test(src))
+    : [];
+  if(typeof product.imageUrl === 'string' && /^https?:\/\//i.test(product.imageUrl) && !originalImages.includes(product.imageUrl)) {
+    originalImages.unshift(product.imageUrl);
+  }
   const productImages = originalImages.length
     ? originalImages.map((src, i) => `${SITE}/product-image/${encodeURIComponent(product.id)}.jpg${i ? `?n=${i}` : ''}`)
     : [`${SITE}/og-image.png`];
