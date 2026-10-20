@@ -20,6 +20,8 @@
     { "source": "/ring", "destination": "/rings", "permanent": true },
     { "source": "/rings.html", "destination": "/rings", "permanent": true },
     { "source": "/bandana", "destination": "/bandanas", "permanent": true },
+    { "source": "/chain", "destination": "/chrome-heart-chains", "permanent": true },
+    { "source": "/chains", "destination": "/chrome-heart-chains", "permanent": true },
 
     { "source": "/shop.html", "has": [{ "type": "query", "key": "category", "value": "Clothing" }], "destination": "/clothing", "permanent": true },
     { "source": "/shop.html", "has": [{ "type": "query", "key": "category", "value": "Accessories" }], "destination": "/accessories", "permanent": true },
@@ -56,6 +58,7 @@
     { "source": "/bracelets", "destination": "/api/shop-page?scope=bracelets" },
     { "source": "/rings", "destination": "/api/shop-page?scope=rings" },
     { "source": "/bandanas", "destination": "/api/shop-page?scope=bandanas" },
+    { "source": "/chrome-heart-chains", "destination": "/api/shop-page?scope=chains" },
     { "source": "/shop", "destination": "/api/shop-page" },
     { "source": "/clothing", "destination": "/api/shop-page?category=Clothing" },
     { "source": "/accessories", "destination": "/api/shop-page?category=Accessories" },
