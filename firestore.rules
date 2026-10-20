@@ -49,6 +49,13 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Menu categories and sub-categories (admin -> Categories tab): the site
+    // menu reads them, only the admin can change them.
+    match /categories/{doc} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
     // Delivery settings: checkout reads, admin writes
     match /settings/{doc} {
       allow read: if true;
