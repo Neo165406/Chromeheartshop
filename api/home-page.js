@@ -148,6 +148,14 @@ function withLandingPills(html){
   );
 }
 
+// Loads js/menu-categories.js, which replaces the menu drawer's category list
+// with one whose categories open on tap and come from the admin "Categories"
+// tab (Firestore). The template's own list stays in place as the fallback if
+// that script can't run. If the template has no </body>, this does nothing.
+function withCategoryMenu(html){
+  return html.replace('</body>', () => '<script type="module" src="/js/menu-categories.js"></script>\n</body>');
+}
+
 function cardMarkup(p, i, eagerCount){
   const pid = p.id || String(p.name||'').toLowerCase().replace(/[^a-z0-9]+/g,'-');
   const outOfStock = p.stock === 0;
@@ -304,6 +312,7 @@ module.exports = async function handler(req, res){
   html = withShareImage(html, req);
   html = withoutSlideTitles(html);
   html = withLandingPills(html);
+  html = withCategoryMenu(html);
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
 
