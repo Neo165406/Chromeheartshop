@@ -267,6 +267,7 @@
 import { db, collection, getDocs } from './js/firebase-config.js';
 import { renderCartDrawer, updateCartBadge, checkoutWhatsApp, wireAddToCart } from './js/cart.js';
 import { wireFavButtons, refreshFavButtons } from './js/favorites.js';
+import { DEFAULT_TREE, loadCategoryTree, renderCategoryMenu } from './js/categories.js';
 
 window.toggleNav = function(open){
   document.getElementById('drawer').classList.toggle('open',open);
@@ -287,30 +288,24 @@ window.toggleFilter = function(open){
   document.getElementById('scrim').classList.toggle('open', open);
 };
 
-const categoryTree = [
-  {name:"New In", subs:[]},
-  {name:"Glasses", subs:["Rimless","Aviators","Round"]},
-  {name:"Accessories", subs:["Bandana","Belts","Bracelets","Chain-Necklaces","Earrings","Fake Piercings","Keychains","Ring Watch","Rings","Sunglasses","Tattoo","Teeth-Grillz","Wallet","Wallet Chains","Watches"]},
-  {name:"Clothing", subs:["T-shirt"]}
-];
+// The menu categories are managed in the admin "Categories" tab (Firestore).
+// Until they load — or if they can't be read — the built-in DEFAULT_TREE is
+// used. See js/categories.js.
+let categoryTree = DEFAULT_TREE;
+let currentCategory = null;
+
+function escHtml(s){
+  return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
 
 // Glasses has its own clean URL (/glasses); every other category still uses this page.
 function categoryUrl(name){
   return name === 'Glasses' ? '/glasses' : `shop.html?category=${encodeURIComponent(name)}`;
 }
 
-const catTree = document.getElementById('catTree');
-categoryTree.forEach(cat=>{
-  const row = document.createElement('div');
-  row.className = 'cat-row';
-  row.innerHTML = `<span class="name">${cat.name}</span>${cat.subs.length ? '<span class="chev"></span>' : ''}`;
-  catTree.appendChild(row);
-  const subs = document.createElement('div');
-  subs.className = 'subs';
-  subs.innerHTML = cat.subs.map(s=>`<a href="${categoryUrl(cat.name)}">${s}</a>`).join('');
-  catTree.appendChild(subs);
-  row.addEventListener('click', ()=>window.location.href = categoryUrl(cat.name));
-});
+// Menu drawer: tapping a category with sub-categories opens its list (it no
+// longer jumps straight to the category page).
+renderCategoryMenu(document.getElementById('catTree'), categoryTree);
 
 // ---------- SEO: each category gets its own title, description and canonical
 // (set before/independent of the Firestore load). /shop.html with no category
@@ -338,7 +333,11 @@ const CATEGORY_SEO = {
 };
 function applyCategorySEO(cat){
   const s = CATEGORY_SEO[cat];
-  if(!s) return;
+  if(!s){
+    // A category made in the admin Categories tab has no written copy: give it a plain title.
+    if(cat) document.title = `${cat} in Bangladesh | FASHIONISTA`;
+    return;
+  }
   const url = cat === 'Glasses'
     ? 'https://fashion1sta.com/glasses'
     : `https://fashion1sta.com/shop.html?category=${encodeURIComponent(cat)}`;
@@ -470,12 +469,12 @@ function updateSubcategoryList(){
   const subWrap = document.getElementById('filterSubChecks');
   const subs = cats.flatMap(c=>c.subs);
   document.getElementById('filterSubWrap').style.display = subs.length ? 'block' : 'none';
-  subWrap.innerHTML = subs.map(s=>`<label class="filter-check"><input type="checkbox" class="subChk" value="${s}">${s}</label>`).join('');
+  subWrap.innerHTML = subs.map(s=>`<label class="filter-check"><input type="checkbox" class="subChk" value="${escHtml(s)}">${escHtml(s)}</label>`).join('');
 }
 
 function populateFilterUI(){
   const catWrap = document.getElementById('filterCategoryChecks');
-  catWrap.innerHTML = categoryTree.map(c=>`<label class="filter-check"><input type="checkbox" class="catChk" value="${c.name}">${c.name}</label>`).join('');
+  catWrap.innerHTML = categoryTree.map(c=>`<label class="filter-check"><input type="checkbox" class="catChk" value="${escHtml(c.name)}">${escHtml(c.name)}</label>`).join('');
   catWrap.querySelectorAll('.catChk').forEach(chk=>chk.addEventListener('change', updateSubcategoryList));
   updateSubcategoryList();
 }
@@ -510,16 +509,11 @@ function clearDrawerFilters(){
 document.getElementById('applyFilterBtn').addEventListener('click', applyDrawerFilters);
 document.getElementById('clearFilterBtn').addEventListener('click', clearDrawerFilters);
 
-async function init(){
-  const params = new URLSearchParams(window.location.search);
-  const activeCategory = params.get('category');
-  const categories = ["New In","Glasses","Accessories","Clothing"];
-
-  applyCategorySEO(activeCategory);
-
+// The category pills above the grid (and the filter button pinned to their right).
+function renderFilterBar(activeCategory){
   const filterBar = document.getElementById('catFilters');
   filterBar.innerHTML = `<button class="cat ${!activeCategory?'active':''}" data-cat="">All</button>` +
-    categories.map(c=>`<button class="cat ${activeCategory===c?'active':''}" data-cat="${c}">${c}</button>`).join('') +
+    categoryTree.map(c=>`<button class="cat ${activeCategory===c.name?'active':''}" data-cat="${escHtml(c.name)}">${escHtml(c.name)}</button>`).join('') +
     `<button class="cat-filter-btn" id="openFilterBtn" aria-label="Filter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="4" y1="7" x2="20" y2="7"/><circle cx="9" cy="7" r="2" fill="var(--bg)"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="15" cy="17" r="2" fill="var(--bg)"/></svg></button>`;
   filterBar.querySelectorAll('.cat').forEach(btn=>{
     btn.addEventListener('click', ()=>{
@@ -528,11 +522,38 @@ async function init(){
     });
   });
   document.getElementById('openFilterBtn').addEventListener('click', ()=>toggleFilter(true));
+}
+
+// Swaps in the categories saved in the admin (menu drawer, pills, filter drawer).
+// loadCategoryTree() returns DEFAULT_TREE itself when it fell back, so nothing
+// is redrawn in that case.
+function applyTree(tree){
+  if(tree === categoryTree) return;
+  categoryTree = tree;
+  renderCategoryMenu(document.getElementById('catTree'), categoryTree);
+  renderFilterBar(currentCategory);
+  populateFilterUI();
+}
+
+async function init(){
+  const params = new URLSearchParams(window.location.search);
+  const activeCategory = params.get('category');
+  currentCategory = activeCategory;
+  const activeSub = params.get('sub');
+  const treePromise = loadCategoryTree();
+
+  applyCategorySEO(activeCategory);
+
+  renderFilterBar(activeCategory);
 
   document.getElementById('pageTitle').textContent = activeCategory || 'Shop All';
   document.getElementById('pageSub').textContent = activeCategory
     ? `Everything in ${activeCategory}`
     : 'Every FASHIONISTA piece in one place';
+  if(activeSub){
+    document.getElementById('pageTitle').textContent = activeSub;
+    document.getElementById('pageSub').textContent = `${activeCategory || 'Shop'} › ${activeSub}`;
+  }
 
   // If the server already fetched the products (see api/shop-page.js),
   // hydrate straight from that — the page already showed real cards before
@@ -558,10 +579,16 @@ async function init(){
   } else {
     filtered = all;
   }
+  // ?sub=Earrings narrows the category to one sub-category (links from the menu drawer).
+  if(activeSub){
+    const wantSub = activeSub.trim().toLowerCase();
+    filtered = filtered.filter(p=>String(p.subcategory || '').trim().toLowerCase() === wantSub);
+  }
   baseFiltered = filtered;
 
   renderShopGrid(filtered);
   populateFilterUI();
+  treePromise.then(applyTree);
 
   // "You might also like" — a handful of products outside the current filter.
   // Uses the server's exact random pick when available, so hydration shows
