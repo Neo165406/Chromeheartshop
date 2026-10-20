@@ -168,3 +168,8 @@ import('./admin-visitors.js').catch(function(e){
 import('./admin-categories.js').catch(function(e){
   console.error('admin-categories load error:', (e && e.code) ? e.code + ' — ' + e.message : e);
 });
+
+// The "Description helper" under the product Description field (tick options → text is written).
+import('./admin-desc-helper.js').catch(function(e){
+  console.error('admin-desc-helper load error:', (e && e.code) ? e.code + ' — ' + e.message : e);
+});
