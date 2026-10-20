@@ -541,7 +541,7 @@ function renderInfoSection(product){
   <h3>Can I pay cash on delivery?</h3>
   <p>Yes. We offer cash on delivery nationwide across Bangladesh, so there is nothing to pay online.</p>
   <h3>What if the item is damaged or the wrong size?</h3>
-  <p>Inspect your parcel in front of the delivery person and report any damaged, incorrect or wrong-size item on the spot. Full details are in our <a href="/return-policy">return and exchange policy</a>.</p>
+  <p>Inspect your parcel in front of the delivery person and report any damaged, incorrect or wrong-size item on the spot, or within 7 days of delivery. Full details are in our <a href="/return-policy">return and exchange policy</a>.</p>
   <h3>Have a question before you order?</h3>
   <p>Message us on WhatsApp or visit our <a href="/contact">contact page</a>. We usually reply within a few hours.</p>
 </section>`;
@@ -852,7 +852,9 @@ module.exports = async function handler(req, res){
       "hasMerchantReturnPolicy": {
         "@type": "MerchantReturnPolicy",
         "applicableCountry": "BD",
-        "returnPolicyCategory": "https://schema.org/MerchantReturnNotPermitted",
+        "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+        "merchantReturnDays": 7,
+        "refundType": "https://schema.org/ExchangeRefund",
         "merchantReturnLink": `${SITE}/return-policy`
       }
     }
