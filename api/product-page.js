@@ -686,9 +686,14 @@ module.exports = async function handler(req, res){
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
 
   if(!id && !bySlug){
-    // No id in the URL — serve the template as-is; the client script's own
-    // "Product not found" + noindex handling covers this case.
-    res.status(200).send(html);
+    // A product template without an ID or slug is not a valid product page.
+    // Return a real 404 so crawlers do not treat this empty shell as indexable.
+    html = html.replace(
+      '<meta name="robots" content="index, follow">',
+      '<meta name="robots" content="noindex, follow">'
+    );
+    res.setHeader('Cache-Control', 'no-store');
+    res.status(404).send(html);
     return;
   }
 
@@ -708,26 +713,22 @@ module.exports = async function handler(req, res){
 
   if(fetchFailed){
     res.setHeader('Cache-Control', 'no-store');
-    if(bySlug){
-      // Crawlers: come back later rather than indexing a page with no product
-      // in it. Everyone else gets the template and the client-side script
-      // looks the product up by the slug in the URL.
-      const ua = String((req && req.headers && req.headers['user-agent']) || '');
-      if(CRAWLER_UA.test(ua)){
-        res.setHeader('Retry-After', '120');
-        res.status(503).send('Service temporarily unavailable. Please try again shortly.');
-        return;
-      }
-      if(validSlug(slug)){
-        html = html.replace(
-          '<link rel="canonical" id="canonicalLink" href="https://fashion1sta.com/product.html">',
-          () => `<link rel="canonical" id="canonicalLink" href="${SITE}/product/${slug}">`
-        );
-      }
+    // If the product lookup failed, do not send a successful HTML response
+    // to crawlers: it would look like a valid but empty product page. A 503
+    // asks crawlers to retry after the temporary data/API failure is resolved.
+    const ua = String((req && req.headers && req.headers['user-agent']) || '');
+    if(CRAWLER_UA.test(ua)){
+      res.setHeader('Retry-After', '120');
+      res.status(503).send('Service temporarily unavailable. Please try again shortly.');
+      return;
     }
-    // Fail soft: client-side JS does its own fetch (with its own retry
-    // logic) exactly as before this project ever had SSR. The page is
-    // never blocked on this.
+    if(bySlug && validSlug(slug)){
+      html = html.replace(
+        '<link rel="canonical" id="canonicalLink" href="https://fashion1sta.com/product.html">',
+        () => `<link rel="canonical" id="canonicalLink" href="${SITE}/product/${slug}">`
+      );
+    }
+    // For shoppers, retain the existing client-side retry/fallback behavior.
     res.status(200).send(html);
     return;
   }
@@ -741,7 +742,7 @@ module.exports = async function handler(req, res){
       '<meta name="robots" content="noindex, follow">'
     );
     res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=3600');
-    res.status(bySlug ? 404 : 200).send(html);
+    res.status(404).send(html);
     return;
   }
 
