@@ -6,15 +6,15 @@
 // The static template lives at templates/shop.html (not at the public
 // path) so this function is what actually serves the shop URLs. Reached via
 // the rewrites in vercel.json: /shop, /clothing, /accessories and /glasses (the
-// last three pass ?category=), plus /bracelets, /rings and /bandanas (?scope=).
-// Reads Firestore's
+// last three pass ?category=), plus /bracelets, /rings, /bandanas and
+// /chrome-heart-chains (?scope=). Reads Firestore's
 // public REST API directly (same public web key already used client-side —
 // firestore.rules already allows public read on /products, same access level
 // the storefront pages themselves have).
 //
-// Sub-category landing pages (/bracelets, /rings, /bandanas) reuse the shop template and
-// add their own title, description, H1, intro, supporting copy, internal links
-// and JSON-LD (see SCOPE_PAGES below).
+// Sub-category landing pages (/bracelets, /rings, /bandanas, /chrome-heart-chains)
+// reuse the shop template and add their own title, description, H1, intro,
+// supporting copy, internal links and JSON-LD (see SCOPE_PAGES below).
 
 const fs = require('fs');
 const path = require('path');
@@ -188,7 +188,7 @@ function seoForCategory(name){
 }
 
 // =====================================================================
-// Sub-category landing pages: /bracelets and /bandanas
+// Sub-category landing pages: /bracelets, /rings, /bandanas and /chrome-heart-chains
 // =====================================================================
 // A product belongs to a landing page when its Firestore `subcategory` field
 // matches one of `aliases` (case-insensitive, trimmed) — the same field the
@@ -198,7 +198,10 @@ function seoForCategory(name){
 // delivery times beyond what the site already states (see shipping.html and
 // return-policy.html). The "highlights" blocks are generated from the real
 // product names/descriptions and only appear when at least one product
-// actually mentions the term. Third-party brand names are never used.
+// actually mentions the term. Third-party brand names are not used in body
+// copy; the one exception is the /chrome-heart-chains page, whose title and H1
+// use the name by the store owner's choice (it makes no claim that the
+// products are official or authentic).
 const SCOPE_PAGES = {
   bracelets: {
     path: '/bracelets',
@@ -230,6 +233,7 @@ const SCOPE_PAGES = {
     ],
     related: [
       { href: '/bandanas', text: 'Bandanas' },
+      { href: '/chrome-heart-chains', text: 'Chrome Heart Chains' },
       { href: '/glasses', text: 'Glasses and sunglasses' },
       { href: '/accessories', text: 'All accessories' },
       { href: '/shop', text: 'Shop everything' }
@@ -265,6 +269,7 @@ const SCOPE_PAGES = {
     related: [
       { href: '/bracelets', text: 'Bracelets' },
       { href: '/bandanas', text: 'Bandanas' },
+      { href: '/chrome-heart-chains', text: 'Chrome Heart Chains' },
       { href: '/glasses', text: 'Glasses and sunglasses' },
       { href: '/accessories', text: 'All accessories' },
       { href: '/shop', text: 'Shop everything' }
@@ -300,6 +305,43 @@ const SCOPE_PAGES = {
     ],
     related: [
       { href: '/bracelets', text: 'Bracelets' },
+      { href: '/chrome-heart-chains', text: 'Chrome Heart Chains' },
+      { href: '/glasses', text: 'Glasses and sunglasses' },
+      { href: '/accessories', text: 'All accessories' },
+      { href: '/shop', text: 'Shop everything' }
+    ]
+  },
+  chains: {
+    path: '/chrome-heart-chains',
+    label: 'Chrome Heart Chains',
+    aliases: ['chain', 'chains'],
+    title: 'Chrome Heart Chains in Bangladesh | FASHIONISTA',
+    desc: 'Shop chains and chain necklaces at FASHIONISTA, in gothic and streetwear styles. Prices in BDT, live stock status and cash on delivery across Bangladesh.',
+    h1: 'Chrome Heart Chains in Bangladesh',
+    sub: 'Gothic and streetwear chains, priced in BDT',
+    intro: [
+      'Browse the chains and chain necklaces currently listed at FASHIONISTA, a Bangladesh-based fashion and accessories store. Each listing shows its photos, the price in BDT and a clear out-of-stock label on anything that has sold through.',
+      'Order from anywhere in Bangladesh and pay cash on delivery.'
+    ],
+    highlights: [
+      { heading: 'Silver chains', text: 'These listings mention silver in their name or description:', test: s => /silver/i.test(s) },
+      { heading: 'Cross chains', text: 'These listings mention a cross design in their name or description:', test: s => /cross/i.test(s) },
+      { heading: 'Gothic chains', text: 'These listings describe themselves as gothic:', test: s => /goth/i.test(s) }
+    ],
+    sections: [
+      { h: 'How to choose a chain', p: [
+        'Open any listing to see its photos, price and description. Length, thickness and finish differ from piece to piece, so check those details on the product page before you order, and message us on WhatsApp through the <a href="/contact">contact page</a> if you need help deciding.'
+      ]},
+      { h: 'Styling a chain', p: [
+        'A chain looks sharpest over a plain black or white tee, a hoodie or an open shirt. Wear one on its own for a clean look, or layer two lengths for a stronger streetwear or gothic feel. <a href="/bracelets">Bracelets</a> and <a href="/glasses">sunglasses</a> are an easy match.'
+      ]},
+      { h: 'Ordering chains in Bangladesh', p: [
+        'We deliver across Bangladesh and every order is cash on delivery, so you pay the courier when the parcel arrives. Delivery charges depend on whether you are inside or outside Dhaka; the <a href="/shipping">shipping info page</a> lists the current charges and timelines. If an item arrives damaged or incorrect, our <a href="/return-policy">return and exchange policy</a> explains what to do.'
+      ]}
+    ],
+    related: [
+      { href: '/bracelets', text: 'Bracelets' },
+      { href: '/bandanas', text: 'Bandanas' },
       { href: '/glasses', text: 'Glasses and sunglasses' },
       { href: '/accessories', text: 'All accessories' },
       { href: '/shop', text: 'Shop everything' }
@@ -635,7 +677,7 @@ const CATEGORY_CONTENT = {
     h2: "Bracelets and streetwear accessories in Bangladesh",
     paras: [
       "Explore bracelets, chain necklaces and bandanas for gothic, Y2K and streetwear outfits at FASHIONISTA. Each product listing shows photos, the current BDT price and stock status, so you can compare styles before ordering.",
-      "Browse our dedicated <a href=\"/bracelets\">bracelet collection</a> and <a href=\"/bandanas\">bandanas</a>, or explore <a href=\"/glasses\">sunglasses</a> and <a href=\"/clothing\">streetwear clothing</a>. Open any listing for product photos, current price and availability."
+      "Browse our dedicated <a href=\"/bracelets\">bracelet collection</a>, <a href=\"/chrome-heart-chains\">chains</a> and <a href=\"/bandanas\">bandanas</a>, or explore <a href=\"/glasses\">sunglasses</a> and <a href=\"/clothing\">streetwear clothing</a>. Open any listing for product photos, current price and availability."
     ]
   },
   "Clothing": {
@@ -674,7 +716,7 @@ ${CATEGORY_FAQ.map(([q, a]) => `  <h3>${q}</h3>\n  <p>${a}</p>`).join('\n')}
 }
 
 // Crawlable links from the main shop, Accessories and Glasses pages to the landing pages.
-const BROWSE_ITEMS = [['/bracelets', 'Bracelets'], ['/bandanas', 'Bandanas'], ['/glasses', 'Glasses']];
+const BROWSE_ITEMS = [['/bracelets', 'Bracelets'], ['/bandanas', 'Bandanas'], ['/chrome-heart-chains', 'Chrome Heart Chains'], ['/glasses', 'Glasses']];
 function browseLinks(excludePath){
   const links = BROWSE_ITEMS.filter(([href]) => href !== excludePath)
     .map(([href, text]) => `<a href="${href}">${text}</a>`).join('');
@@ -778,8 +820,8 @@ module.exports = async function handler(req, res){
     );
   }
 
-  // Crawlable links to /bracelets, /bandanas and /glasses from the main
-  // shop page, the Accessories page and the Glasses page.
+  // Crawlable links to /bracelets, /bandanas, /chrome-heart-chains and
+  // /glasses from the main shop page, the Accessories page and the Glasses page.
   if(!category || category === 'Accessories' || category === 'Glasses'){
     html = html.replace('</head>', () => LANDING_CSS + '\n</head>');
     html = html.replace('<section class="collection" id="similarSection">', () => browseLinks(category === 'Glasses' ? '/glasses' : null) + '\n<section class="collection" id="similarSection">');
