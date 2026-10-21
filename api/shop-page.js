@@ -601,7 +601,7 @@ async function serveLandingPage(req, res, html, cfg){
 
   let products;
   try{
-    products = await listCollection('products');
+    products = (await listCollection('products')).filter(p => p.stock !== 0); // hide out-of-stock
   }catch(e){
     console.error('SSR landing page products fetch failed:', e);
     res.setHeader('Cache-Control', 'no-store');
@@ -779,7 +779,7 @@ module.exports = async function handler(req, res){
 
   let products;
   try{
-    products = await listCollection('products');
+    products = (await listCollection('products')).filter(p => p.stock !== 0); // hide out-of-stock
   }catch(e){
     // Fail soft: client-side JS does its own fetch (with its own retry
     // logic) exactly as before this page had SSR. Never block the page.
