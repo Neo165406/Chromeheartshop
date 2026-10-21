@@ -88,8 +88,10 @@ function itemXml(p){
   if(!Number.isFinite(price) || price <= 0) return '';
 
   const imgs = [];
-  if(Array.isArray(p.images)) p.images.forEach(u => { if(isHttpUrl(u)) imgs.push(u); });
-  if(isHttpUrl(p.imageUrl) && !imgs.includes(p.imageUrl)) imgs.unshift(p.imageUrl);
+  if(isHttpUrl(p.imageUrl)) imgs.push(p.imageUrl);
+  if(Array.isArray(p.images)) p.images.forEach(u => {
+    if(isHttpUrl(u) && !imgs.includes(u)) imgs.push(u);
+  });
   if(!imgs.length) return ''; // Merchant Center requires an image
 
   // Google gets each photo from our own domain (api/product-image.js), not
