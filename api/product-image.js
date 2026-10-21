@@ -50,8 +50,10 @@ function isPublicHttpUrl(u){
 // Same order as api/merchant-feed.js: the main imageUrl first, then the rest.
 function imageList(p){
   const imgs = [];
-  if(Array.isArray(p.images)) p.images.forEach(u => { if(typeof u === 'string' && /^https?:\/\//i.test(u)) imgs.push(u); });
-  if(typeof p.imageUrl === 'string' && /^https?:\/\//i.test(p.imageUrl) && !imgs.includes(p.imageUrl)) imgs.unshift(p.imageUrl);
+  if(typeof p.imageUrl === 'string' && /^https?:\/\//i.test(p.imageUrl)) imgs.push(p.imageUrl);
+  if(Array.isArray(p.images)) p.images.forEach(u => {
+    if(typeof u === 'string' && /^https?:\/\//i.test(u) && !imgs.includes(u)) imgs.push(u);
+  });
   return imgs;
 }
 
