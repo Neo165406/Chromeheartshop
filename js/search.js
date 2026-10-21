@@ -8,6 +8,7 @@
 // - Forgiving: case-insensitive, ignores punctuation, plural/singular (bracelet = bracelets),
 //   multi-word queries, "any word" fallback, and small typos (braclet -> bracelet)
 // - Products come straight from Firestore, so new/edited/removed products show up instantly
+// - Out-of-stock products (stock === 0) are hidden from the results
 
 import { db, collection, getDocs } from './firebase-config.js';
 
@@ -17,7 +18,7 @@ const MAX_RESULTS = 40;
 const norm = (s) => String(s == null ? '' : s)
   .toLowerCase()
   .normalize('NFKD')
-  .replace(/[\u0300-\u036f]/g, '')
+  .replace(/[̀-ͯ]/g, '')
   .replace(/[^\p{L}\p{M}\p{N}]+/gu, ' ')
   .trim();
 
@@ -66,7 +67,7 @@ function loadProducts(){
   if(cache) return Promise.resolve(cache);
   if(!pending){
     pending = Promise.race([
-      getDocs(collection(db, 'products')).then((snap) => snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
+      getDocs(collection(db, 'products')).then((snap) => snap.docs.map((d) => ({ id: d.id, ...d.data() })).filter((p) => p.stock !== 0)),
       new Promise((_, reject) => setTimeout(() => reject(new Error('Products load timed out')), 10000))
     ]).then((items) => { cache = items; pending = null; return items; })
       .catch((e) => { pending = null; throw e; });
@@ -128,7 +129,7 @@ function wire(bar){
   clearBtn.type = 'button';
   clearBtn.className = 'ss-x';
   clearBtn.setAttribute('aria-label', 'Clear search');
-  clearBtn.textContent = '\u2715';
+  clearBtn.textContent = '✕';
   clearBtn.hidden = true;
   bar.appendChild(clearBtn);
 
@@ -152,7 +153,7 @@ function wire(bar){
     if(!q){ seq++; reset(); return; }
     const mine = ++seq;
     out.hidden = false;
-    if(!cache) out.innerHTML = '<p class="ss-empty">Searching\u2026</p>';
+    if(!cache) out.innerHTML = '<p class="ss-empty">Searching…</p>';
     let list;
     try{
       list = await loadProducts();
@@ -160,7 +161,7 @@ function wire(bar){
       if(mine !== seq) return;
       console.error('Search: products failed to load', e);
       if(drawer) drawer.classList.remove('searching');
-      out.innerHTML = '<p class="ss-empty">Couldn\u2019t load products.<button type="button" class="ss-retry">Try again</button></p>';
+      out.innerHTML = '<p class="ss-empty">Couldn’t load products.<button type="button" class="ss-retry">Try again</button></p>';
       const retry = out.querySelector('.ss-retry');
       if(retry) retry.addEventListener('click', run);
       return;
@@ -169,20 +170,19 @@ function wire(bar){
     const results = searchProducts(list, q);
     if(!results.length){
       if(drawer) drawer.classList.remove('searching');
-      out.innerHTML = `<p class="ss-empty">No products found for \u201c${esc(q)}\u201d. Try another word, like <b>ring</b>, <b>chain</b> or <b>glasses</b>.</p>`;
+      out.innerHTML = `<p class="ss-empty">No products found for “${esc(q)}”. Try another word, like <b>ring</b>, <b>chain</b> or <b>glasses</b>.</p>`;
       return;
     }
     if(drawer) drawer.classList.add('searching');
     const shown = results.slice(0, MAX_RESULTS);
     const count = results.length === 1 ? '1 result' : `${results.length} results`;
     out.innerHTML =
-      `<div class="ss-count">${count} for \u201c${esc(q)}\u201d${results.length > shown.length ? ` \u00b7 showing first ${shown.length}` : ''}</div>` +
+      `<div class="ss-count">${count} for “${esc(q)}”${results.length > shown.length ? ` · showing first ${shown.length}` : ''}</div>` +
       shown.map((p) => {
         const price = p.price != null ? `BDT ${esc(p.price)}` : '';
-        const oos = p.stock === 0 ? `${price ? ' \u00b7 ' : ''}Out of stock` : '';
         return `<a class="ss-item" href="product.html?id=${encodeURIComponent(p.id)}">` +
           `<span class="ss-thumb">${p.imageUrl ? `<img src="${esc(p.imageUrl)}" alt="" loading="lazy">` : ''}</span>` +
-          `<span class="ss-info"><span class="ss-name">${esc(p.name)}</span><span class="ss-meta">${price}${oos}</span></span></a>`;
+          `<span class="ss-info"><span class="ss-name">${esc(p.name)}</span><span class="ss-meta">${price}</span></span></a>`;
       }).join('');
   }
 
