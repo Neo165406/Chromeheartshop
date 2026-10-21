@@ -651,14 +651,17 @@ async function initProducts(preloaded){
   const { items: all, failed } = preloaded !== undefined
     ? { items: preloaded, failed: false }
     : await loadProducts();
+  // Keep client hydration consistent with server-rendered homepage grids:
+  // products explicitly marked stock === 0 should not reappear after JS runs.
+  // Keep products with an unknown/missing stock value; only hide confirmed zero.
+  const available = all.filter(p=>p.stock !== 0);
   // Featured Pieces: admin-selected via the "Show in Featured Pieces" checkbox.
-  // Falls back to the first few real products if none are marked featured yet —
-  // never to placeholder/demo items.
-  const featured = all.filter(p=>p.featured).slice(0,4);
-  renderCards('arrivalsGrid', featured.length ? featured : all.slice(0,4), failed, 2);
-  renderCards('glassesGrid', all.filter(p=>p.category==="Glasses").slice(0,4), failed, 0);
-  renderCards('clothingGrid', all.filter(p=>p.category==="Clothing").slice(0,4), failed, 0);
-  renderCards('newInRow', all.slice(0,8), failed, 0);
+  // Falls back to the first few available real products if none are marked featured.
+  const featured = available.filter(p=>p.featured).slice(0,4);
+  renderCards('arrivalsGrid', featured.length ? featured : available.slice(0,4), failed, 2);
+  renderCards('glassesGrid', available.filter(p=>p.category==="Glasses").slice(0,4), failed, 0);
+  renderCards('clothingGrid', available.filter(p=>p.category==="Clothing").slice(0,4), failed, 0);
+  renderCards('newInRow', available.slice(0,8), failed, 0);
 }
 
 /* ---------- Reels — managed from the admin dashboard (Reels tab) ---------- */
