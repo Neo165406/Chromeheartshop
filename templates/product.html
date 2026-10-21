@@ -611,7 +611,11 @@ function renderProduct(product, similar, reviews){
   const sizes = getSizes(product);
   const discount = product.was ? Math.round((1 - product.price/product.was) * 100) : 0;
   const soldText = product.sold ? `${product.sold >= 1000 ? (product.sold/1000).toFixed(1).replace('.0','')+'k' : product.sold} sold` : '';
-  const images = (product.images && product.images.length) ? product.images : (product.imageUrl ? [product.imageUrl] : []);
+  const images = [];
+  if(typeof product.imageUrl === 'string' && /^https?:\/\//i.test(product.imageUrl)) images.push(product.imageUrl);
+  if(Array.isArray(product.images)) product.images.forEach(src => {
+    if(typeof src === 'string' && /^https?:\/\//i.test(src) && !images.includes(src)) images.push(src);
+  });
   galleryImages = images;
   galleryIndex = 0;
   // The main image is the page's LCP candidate — never lazy, and flagged
