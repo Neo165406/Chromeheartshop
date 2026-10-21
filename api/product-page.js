@@ -133,7 +133,7 @@ async function fetchSimilar(category, excludeId){
     return rows
       .filter(row => row.document)
       .map(row => ({ id: row.document.name.split('/').pop(), ...fsFields(row.document.fields || {}) }))
-      .filter(p => p.id !== excludeId)
+      .filter(p => p.id !== excludeId && p.stock !== 0) // hide out-of-stock
       .slice(0, 4);
   }catch(e){
     console.error('SSR similar-products fetch failed:', e);
