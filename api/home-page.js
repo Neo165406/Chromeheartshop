@@ -349,6 +349,9 @@ module.exports = async function handler(req, res){
   reels = reels.sort((a,b)=>(a.order||0)-(b.order||0));
   const collagePhotos = collage.filter(p=>p.imageUrl).sort((a,b)=>(a.order||0)-(b.order||0));
 
+  // Out-of-stock products (stock === 0) are hidden everywhere on the storefront.
+  products = products.filter(p => p.stock !== 0);
+
   const featured = products.filter(p=>p.featured).slice(0,4);
   const arrivals = featured.length ? featured : products.slice(0,4);
   const glasses = products.filter(p=>p.category==="Glasses").slice(0,4);
