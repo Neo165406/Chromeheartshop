@@ -504,6 +504,7 @@ function buildDescription(product, label){
 // claims about materials or sizing beyond what the shop already states.
 function categoryBlurb(product){
   const hay = `${product.category || ''} ${product.name || ''}`.toLowerCase();
+  if(String(product.slug || '').toLowerCase() === 'chrome-heart-black-gold') return 'Black-and-gold statement glasses for Y2K, retro and streetwear outfits. Check the product photos and current BDT price before ordering.';
   if(/bandana/.test(hay)) return 'A versatile accessory you can wear as a headband, around your neck, on your waist or hooked onto your jeans.';
   if(product && product.id === 'hRTjTVeGAcjWuwFAMwcs') return 'These silver rimless glasses bring a minimalist eyewear look to Y2K outfits and everyday streetwear. Review the product photos and current BDT price before ordering.';
   if(/glass|eyewear/.test(hay)) return 'It belongs to our eyewear range, built around gothic, Y2K and streetwear styling. Wear the frames with a plain tee or an all-black outfit to make the look stand out.';
@@ -772,9 +773,12 @@ module.exports = async function handler(req, res){
   // SEO override for this exact product only. Describes the style instead of
   // naming a third-party brand.
   const isSilverRimlessOverride = product.id === 'hRTjTVeGAcjWuwFAMwcs';
+  const isBlackGoldGlassesOverride = String(product.slug || '').toLowerCase() === 'chrome-heart-black-gold';
   const desc = isSilverRimlessOverride
     ? 'Shop silver rimless glasses in Bangladesh at FASHIONISTA. Silver-tone eyewear for Y2K and streetwear looks, with cash on delivery nationwide.'
-    : buildDescription(product, label);
+    : isBlackGoldGlassesOverride
+      ? `Shop black and gold glasses in Bangladesh at FASHIONISTA. A statement eyewear style for Y2K, retro and streetwear outfits. Cash on delivery nationwide.`
+      : buildDescription(product, label);
   // Use first-party image URLs in metadata/schema so Google can crawl the photos
   // without depending on the external image host. Keep order identical to
   // api/product-image.js: imageUrl first, then the remaining images array.
@@ -795,7 +799,9 @@ module.exports = async function handler(req, res){
   const image = productImages[0];
   const titleTag = isSilverRimlessOverride
     ? 'Silver Rimless Glasses Price in Bangladesh | FASHIONISTA'
-    : esc(buildTitle(label));
+    : isBlackGoldGlassesOverride
+      ? 'Black Gold Glasses Price in Bangladesh | FASHIONISTA'
+      : esc(buildTitle(label));
   const keywordsContent = esc(buildKeywords(product).join(', '));
 
   html = html
