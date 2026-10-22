@@ -529,6 +529,7 @@ function renderInfoSection(product){
   const discount = hasPrice && was > price ? Math.round((1 - price / was) * 100) : 0;
   const subPage = subcategoryPage(product);
   const isBlackGoldGlasses = String(product.slug || '').toLowerCase() === 'chrome-heart-black-gold';
+  const isRaglanLongSleeveTShirt = String(product.slug || '').toLowerCase() === 'raglan-long-sleeve-t-shirt';
   const productCategoryUrl = categoryPath(product.category);
 
   const intro = [
@@ -541,13 +542,14 @@ function renderInfoSection(product){
 
   return `
 <section class="seo-info" aria-labelledby="seoInfoHead">
-  <h2 id="seoInfoHead" class="display">${isBlackGoldGlasses ? 'Black Gold Glasses Price in Bangladesh' : `About ${name}`}</h2>
+  <h2 id="seoInfoHead" class="display">${isBlackGoldGlasses ? 'Black Gold Glasses Price in Bangladesh' : isRaglanLongSleeveTShirt ? 'Raglan Long Sleeve T-Shirt Price in Bangladesh' : `About ${name}`}</h2>
   <p>${intro}</p>
-  <p>${esc(categoryBlurb(product))}</p>
+  <p>${isRaglanLongSleeveTShirt ? 'A long sleeve raglan T-shirt is an easy streetwear layer for casual everyday outfits. Check the product photos, available sizes and current price before ordering; fabric and fit details should be confirmed from the listed product information.' : esc(categoryBlurb(product))}</p>
   ${isBlackGoldGlasses ? `<p>Looking for black gold glasses in Bangladesh? The current listed price for this pair at FASHIONISTA is BDT ${hasPrice ? price : 'shown above'}. Review the product photos and availability on this page before ordering; we do not list frame or lens specifications unless they are confirmed in the product details.</p><p>Explore more eyewear in our <a href="${esc(productCategoryUrl)}">glasses collection</a>, or check <a href="/shipping">delivery charges and timelines</a> for your location.</p>` : ''}
+  ${isRaglanLongSleeveTShirt ? `<p>Looking for a raglan long sleeve T-shirt in Bangladesh? The current listed price at FASHIONISTA is BDT ${hasPrice ? price : 'shown above'}. Check the available size options and product photos before placing your order. Browse more styles in our <a href="${esc(productCategoryUrl)}">clothing collection</a> or review <a href="/shipping">delivery charges and timelines</a>.</p>` : ''}
   ${subPage ? `<p>Browse all <a href="${subPage.path}">${esc(subPage.label.toLowerCase())}</a> at FASHIONISTA.</p>` : ''}
-  <h3>${isBlackGoldGlasses ? 'How much do black gold glasses cost in Bangladesh?' : `What is the price of ${name} in Bangladesh?`}</h3>
-  <p>${hasPrice ? `${isBlackGoldGlasses ? 'Black gold glasses' : name} costs BDT ${price} at FASHIONISTA. ` : ''}Delivery charges depend on where you live; see our <a href="/shipping">shipping info</a> for charges, timelines and how order confirmation works.</p>
+  <h3>${isBlackGoldGlasses ? 'How much do black gold glasses cost in Bangladesh?' : isRaglanLongSleeveTShirt ? 'What is the price of a raglan long sleeve T-shirt in Bangladesh?' : `What is the price of ${name} in Bangladesh?`}</h3>
+  <p>${hasPrice ? `${isBlackGoldGlasses ? 'Black gold glasses' : isRaglanLongSleeveTShirt ? 'Raglan long sleeve T-shirt' : name} costs BDT ${price} at FASHIONISTA. ` : ''}Delivery charges depend on where you live; see our <a href="/shipping">shipping info</a> for charges, timelines and how order confirmation works.</p>
   <h3>Can I pay cash on delivery?</h3>
   <p>Yes. We offer cash on delivery nationwide across Bangladesh, so there is nothing to pay online.</p>
   <h3>What if the item is damaged or the wrong size?</h3>
