@@ -865,6 +865,7 @@ module.exports = async function handler(req, res){
         "applicableCountry": "BD",
         "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
         "merchantReturnDays": 7,
+        "returnMethod": "https://schema.org/ReturnByMail",
         "refundType": "https://schema.org/ExchangeRefund",
         "merchantReturnLink": `${SITE}/return-policy`
       }
