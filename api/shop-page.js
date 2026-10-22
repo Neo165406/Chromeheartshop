@@ -634,7 +634,10 @@ async function serveLandingPage(req, res, html, cfg){
   html = html.replace('</head>', () => head.join('\n') + '\n</head>');
 
   const gridInner = items.map((p, i) => cardMarkup(p, i, i < 2)).join('');
-  html = html.replace('<div class="grid" id="shopGrid"></div>', () => introMarkup(cfg, items.length) + `<div class="grid" id="shopGrid">${gridInner}</div>`);
+  html = html.replace('<div class="grid" id="shopGrid"></div>', () => `<div class="grid" id="shopGrid">${gridInner}</div>`);
+  // Put useful category copy before the filter controls in the document order,
+  // so search engines are less likely to build snippets from filter UI labels.
+  html = html.replace('<div class="cats" id="catFilters"></div>', () => introMarkup(cfg, items.length) + '<div class="cats" id="catFilters"></div>');
   if(!items.length){
     html = html.replace(
       '<p class="empty-state" id="emptyState" style="display:none;">No products in this category yet — check back soon.</p>',
