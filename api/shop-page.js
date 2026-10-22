@@ -143,8 +143,8 @@ const CATEGORY_SEO = {
     desc: "Explore new and featured sunglasses, accessories and streetwear at FASHIONISTA. See BDT prices and stock status, with cash on delivery across Bangladesh."
   },
   "Glasses": {
-    title: "Glasses & Sunglasses in Bangladesh | FASHIONISTA",
-    desc: "Shop glasses and sunglasses in Bangladesh at FASHIONISTA. Explore rimless, aviator and round styles, BDT prices and cash on delivery nationwide."
+    title: "Sunglasses & Rimless Glasses in Bangladesh | FASHIONISTA",
+    desc: "Shop sunglasses and rimless glasses in Bangladesh at FASHIONISTA. Explore aviator and round styles, compare BDT prices, and pay cash on delivery nationwide."
   },
   "Accessories": {
     title: "Bracelets & Streetwear Accessories in Bangladesh | FASHIONISTA",
@@ -158,13 +158,13 @@ const CATEGORY_SEO = {
 
 const CATEGORY_HEADINGS = {
   "New In": "New Arrivals in Bangladesh",
-  "Glasses": "Glasses & Sunglasses in Bangladesh",
+  "Glasses": "Sunglasses & Rimless Glasses in Bangladesh",
   "Accessories": "Bracelets & Streetwear Accessories",
   "Clothing": "T-Shirts & Streetwear Clothing in Bangladesh"
 };
 const CATEGORY_SUBHEADINGS = {
   "New In": "Recently added glasses, accessories and streetwear",
-  "Glasses": "Rimless, aviator and round eyewear at FASHIONISTA",
+  "Glasses": "Shop aviator, round and rimless sunglasses in Bangladesh",
   "Accessories": "Browse bracelets, bandanas and chain necklaces",
   "Clothing": "T-shirts and streetwear styles, with BDT prices"
 };
@@ -670,9 +670,9 @@ const CATEGORY_CONTENT = {
     ]
   },
   "Glasses": {
-    h2: "Glasses and sunglasses in Bangladesh",
+    h2: "Sunglasses and rimless glasses in Bangladesh",
     paras: [
-      "Shop glasses and sunglasses in Bangladesh at FASHIONISTA, including rimless, aviator and round styles for gothic, Y2K and streetwear outfits. Product cards show current BDT prices; open a listing to check photos, details and availability before ordering.",
+      "Shop sunglasses and rimless glasses in Bangladesh at FASHIONISTA, including aviator and round styles for gothic, Y2K and streetwear outfits. Compare current BDT prices and open a listing to check photos, details and availability before ordering.",
       "Compare rimless glasses for a minimal look, aviator frames for a classic shape and round glasses for a retro accent. Check each product page for photos, details and current availability. Browse our <a href=\"/accessories\">accessories</a> to complete the look."
     ]
   },
