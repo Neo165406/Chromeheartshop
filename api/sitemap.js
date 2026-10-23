@@ -17,12 +17,6 @@ const SITE = 'https://fashion1sta.com';
 const FETCH_TIMEOUT_MS = 5000;
 const FETCH_ATTEMPTS = 2;
 
-// Bound sitemap generation time so crawlers don't wait indefinitely when
-// Firestore is slow. Retry transient failures once; the handler returns 503
-// if a complete product list still cannot be fetched.
-const FETCH_TIMEOUT_MS = 5000;
-const FETCH_ATTEMPTS = 2;
-
 const STATIC_PAGES = [
   { loc: `${SITE}/`, changefreq: 'daily', priority: '1.0' },
   { loc: `${SITE}/shop`, changefreq: 'daily', priority: '0.9' },
