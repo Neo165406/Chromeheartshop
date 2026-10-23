@@ -143,7 +143,7 @@ const CATEGORY_SEO = {
     desc: "Explore new and featured sunglasses, accessories and streetwear at FASHIONISTA. See BDT prices and stock status, with cash on delivery across Bangladesh."
   },
   "Glasses": {
-    title: "Glasses & Sunglasses in Bangladesh | FASHIONISTA",
+    title: "Chrome Heart Glasses in Bangladesh | FASHIONISTA",
     desc: "Shop glasses and sunglasses in Bangladesh at FASHIONISTA. Explore rimless, aviator and round styles, BDT prices and cash on delivery nationwide."
   },
   "Accessories": {
