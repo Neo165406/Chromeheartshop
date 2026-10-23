@@ -11,6 +11,12 @@ const FIREBASE_API_KEY = 'AIzaSyC_Fgdc_JlFlrPwByNQIa3e-MMGmoRXRWE'; // public we
 const PROJECT_ID = 'argentum-3709f';
 const SITE = 'https://fashion1sta.com';
 
+// Bound sitemap generation time so crawlers don't wait indefinitely when
+// Firestore is slow. Retry transient failures once; the handler returns 503
+// if a complete product list still cannot be fetched.
+const FETCH_TIMEOUT_MS = 5000;
+const FETCH_ATTEMPTS = 2;
+
 const STATIC_PAGES = [
   { loc: `${SITE}/`, changefreq: 'daily', priority: '1.0' },
   { loc: `${SITE}/shop`, changefreq: 'daily', priority: '0.9' },
@@ -45,8 +51,22 @@ async function fetchAllProducts(){
     do{
       const url = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/products?pageSize=300&key=${FIREBASE_API_KEY}`
         + (pageToken ? `&pageToken=${encodeURIComponent(pageToken)}` : '');
-      const r = await fetch(url);
-      if(!r.ok) throw new Error('Sitemap Firestore fetch failed: ' + r.status);
+      let r;
+      let lastError;
+      for(let attempt = 1; attempt <= FETCH_ATTEMPTS; attempt++){
+        try{
+          r = await fetch(url, { signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) });
+          if(!r.ok) throw new Error('Sitemap Firestore fetch failed: ' + r.status);
+          lastError = null;
+          break;
+        }catch(e){
+          lastError = e;
+          if(attempt < FETCH_ATTEMPTS){
+            console.error('Sitemap Firestore request failed; retrying:', e);
+          }
+        }
+      }
+      if(lastError) throw lastError;
       const j = await r.json();
       (j.documents || []).forEach(doc => {
         const id = doc.name.split('/').pop();
