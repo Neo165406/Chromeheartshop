@@ -56,8 +56,30 @@ const db = getFirestore();
 const snap = await db.collection('products').get();
 const products = snap.docs.map(d => ({ id: d.id, ref: d.ref, ...d.data() }));
 
-const taken = new Set();
-products.forEach(p => { if(validSlug(p.slug)) taken.add(p.slug); });
+// Audit existing valid slugs before planning writes. Duplicate slugs make two
+// products compete for the same canonical URL, so never silently leave them in
+// place or proceed with a bulk write until they have been resolved deliberately.
+const slugOwners = new Map();
+products.forEach(p => {
+  if(!validSlug(p.slug)) return;
+  if(!slugOwners.has(p.slug)) slugOwners.set(p.slug, []);
+  slugOwners.get(p.slug).push(p);
+});
+const duplicates = [...slugOwners.entries()].filter(([, owners]) => owners.length > 1);
+if(duplicates.length){
+  console.error('DUPLICATE VALID SLUGS FOUND:');
+  duplicates.forEach(([slug, owners]) => {
+    console.error(`  /product/${slug}`);
+    owners.forEach(p => console.error(`    ${p.id}  ${p.name || '(unnamed product)'}`));
+  });
+  if(write){
+    console.error('Refusing to write slugs while duplicate existing slugs remain. Resolve these products first.');
+    process.exit(2);
+  }
+  console.error('Audit only: no writes made. Resolve duplicate slugs before running with --write.\\n');
+}
+
+const taken = new Set(slugOwners.keys());
 
 const millis = p => (p.createdAt && typeof p.createdAt.toMillis === 'function') ? p.createdAt.toMillis() : 0;
 const todo = products
