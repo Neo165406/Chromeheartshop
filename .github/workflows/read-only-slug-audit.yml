@@ -1,0 +1,24 @@
+name: Read-only product slug audit
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit-product-slugs:
+    name: Audit product slugs (read-only)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run read-only Firestore audit
+        run: node scripts/audit-product-slugs.mjs
