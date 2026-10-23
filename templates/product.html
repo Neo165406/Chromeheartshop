@@ -235,7 +235,10 @@ function updateSEOTags(product){
   // SEO override for this exact product only. Describes the style instead of
   // naming a third-party brand (must match api/product-page.js).
   const isSilverRimlessOverride = product.id === 'hRTjTVeGAcjWuwFAMwcs';
-  const desc = isSilverRimlessOverride
+  const isRedBandanaOverride = String(product.slug || '').toLowerCase() === 'red-bandana';
+  const desc = isRedBandanaOverride
+    ? 'Shop a red bandana in Bangladesh at FASHIONISTA. Check the current BDT price, product photos and availability, with cash on delivery nationwide.'
+    : isSilverRimlessOverride
     ? 'Shop silver rimless glasses in Bangladesh at FASHIONISTA. Silver-tone eyewear for Y2K and streetwear looks, with cash on delivery nationwide.'
     : (product.description
       ? product.description.replace(/\s+/g,' ').trim().slice(0,155)
@@ -252,9 +255,11 @@ function updateSEOTags(product){
     ? originalImages.map((src, i) => `${SITE_URL}/product-image/${encodeURIComponent(product.id)}.jpg${i ? `?n=${i}` : ''}`)
     : [`${SITE_URL}/og-image.png`];
   const image = productImages[0];
-  const seoTitle = isSilverRimlessOverride
-    ? 'Silver Rimless Glasses | FASHIONISTA'
-    : `${product.name} — FASHIONISTA`;
+  const seoTitle = isRedBandanaOverride
+    ? 'Red Bandana in Bangladesh | FASHIONISTA'
+    : isSilverRimlessOverride
+      ? 'Silver Rimless Glasses | FASHIONISTA'
+      : `${product.name} — FASHIONISTA`;
 
   // When the server already baked in the title and descriptions (api/product-page.js
   // builds the unique, cleaned versions), keep them as they are: overwriting them
