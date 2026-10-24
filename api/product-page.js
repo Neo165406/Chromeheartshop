@@ -908,7 +908,7 @@ module.exports = async function handler(req, res){
           "refundType": "https://schema.org/ExchangeRefund",
           "returnFees": "https://schema.org/ReturnFeesCustomerResponsibility",
           "merchantReturnDescription": "For defective or incorrect items, FASHIONISTA covers return shipping. For other returns, the customer is responsible for return shipping fees.",
-          "merchantReturnLink": `${SITE}/return-policy`
+          "url": `${SITE}/return-policy`
         }
       },
       "shippingDetails": SHIPPING_DETAILS,
@@ -921,7 +921,7 @@ module.exports = async function handler(req, res){
         "refundType": "https://schema.org/ExchangeRefund",
         "returnFees": "https://schema.org/ReturnFeesCustomerResponsibility",
         "merchantReturnDescription": "For defective or incorrect items, FASHIONISTA covers return shipping. For other returns, the customer is responsible for return shipping fees.",
-        "merchantReturnLink": `${SITE}/return-policy`
+        "url": `${SITE}/return-policy`
       }
     }
   };
