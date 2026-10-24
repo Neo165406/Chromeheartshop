@@ -1,0 +1,22 @@
+name: Green Bandana 404 diagnostic
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose-green-bandana:
+    name: Read-only Green Bandana lookup
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Inspect Green Bandana record (read-only)
+        run: node scripts/audit-green-bandana.mjs
