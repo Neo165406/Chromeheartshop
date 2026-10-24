@@ -155,7 +155,7 @@ function withLandingPills(html){
 // links, and removal of the placeholder TikTok icon (it linked to "#").
 // Each piece is an exact-text replace: if the template text ever changes,
 // that piece does nothing — it can't break the page.
-const HOME_TITLE = 'FASHIONISTA | Y2K Glasses, Bracelets &amp; Accessories in Bangladesh';
+const HOME_TITLE = 'Fashionista Bangladesh | Glasses, Bracelets &amp; Bandanas';
 const OLD_TITLE_TAG = '<title>Fashionista</title>';
 
 const LINK_REWRITES = [
