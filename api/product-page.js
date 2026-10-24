@@ -898,18 +898,7 @@ module.exports = async function handler(req, res){
       "seller": {
         "@type": "Organization",
         "name": "FASHIONISTA",
-        "url": SITE,
-        "hasMerchantReturnPolicy": {
-          "@type": "MerchantReturnPolicy",
-          "applicableCountry": "BD",
-          "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
-          "merchantReturnDays": 7,
-          "returnMethod": "https://schema.org/ReturnByMail",
-          "refundType": "https://schema.org/ExchangeRefund",
-          "returnFees": "https://schema.org/ReturnFeesCustomerResponsibility",
-          "merchantReturnDescription": "For defective or incorrect items, FASHIONISTA covers return shipping. For other returns, the customer is responsible for return shipping fees.",
-          "url": `${SITE}/return-policy`
-        }
+        "url": SITE
       },
       "shippingDetails": SHIPPING_DETAILS,
       "hasMerchantReturnPolicy": {
