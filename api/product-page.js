@@ -107,8 +107,26 @@ async function fetchProductBySlug(slug){
   if(!r.ok) throw new Error('Firestore product-by-slug query failed: ' + r.status);
   const rows = await r.json();
   const row = rows.find(x => x && x.document);
-  if(!row) return null;
-  return { id: row.document.name.split('/').pop(), ...fsFields(row.document.fields || {}) };
+  if(row) return { id: row.document.name.split('/').pop(), ...fsFields(row.document.fields || {}) };
+
+  // Recovery path for a stale/mismatched slug field: only when the exact
+  // slug query has no result, scan the public product collection and match the
+  // requested slug against the product name's normalized slug. Require one
+  // unique match so this can never select an arbitrary product.
+  const listUrl = new URL(`https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/products`);
+  listUrl.searchParams.set('pageSize', '300');
+  listUrl.searchParams.set('key', FIREBASE_API_KEY);
+  const listResponse = await fetch(listUrl, { signal: AbortSignal.timeout(PRODUCT_TIMEOUT_MS) });
+  if(!listResponse.ok) throw new Error('Firestore product fallback lookup failed: ' + listResponse.status);
+  const listBody = await listResponse.json();
+  const slugifyName = value => String(value || '').normalize('NFKD')
+    .replace(/[\\u0300-\\u036f]/g, '').toLowerCase().replace(/&/g, ' and ')
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80).replace(/-+$/g, '');
+  const matches = (listBody.documents || []).map(doc => ({
+    id: doc.name.split('/').pop(),
+    ...fsFields(doc.fields || {})
+  })).filter(p => slugifyName(p.name) === slug);
+  return matches.length === 1 ? matches[0] : null;
 }
 
 async function fetchSimilar(category, excludeId){
@@ -761,9 +779,9 @@ module.exports = async function handler(req, res){
     return;
   }
 
-  // Old id-based URL of a product that now has a slug: one permanent hop to
-  // the slug URL, so links, bookmarks and Google's index all consolidate there.
-  if(!bySlug && validSlug(product.slug)){
+  // Consolidate old ID URLs and any stale name-derived slug aliases to the
+  // product's current canonical URL.
+  if(validSlug(product.slug) && ((!bySlug) || product.slug !== slug)){
     redirectPermanent(res, productPath(product));
     return;
   }
