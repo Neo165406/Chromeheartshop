@@ -147,8 +147,8 @@ const CATEGORY_SEO = {
     desc: "Shop glasses and sunglasses in Bangladesh at FASHIONISTA. Explore rimless, aviator and round styles, BDT prices and cash on delivery nationwide."
   },
   "Accessories": {
-    title: "Bracelets & Streetwear Accessories in Bangladesh | FASHIONISTA",
-    desc: "Shop bracelets, chain necklaces and bandanas at FASHIONISTA. Explore gothic and streetwear accessories, BDT prices and cash on delivery in Bangladesh."
+    title: "Y2K Accessories in Bangladesh | Fashionista",
+    desc: "Shop Y2K accessories in Bangladesh at Fashionista, including bracelets, chain necklaces and bandanas. Browse streetwear styles, BDT prices and cash on delivery nationwide."
   },
   "Clothing": {
     title: "T-Shirts & Streetwear Clothing in Bangladesh | FASHIONISTA",
@@ -159,13 +159,13 @@ const CATEGORY_SEO = {
 const CATEGORY_HEADINGS = {
   "New In": "New Arrivals in Bangladesh",
   "Glasses": "Glasses & Sunglasses in Bangladesh",
-  "Accessories": "Bracelets & Streetwear Accessories",
+  "Accessories": "Y2K Accessories in Bangladesh",
   "Clothing": "T-Shirts & Streetwear Clothing in Bangladesh"
 };
 const CATEGORY_SUBHEADINGS = {
   "New In": "Recently added glasses, accessories and streetwear",
   "Glasses": "Rimless, aviator and round eyewear at FASHIONISTA",
-  "Accessories": "Browse bracelets, bandanas and chain necklaces",
+  "Accessories": "Explore bracelets, bandanas and chain necklaces for Y2K and streetwear looks",
   "Clothing": "T-shirts and streetwear styles, with BDT prices"
 };
 
