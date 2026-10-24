@@ -120,7 +120,7 @@ async function fetchProductBySlug(slug){
   if(!listResponse.ok) throw new Error('Firestore product fallback lookup failed: ' + listResponse.status);
   const listBody = await listResponse.json();
   const slugifyName = value => String(value || '').normalize('NFKD')
-    .replace(/[\\u0300-\\u036f]/g, '').toLowerCase().replace(/&/g, ' and ')
+    .replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/&/g, ' and ')
     .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80).replace(/-+$/g, '');
   const matches = (listBody.documents || []).map(doc => ({
     id: doc.name.split('/').pop(),
