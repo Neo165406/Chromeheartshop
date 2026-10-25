@@ -307,9 +307,9 @@ function itemListJsonLd(products){
     // Publish product photos through the site's image endpoint so crawlers
     // can fetch them from the canonical domain, including secondary photos.
     const originalImages = [];
-    if(typeof p.imageUrl === 'string' && /^https?:\/\//i.test(p.imageUrl)) originalImages.push(p.imageUrl);
+    if(typeof p.imageUrl === 'string' && /^https?:\\/\\//i.test(p.imageUrl)) originalImages.push(p.imageUrl);
     if(Array.isArray(p.images)) p.images.forEach(src => {
-      if(typeof src === 'string' && /^https?:\/\//i.test(src) && !originalImages.includes(src)) originalImages.push(src);
+      if(typeof src === 'string' && /^https?:\\/\\//i.test(src) && !originalImages.includes(src)) originalImages.push(src);
     });
     if(!originalImages.length) continue;
     if(seen.has(p.id)) continue;
@@ -331,7 +331,7 @@ function itemListJsonLd(products){
     "name": "FASHIONISTA — featured products",
     "itemListElement": items
   };
-  return `<script type="application/ld+json" id="homeItemListLd">${JSON.stringify(data).replace(/</g,'\\\\u003c')}</script>\\n`;
+  return `<script type="application/ld+json" id="homeItemListLd">${JSON.stringify(data).replace(/</g,'\\u003c')}</script>\n`;
 }
 
 module.exports = async function handler(req, res){
