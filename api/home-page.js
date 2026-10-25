@@ -302,17 +302,17 @@ function withShareImage(html, req){
 function itemListJsonLd(products){
   const seen = new Set();
   const items = [];
+  const isHttpUrl = value => typeof value === 'string' && (value.startsWith('https://') || value.startsWith('http://'));
   for(const p of products){
     if(!p || !p.name || !p.id) continue;
     // Publish product photos through the site's image endpoint so crawlers
     // can fetch them from the canonical domain, including secondary photos.
     const originalImages = [];
-    if(typeof p.imageUrl === 'string' && /^https?:\\/\\//i.test(p.imageUrl)) originalImages.push(p.imageUrl);
+    if(isHttpUrl(p.imageUrl)) originalImages.push(p.imageUrl);
     if(Array.isArray(p.images)) p.images.forEach(src => {
-      if(typeof src === 'string' && /^https?:\\/\\//i.test(src) && !originalImages.includes(src)) originalImages.push(src);
+      if(isHttpUrl(src) && !originalImages.includes(src)) originalImages.push(src);
     });
-    if(!originalImages.length) continue;
-    if(seen.has(p.id)) continue;
+    if(!originalImages.length || seen.has(p.id)) continue;
     seen.add(p.id);
     const images = originalImages.map((src, i) => `${SITE}/product-image/${encodeURIComponent(p.id)}.jpg${i ? `?n=${i}` : ''}`);
     items.push({
