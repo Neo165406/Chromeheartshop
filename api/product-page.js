@@ -801,9 +801,12 @@ module.exports = async function handler(req, res){
   const isSilverRimlessOverride = product.id === 'hRTjTVeGAcjWuwFAMwcs';
   const isBlackGoldGlassesOverride = String(product.slug || '').toLowerCase() === 'chrome-heart-black-gold';
   const isRedBandanaOverride = String(product.slug || '').toLowerCase() === 'red-bandana';
-  const desc = isRedBandanaOverride
-    ? 'Shop a red bandana in Bangladesh at FASHIONISTA. Check the current BDT price, product photos and availability, with cash on delivery nationwide.'
-    : isSilverRimlessOverride
+  const isRaglanTeeOverride = String(product.slug || '').toLowerCase() === 'raglan-long-sleeve-t-shirt';
+  const desc = isRaglanTeeOverride
+    ? 'Shop a raglan long sleeve T-shirt in Bangladesh at FASHIONISTA. Check the current BDT price, product photos, available sizes and stock status, with cash on delivery nationwide.'
+    : isRedBandanaOverride
+      ? 'Shop a red bandana in Bangladesh at FASHIONISTA. Check the current BDT price, product photos and availability, with cash on delivery nationwide.'
+      : isSilverRimlessOverride
       ? 'Shop silver rimless glasses in Bangladesh at FASHIONISTA. Silver-tone eyewear for Y2K and streetwear looks, with cash on delivery nationwide.'
       : isBlackGoldGlassesOverride
       ? `Shop black and gold glasses in Bangladesh at FASHIONISTA. A statement eyewear style for Y2K, retro and streetwear outfits. Cash on delivery nationwide.`
@@ -826,9 +829,11 @@ module.exports = async function handler(req, res){
     ? originalImages.map((src, i) => `${SITE}/product-image/${encodeURIComponent(product.id)}.jpg${i ? `?n=${i}` : ''}`)
     : [`${SITE}/og-image.png`];
   const image = productImages[0];
-  const titleTag = isRedBandanaOverride
-    ? 'Red Bandana in Bangladesh | Price & COD | FASHIONISTA'
-    : isSilverRimlessOverride
+  const titleTag = isRaglanTeeOverride
+    ? 'Raglan Long Sleeve T-Shirt Price in Bangladesh | FASHIONISTA'
+    : isRedBandanaOverride
+      ? 'Red Bandana in Bangladesh | Price & COD | FASHIONISTA'
+      : isSilverRimlessOverride
       ? 'Silver Rimless Glasses Price in Bangladesh | FASHIONISTA'
       : isBlackGoldGlassesOverride
         ? 'Black Gold Glasses Price in Bangladesh | FASHIONISTA'
