@@ -303,16 +303,24 @@ function itemListJsonLd(products){
   const seen = new Set();
   const items = [];
   for(const p of products){
-    if(!p || !p.name || typeof p.imageUrl !== 'string' || !/^https?:\/\//i.test(p.imageUrl)) continue;
-    const pid = p.id || String(p.name||'').toLowerCase().replace(/[^a-z0-9]+/g,'-');
-    if(seen.has(pid)) continue;
-    seen.add(pid);
+    if(!p || !p.name || !p.id) continue;
+    // Publish product photos through the site's image endpoint so crawlers
+    // can fetch them from the canonical domain, including secondary photos.
+    const originalImages = [];
+    if(typeof p.imageUrl === 'string' && /^https?:\/\//i.test(p.imageUrl)) originalImages.push(p.imageUrl);
+    if(Array.isArray(p.images)) p.images.forEach(src => {
+      if(typeof src === 'string' && /^https?:\/\//i.test(src) && !originalImages.includes(src)) originalImages.push(src);
+    });
+    if(!originalImages.length) continue;
+    if(seen.has(p.id)) continue;
+    seen.add(p.id);
+    const images = originalImages.map((src, i) => `${SITE}/product-image/${encodeURIComponent(p.id)}.jpg${i ? `?n=${i}` : ''}`);
     items.push({
       "@type": "ListItem",
       "position": items.length + 1,
       "url": `${SITE}${productPath(p)}`,
       "name": p.name,
-      "image": p.imageUrl
+      "image": images
     });
     if(items.length >= 8) break;
   }
@@ -323,7 +331,7 @@ function itemListJsonLd(products){
     "name": "FASHIONISTA — featured products",
     "itemListElement": items
   };
-  return `<script type="application/ld+json" id="homeItemListLd">${JSON.stringify(data).replace(/</g,'\\u003c')}</script>\n`;
+  return `<script type="application/ld+json" id="homeItemListLd">${JSON.stringify(data).replace(/</g,'\\\\u003c')}</script>\\n`;
 }
 
 module.exports = async function handler(req, res){
