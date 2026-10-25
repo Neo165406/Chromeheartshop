@@ -281,13 +281,13 @@ const SCOPE_PAGES = {
     path: '/bandanas',
     label: 'Bandanas',
     aliases: ['bandana', 'bandanas'],
-    title: 'Bandanas in Bangladesh | Streetwear & Gothic | FASHIONISTA',
-    desc: 'Shop bandanas at FASHIONISTA to wear as a headband, neck scarf or waist accessory. Prices in BDT, cash on delivery across Bangladesh.',
-    h1: 'Bandanas in Bangladesh',
-    sub: 'Streetwear and gothic bandanas, priced in BDT',
+    title: 'Bandana Price in Bangladesh | Bandanas in BD | FASHIONISTA',
+    desc: 'Check bandana prices in Bangladesh at FASHIONISTA. Browse printed, streetwear and gothic bandanas with BDT prices, product photos, stock status and cash on delivery nationwide.',
+    h1: 'Bandana Price in Bangladesh',
+    sub: 'Shop bandanas in BD — printed, streetwear and gothic styles with prices in BDT',
     intro: [
-      'A bandana is one of the easiest ways to change an outfit. Tie one as a headband, around your neck, on your waist or hooked onto your jeans. Every bandana listed here shows its price in BDT and an out-of-stock label when it has sold through.',
-      'Order from anywhere in Bangladesh and pay cash on delivery.'
+      'Looking for bandana prices in Bangladesh? Browse the bandanas currently available at FASHIONISTA and check each product photo, description, stock status and price in BDT before ordering.',
+      'Choose a printed, streetwear or gothic-inspired bandana to style as a headband, neck scarf or accessory. Order from anywhere in Bangladesh and pay cash on delivery.'
     ],
     highlights: [
       { heading: 'Printed bandanas', text: 'These listings mention a print, paisley or pattern in their name or description:', test: s => /print|paisley|pattern/i.test(s) },
