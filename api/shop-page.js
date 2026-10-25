@@ -145,8 +145,8 @@ const CATEGORY_SEO = {
     desc: "Explore new and featured sunglasses, accessories and streetwear at FASHIONISTA. See BDT prices and stock status, with cash on delivery across Bangladesh."
   },
   "Glasses": {
-    title: "Chrome Heart Glasses in Bangladesh | FASHIONISTA",
-    desc: "Shop glasses and sunglasses in Bangladesh at FASHIONISTA. Explore rimless, aviator and round styles, BDT prices and cash on delivery nationwide."
+    title: "Sunglasses Price in Bangladesh | FASHIONISTA",
+    desc: "Shop sunglasses and fashion glasses in Bangladesh at FASHIONISTA. Compare Y2K, retro, rimless, aviator and round styles with BDT prices and cash on delivery nationwide."
   },
   "Accessories": {
     title: "Y2K Accessories in Bangladesh | Fashionista",
@@ -160,7 +160,7 @@ const CATEGORY_SEO = {
 
 const CATEGORY_HEADINGS = {
   "New In": "New Arrivals in Bangladesh",
-  "Glasses": "Glasses & Sunglasses in Bangladesh",
+  "Glasses": "Sunglasses & Fashion Glasses in Bangladesh",
   "Accessories": "Y2K Accessories in Bangladesh",
   "Clothing": "T-Shirts & Streetwear Clothing in Bangladesh"
 };
@@ -281,12 +281,12 @@ const SCOPE_PAGES = {
     path: '/bandanas',
     label: 'Bandanas',
     aliases: ['bandana', 'bandanas'],
-    title: 'Bandana Price in Bangladesh | Bandanas in BD | FASHIONISTA',
-    desc: 'Check bandana prices in Bangladesh at FASHIONISTA. Browse printed, streetwear and gothic bandanas with BDT prices, product photos, stock status and cash on delivery nationwide.',
+    title: 'Bandana Price in Bangladesh | FASHIONISTA',
+    desc: 'Looking for bandana prices in Bangladesh? Shop printed, red and streetwear bandanas at FASHIONISTA. View product photos, BDT prices and stock status, with cash on delivery nationwide.',
     h1: 'Bandana Price in Bangladesh',
-    sub: 'Shop bandanas in BD — printed, streetwear and gothic styles with prices in BDT',
+    sub: 'Printed, red and streetwear bandanas with prices in BDT',
     intro: [
-      'Looking for bandana prices in Bangladesh? Browse the bandanas currently available at FASHIONISTA and check each product photo, description, stock status and price in BDT before ordering.',
+      'Compare bandana prices in Bangladesh at FASHIONISTA. Browse the currently listed bandanas, check product photos and stock status, and see each price in BDT before ordering.',
       'Choose a printed, streetwear or gothic-inspired bandana to style as a headband, neck scarf or accessory. Order from anywhere in Bangladesh and pay cash on delivery.'
     ],
     highlights: [
