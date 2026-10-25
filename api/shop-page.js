@@ -438,7 +438,14 @@ function landingJsonLd(cfg, items){
       "url": `${SITE}${productPath(p)}`,
       "name": p.name
     };
-    if(typeof p.imageUrl === 'string' && /^https?:\/\//i.test(p.imageUrl)) entry.image = p.imageUrl;
+    const sourceImages = [p.imageUrl, ...(Array.isArray(p.images) ? p.images : [])]
+      .filter(value => typeof value === 'string' && /^https?:\/\//i.test(value));
+    const uniqueImages = [...new Set(sourceImages)];
+    if(uniqueImages.length){
+      entry.image = uniqueImages.slice(0, 6).map((_, imageIndex) =>
+        `${SITE}/product-image/${encodeURIComponent(p.id)}.jpg${imageIndex ? `?n=${imageIndex}` : ''}`
+      );
+    }
     listItems.push(entry);
     if(listItems.length >= 30) break;
   }
@@ -742,7 +749,14 @@ function categoryJsonLd(category, items){
   for(const p of items){
     if(!p || !p.name) continue;
     const entry = { "@type": "ListItem", "position": listItems.length + 1, "url": `${SITE}${productPath(p)}`, "name": p.name };
-    if(typeof p.imageUrl === 'string' && /^https?:\/\//i.test(p.imageUrl)) entry.image = p.imageUrl;
+    const sourceImages = [p.imageUrl, ...(Array.isArray(p.images) ? p.images : [])]
+      .filter(value => typeof value === 'string' && /^https?:\/\//i.test(value));
+    const uniqueImages = [...new Set(sourceImages)];
+    if(uniqueImages.length){
+      entry.image = uniqueImages.slice(0, 6).map((_, imageIndex) =>
+        `${SITE}/product-image/${encodeURIComponent(p.id)}.jpg${imageIndex ? `?n=${imageIndex}` : ''}`
+      );
+    }
     listItems.push(entry);
     if(listItems.length >= 30) break;
   }
