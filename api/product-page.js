@@ -355,7 +355,7 @@ const NAME_KEYWORDS = [
   { match: /black/, words: ['black sunglasses bd'] },
   { match: /cross/, words: ['gothic cross accessories bangladesh', 'silver cross bracelet bd'] },
   { match: /printed|print/, words: ['printed fashion accessories bangladesh'] },
-  { match: /raglan|long sleeve/, words: ['raglan t-shirt bd', 'long sleeve t-shirt bangladesh'] }
+  { match: /raglan|long sleeve/, words: ['raglan t-shirt bd', 'raglan long sleeve t-shirt bangladesh', 'raglan full sleeve t-shirt', 'long sleeve t-shirt price in bangladesh', 'long sleeve t-shirt bangladesh', 'full sleeve t-shirt bd'] }
 ];
 
 function buildKeywords(product){
