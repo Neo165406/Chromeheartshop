@@ -150,7 +150,7 @@ const CATEGORY_SEO = {
   },
   "Accessories": {
     title: "Y2K Accessories in Bangladesh | Fashionista",
-    desc: "Shop Y2K accessories in Bangladesh at Fashionista, including bracelets, chain necklaces and bandanas. Browse streetwear styles, BDT prices and cash on delivery nationwide."
+    desc: "Shop Y2K accessories in Bangladesh at Fashionista: bracelets, chain necklaces and bandanas. See BDT prices, with cash on delivery nationwide."
   },
   "Clothing": {
     title: "T-Shirts & Streetwear Clothing in Bangladesh | FASHIONISTA",
@@ -245,8 +245,8 @@ const SCOPE_PAGES = {
     path: '/rings',
     label: 'Rings',
     aliases: ['rings', 'ring'],
-    title: 'Fashion Rings in Bangladesh | Silver & Gothic Rings | FASHIONISTA',
-    desc: 'Explore fashion rings at FASHIONISTA, from silver-tone and gothic-inspired styles to everyday streetwear accessories. Prices in BDT and cash on delivery across Bangladesh.',
+    title: 'Silver & Gothic Rings in Bangladesh | FASHIONISTA',
+    desc: 'Explore silver-tone and gothic-inspired fashion rings at FASHIONISTA. Prices in BDT, with cash on delivery across Bangladesh.',
     h1: 'Fashion Rings in Bangladesh',
     sub: 'Silver-tone, gothic and streetwear rings, priced in BDT',
     intro: [
@@ -282,7 +282,7 @@ const SCOPE_PAGES = {
     label: 'Bandanas',
     aliases: ['bandana', 'bandanas'],
     title: 'Printed & Streetwear Bandanas in Bangladesh | FASHIONISTA',
-    desc: 'Shop printed, streetwear and gothic bandanas in Bangladesh at FASHIONISTA. Explore available styles, product photos and BDT prices, with cash on delivery nationwide.',
+    desc: 'Shop printed, streetwear and gothic bandanas in Bangladesh at FASHIONISTA. See styles and BDT prices, with cash on delivery nationwide.',
     h1: 'Shop Bandanas in Bangladesh',
     sub: 'Printed, streetwear and gothic bandana styles with prices in BDT',
     intro: [
@@ -703,7 +703,7 @@ const CATEGORY_CONTENT = {
 
 const CATEGORY_FAQ = [
   ["Can I pay cash on delivery?", "Yes. We offer cash on delivery nationwide across Bangladesh, so there is nothing to pay online. See our <a href=\"/shipping\">shipping info</a> for delivery charges and timelines."],
-  ["What if an item is damaged or the wrong size?", "Inspect your parcel in front of the delivery person and report any damaged, incorrect or wrong-size item on the spot. Details are in our <a href=\"/return-policy\">return and exchange policy</a>."],
+  ["What if an item is damaged or the wrong size?", "Inspect your parcel in front of the delivery person and report any damaged, incorrect or wrong-size item on the spot, or within 7 days of delivery. Details are in our <a href=\"/return-policy\">return and exchange policy</a>."],
   ["How do I ask a question before ordering?", "Message us on WhatsApp or visit our <a href=\"/contact\">contact page</a>. We usually reply within a few hours."]
 ];
 
