@@ -157,6 +157,8 @@ function withLandingPills(html){
 // that piece does nothing — it can't break the page.
 const HOME_TITLE = 'Fashionista Bangladesh | Glasses, Bracelets &amp; Bandanas';
 const OLD_TITLE_TAG = '<title>Fashionista</title>';
+const OLD_HOME_DESC = 'Shop glasses, bracelets and printed bandanas online in Bangladesh at Fashionista. Explore Y2K sunglasses, gothic accessories and streetwear styles with prices in BDT.';
+const HOME_DESC = 'Shop glasses, bracelets and printed bandanas in Bangladesh at Fashionista. Explore Y2K sunglasses, gothic accessories and streetwear, with prices in BDT.';
 
 const LINK_REWRITES = [
   ['href="shop.html?category=Clothing"', 'href="/clothing"'],
@@ -171,6 +173,9 @@ const LINK_REWRITES = [
 
 function withSeoTweaks(html){
   html = html.replace(OLD_TITLE_TAG, () => `<title>${HOME_TITLE}</title>`);
+  // The template's description (also used for og/twitter) is 166 characters;
+  // Google cuts snippets near 160, so serve a shorter one.
+  html = html.split(OLD_HOME_DESC).join(HOME_DESC);
   LINK_REWRITES.forEach(([from, to]) => { html = html.split(from).join(to); });
   html = html.replace(/\s*<a href="#" aria-label="TikTok">[\s\S]*?<\/a>/, '');
   return html;
