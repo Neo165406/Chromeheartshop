@@ -802,9 +802,12 @@ module.exports = async function handler(req, res){
   const isBlackGoldGlassesOverride = String(product.slug || '').toLowerCase() === 'chrome-heart-black-gold';
   const isRedBandanaOverride = String(product.slug || '').toLowerCase() === 'red-bandana';
   const isRaglanTeeOverride = String(product.slug || '').toLowerCase() === 'raglan-long-sleeve-t-shirt';
-  const desc = isRaglanTeeOverride
-    ? 'Shop a raglan long sleeve T-shirt in Bangladesh at FASHIONISTA. Check the current BDT price, product photos, available sizes and stock status, with cash on delivery nationwide.'
-    : isRedBandanaOverride
+  const isY2kStarGlassesOverride = String(product.slug || '').toLowerCase() === 'retro-y2k-star-glass';
+  const desc = isY2kStarGlassesOverride
+    ? 'Shop Y2K star glasses in Bangladesh at FASHIONISTA. Check the current BDT price, product photos and availability, with cash on delivery nationwide.'
+    : isRaglanTeeOverride
+      ? 'Shop a raglan long sleeve T-shirt in Bangladesh at FASHIONISTA. Check the current BDT price, product photos, available sizes and stock status, with cash on delivery nationwide.'
+      : isRedBandanaOverride
       ? 'Shop a red bandana in Bangladesh at FASHIONISTA. Check the current BDT price, product photos and availability, with cash on delivery nationwide.'
       : isSilverRimlessOverride
       ? 'Shop silver rimless glasses in Bangladesh at FASHIONISTA. Silver-tone eyewear for Y2K and streetwear looks, with cash on delivery nationwide.'
@@ -829,9 +832,11 @@ module.exports = async function handler(req, res){
     ? originalImages.map((src, i) => `${SITE}/product-image/${encodeURIComponent(product.id)}.jpg${i ? `?n=${i}` : ''}`)
     : [`${SITE}/og-image.png`];
   const image = productImages[0];
-  const titleTag = isRaglanTeeOverride
-    ? 'Raglan Long Sleeve T-Shirt Price in Bangladesh | FASHIONISTA'
-    : isRedBandanaOverride
+  const titleTag = isY2kStarGlassesOverride
+    ? 'Y2K Star Glasses Price in Bangladesh | FASHIONISTA'
+    : isRaglanTeeOverride
+      ? 'Raglan Long Sleeve T-Shirt Price in Bangladesh | FASHIONISTA'
+      : isRedBandanaOverride
       ? 'Red Bandana in Bangladesh | Price & COD | FASHIONISTA'
       : isSilverRimlessOverride
       ? 'Silver Rimless Glasses Price in Bangladesh | FASHIONISTA'
