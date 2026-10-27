@@ -562,15 +562,15 @@ function renderInfoSection(product){
 
   return `
 <section class="seo-info" aria-labelledby="seoInfoHead">
-  <h2 id="seoInfoHead" class="display">${isBlackGoldGlasses ? 'Black Gold Glasses Price in Bangladesh' : isRaglanLongSleeveTShirt ? 'Raglan Long Sleeve T-Shirt Price in Bangladesh' : isRedBandana ? 'Red Bandana Price in Bangladesh' : `About ${name}`}</h2>
+  <h2 id="seoInfoHead" class="display">${isBlackGoldGlasses ? 'Chrome Heart Glasses Price in Bangladesh' : isRaglanLongSleeveTShirt ? 'Raglan Long Sleeve T-Shirt Price in Bangladesh' : isRedBandana ? 'Red Bandana Price in Bangladesh' : `About ${name}`}</h2>
   <p>${intro}</p>
   <p>${isRaglanLongSleeveTShirt ? 'A long sleeve raglan T-shirt is an easy streetwear layer for casual everyday outfits. Check the product photos, available sizes and current price before ordering; fabric and fit details should be confirmed from the listed product information.' : esc(categoryBlurb(product))}</p>
-  ${isBlackGoldGlasses ? `<p>Looking for black gold glasses in Bangladesh? The current listed price for this pair at FASHIONISTA is BDT ${hasPrice ? price : 'shown above'}. Review the product photos and availability on this page before ordering; we do not list frame or lens specifications unless they are confirmed in the product details.</p><p>Explore more eyewear in our <a href="${esc(productCategoryUrl)}">glasses collection</a>, or check <a href="/shipping">delivery charges and timelines</a> for your location.</p>` : ''}
+  ${isBlackGoldGlasses ? `<p>Looking for Chrome Heart-style glasses in Bangladesh? The current listed price for this black-and-gold pair at FASHIONISTA is BDT ${hasPrice ? price : 'shown above'}. Review the product photos and availability on this page before ordering; we do not list frame or lens specifications unless they are confirmed in the product details.</p><p>Explore more eyewear in our <a href="${esc(productCategoryUrl)}">glasses collection</a>, or check <a href="/shipping">delivery charges and timelines</a> for your location.</p>` : ''}
   ${isRaglanLongSleeveTShirt ? `<p>Looking for a raglan long sleeve T-shirt in Bangladesh? The current listed price at FASHIONISTA is BDT ${hasPrice ? price : 'shown above'}. Check the available size options and product photos before placing your order. Browse more styles in our <a href="${esc(productCategoryUrl)}">clothing collection</a> or review <a href="/shipping">delivery charges and timelines</a>.</p>` : ''}
   ${isRedBandana ? `<p>Looking for a red bandana in Bangladesh? Check the current BDT price, availability and product photos above before ordering. A red bandana can add a strong colour accent to a streetwear outfit; try it as a headband, neck scarf or wrist accessory. Browse the <a href="/bandanas">bandana collection</a>, explore <a href="/accessories">Fashionista accessories</a>, and review <a href="/shipping">delivery charges and timelines</a>.</p>` : ''}
   ${subPage ? `<p>Browse all <a href="${subPage.path}">${esc(subPage.label.toLowerCase())}</a> at FASHIONISTA.</p>` : ''}
-  <h3>${isBlackGoldGlasses ? 'How much do black gold glasses cost in Bangladesh?' : isRaglanLongSleeveTShirt ? 'What is the price of a raglan long sleeve T-shirt in Bangladesh?' : isRedBandana ? 'Where can I buy a red bandana in Bangladesh?' : `What is the price of ${name} in Bangladesh?`}</h3>
-  <p>${hasPrice ? `${isBlackGoldGlasses ? 'Black gold glasses' : isRaglanLongSleeveTShirt ? 'Raglan long sleeve T-shirt' : isRedBandana ? 'The red bandana' : name} costs BDT ${price} at FASHIONISTA. ` : ''}${isRedBandana ? 'Order online from FASHIONISTA and pay cash on delivery across Bangladesh. Check the product photos and stock status before placing your order. ' : ''}Delivery charges depend on where you live; see our <a href="/shipping">shipping info</a> for charges, timelines and how order confirmation works.</p>
+  <h3>${isBlackGoldGlasses ? 'What is the price of Chrome Heart glasses in Bangladesh?' : isRaglanLongSleeveTShirt ? 'What is the price of a raglan long sleeve T-shirt in Bangladesh?' : isRedBandana ? 'Where can I buy a red bandana in Bangladesh?' : `What is the price of ${name} in Bangladesh?`}</h3>
+  <p>${hasPrice ? `${isBlackGoldGlasses ? 'Chrome Heart-style glasses' : isRaglanLongSleeveTShirt ? 'Raglan long sleeve T-shirt' : isRedBandana ? 'The red bandana' : name} costs BDT ${price} at FASHIONISTA. ` : ''}${isRedBandana ? 'Order online from FASHIONISTA and pay cash on delivery across Bangladesh. Check the product photos and stock status before placing your order. ' : ''}Delivery charges depend on where you live; see our <a href="/shipping">shipping info</a> for charges, timelines and how order confirmation works.</p>
   <h3>Can I pay cash on delivery?</h3>
   <p>Yes. We offer cash on delivery nationwide across Bangladesh, so there is nothing to pay online.</p>
   <h3>What if the item is damaged or the wrong size?</h3>
@@ -812,7 +812,7 @@ module.exports = async function handler(req, res){
       : isSilverRimlessOverride
       ? 'Shop silver rimless glasses in Bangladesh at FASHIONISTA. Silver-tone eyewear for Y2K and streetwear looks, with cash on delivery nationwide.'
       : isBlackGoldGlassesOverride
-      ? `Shop black and gold glasses in Bangladesh at FASHIONISTA. A statement eyewear style for Y2K, retro and streetwear outfits. Cash on delivery nationwide.`
+      ? `Shop Chrome Heart-style glasses in Bangladesh at FASHIONISTA. Check the current price in BDT, product photos and availability for this black-and-gold frame, with cash on delivery nationwide.`
       : buildDescription(product, label);
   // Use first-party image URLs in metadata/schema so Google can crawl the photos
   // without depending on the external image host. Keep order identical to
@@ -841,7 +841,7 @@ module.exports = async function handler(req, res){
       : isSilverRimlessOverride
       ? 'Silver Rimless Glasses Price in Bangladesh | FASHIONISTA'
       : isBlackGoldGlassesOverride
-        ? 'Black Gold Glasses Price in Bangladesh | FASHIONISTA'
+        ? 'Chrome Heart Glasses Price in Bangladesh | FASHIONISTA'
         : esc(buildTitle(label));
   const keywordsContent = esc(buildKeywords(product).join(', '));
 
