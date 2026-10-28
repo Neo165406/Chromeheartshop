@@ -365,11 +365,11 @@
 </div>
 
 <div class="cats">
-  <a class="cat active" href="shop.html?category=New">New In</a>
+  <a class="cat active" href="/shop">New In</a>
   <a class="cat active" href="/glasses">Glasses</a>
-  <a class="cat" href="shop.html?category=Accessories">Accessories</a>
-  <a class="cat" href="shop.html?category=Clothing">Clothing</a>
-  <a class="cat-filter-btn" href="shop.html?filter=1" aria-label="Filter">
+  <a class="cat" href="/accessories">Accessories</a>
+  <a class="cat" href="/clothing">Clothing</a>
+  <a class="cat-filter-btn" href="/shop" aria-label="Filter">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="4" y1="7" x2="20" y2="7"/><circle cx="9" cy="7" r="2" fill="var(--bg)"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="15" cy="17" r="2" fill="var(--bg)"/></svg>
   </a>
 </div>
@@ -387,7 +387,7 @@
 </section>
 
 <section class="collection">
-  <div class="section-head"><h2 class="display reveal from-left">Featured Pieces</h2><a class="viewall" href="shop.html">View all →</a></div>
+  <div class="section-head"><h2 class="display reveal from-left">Featured Pieces</h2><a class="viewall" href="/shop">View all →</a></div>
   <div class="grid" id="arrivalsGrid"></div>
 </section>
 
@@ -397,7 +397,7 @@
 </section>
 
 <section class="collection" id="clothing">
-  <div class="section-head"><h2 class="display reveal from-left">Clothing</h2><a class="viewall" href="shop.html?category=Clothing">View all →</a></div>
+  <div class="section-head"><h2 class="display reveal from-left">Clothing</h2><a class="viewall" href="/clothing">View all →</a></div>
   <div class="grid" id="clothingGrid"></div>
 </section>
 
@@ -411,7 +411,7 @@
 </section>
 
 <section class="collection">
-  <div class="section-head"><h2 class="display reveal from-left">New In</h2><a class="viewall" href="shop.html?category=New">View all →</a></div>
+  <div class="section-head"><h2 class="display reveal from-left">New In</h2><a class="viewall" href="/shop">View all →</a></div>
   <div class="swipe-row" id="newInRow"></div>
 </section>
 
@@ -489,7 +489,7 @@ const categoryTree = [
 ];
 // Glasses has its own clean URL (/glasses); every other category still uses the shop page.
 function categoryUrl(name){
-  return name === 'Glasses' ? '/glasses' : `shop.html?category=${encodeURIComponent(name)}`;
+  return ({Glasses:'/glasses',Accessories:'/accessories',Clothing:'/clothing',Bandana:'/bandanas',Bracelets:'/bracelets'})[name] || `/shop?category=${encodeURIComponent(name)}`;
 }
 const catTree = document.getElementById('catTree');
 categoryTree.forEach((cat,i)=>{
