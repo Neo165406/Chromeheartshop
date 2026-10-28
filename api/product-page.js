@@ -808,7 +808,7 @@ module.exports = async function handler(req, res){
     : isRaglanTeeOverride
       ? 'Shop a raglan long sleeve T-shirt in Bangladesh at FASHIONISTA. Check the current BDT price, product photos, available sizes and stock status, with cash on delivery nationwide.'
       : isRedBandanaOverride
-      ? 'Shop a red bandana in Bangladesh at FASHIONISTA. Check the current BDT price, product photos and availability, with cash on delivery nationwide.'
+      ? 'Check the red bandana price in Bangladesh at FASHIONISTA. View current BDT price, photos and availability, and order online with cash on delivery nationwide.'
       : isSilverRimlessOverride
       ? 'Shop silver rimless glasses in Bangladesh at FASHIONISTA. Silver-tone eyewear for Y2K and streetwear looks, with cash on delivery nationwide.'
       : isBlackGoldGlassesOverride
@@ -837,7 +837,7 @@ module.exports = async function handler(req, res){
     : isRaglanTeeOverride
       ? 'Raglan Long Sleeve T-Shirt Price in Bangladesh | FASHIONISTA'
       : isRedBandanaOverride
-      ? 'Red Bandana in Bangladesh | Price & COD | FASHIONISTA'
+      ? 'Red Bandana Price in Bangladesh | FASHIONISTA'
       : isSilverRimlessOverride
       ? 'Silver Rimless Glasses Price in Bangladesh | FASHIONISTA'
       : isBlackGoldGlassesOverride
