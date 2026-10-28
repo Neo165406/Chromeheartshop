@@ -237,7 +237,7 @@ function updateSEOTags(product){
   const isSilverRimlessOverride = product.id === 'hRTjTVeGAcjWuwFAMwcs';
   const isRedBandanaOverride = String(product.slug || '').toLowerCase() === 'red-bandana';
   const desc = isRedBandanaOverride
-    ? 'Shop a red bandana in Bangladesh at FASHIONISTA. Check the current BDT price, product photos and availability, with cash on delivery nationwide.'
+    ? 'Buy a red bandana in Bangladesh at FASHIONISTA. Check the current price in BDT, view product photos, and order online with cash on delivery nationwide.'
     : isSilverRimlessOverride
     ? 'Shop silver rimless glasses in Bangladesh at FASHIONISTA. Silver-tone eyewear for Y2K and streetwear looks, with cash on delivery nationwide.'
     : (product.description
@@ -256,7 +256,7 @@ function updateSEOTags(product){
     : [`${SITE_URL}/og-image.png`];
   const image = productImages[0];
   const seoTitle = isRedBandanaOverride
-    ? 'Red Bandana in Bangladesh | FASHIONISTA'
+    ? 'Red Bandana Price in Bangladesh | FASHIONISTA'
     : isSilverRimlessOverride
       ? 'Silver Rimless Glasses | FASHIONISTA'
       : `${product.name} — FASHIONISTA`;
