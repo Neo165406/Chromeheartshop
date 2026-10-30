@@ -35,6 +35,21 @@
     else window.addEventListener('load', start);
   })();
 
+  // AI chat assistant (floating chat button, bottom-left). Loaded a moment after the
+  // page has finished loading so it never slows the page down. Its own failure can't
+  // affect the page (separate dynamic import + catch). See js/chatbot.js and api/chat.js.
+  (function(){
+    function start(){
+      setTimeout(function(){
+        import('/js/chatbot.js').catch(function(e){
+          console.error('chatbot load error:', (e && e.code) ? e.code + ' — ' + e.message : e);
+        });
+      }, 800);
+    }
+    if(document.readyState === 'complete') start();
+    else window.addEventListener('load', start);
+  })();
+
   // Extra sections under the Add to Cart buttons (trust strip, accordions,
   // "pay after you look" steps). Product pages only. See js/product-extras.js.
   if(/product/i.test(location.pathname)){
