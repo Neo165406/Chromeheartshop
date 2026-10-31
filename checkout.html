@@ -56,12 +56,13 @@
 
   .field{margin-bottom:14px;}
   .field label{display:block;font-size:12px;color:var(--text-dim);margin-bottom:6px;}
-  .field input, .field textarea{
+  .field input, .field textarea, .field select{
     width:100%;padding:12px 14px;background:var(--card);border:1px solid var(--line);
     color:var(--text);border-radius:var(--radius);font-size:14px;font-family:inherit;
   }
+  .field select{appearance:auto;cursor:pointer;}
   .field textarea{resize:vertical;min-height:70px;}
-  .field input:focus, .field textarea:focus{outline:none;border-color:var(--silver);}
+  .field input:focus, .field textarea:focus, .field select:focus{outline:none;border-color:var(--silver);}
   .field .err{color:#e08a8a;font-size:11.5px;margin-top:5px;display:none;}
   .field.invalid input, .field.invalid textarea{border-color:#e08a8a;}
   .field.invalid .err{display:block;}
@@ -400,6 +401,20 @@ function renderCheckout(cart){
         <textarea id="inNote" maxlength="300" placeholder="Anything we should know?"></textarea>
       </div>
 
+      <div class="field">
+        <label for="inFoundUs">How did you find us? (optional)</label>
+        <select id="inFoundUs">
+          <option value="">Select one…</option>
+          <option value="Google search">Google search</option>
+          <option value="Instagram">Instagram</option>
+          <option value="Facebook">Facebook</option>
+          <option value="TikTok">TikTok</option>
+          <option value="YouTube">YouTube</option>
+          <option value="Friend / WhatsApp">Friend / WhatsApp</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
       <div class="pay-note">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
         <span>Cash on delivery — pay when your order arrives. No online payment needed.</span>
@@ -522,7 +537,10 @@ function validate(){
   addrField.classList.toggle('invalid', !address);
   if(!address) ok = false;
 
-  return ok ? { name, phone, address, note: document.getElementById('inNote').value.trim() } : null;
+  const foundUsEl = document.getElementById('inFoundUs');
+  const foundUs = foundUsEl ? foundUsEl.value.trim().slice(0, 40) : '';
+
+  return ok ? { name, phone, address, note: document.getElementById('inNote').value.trim(), foundUs } : null;
 }
 
 async function placeOrder(){
@@ -536,6 +554,13 @@ async function placeOrder(){
     ? 'Outside Dhaka' : 'Inside Dhaka';
   const discount = getDiscountAmount(subtotal);
   const grandTotal = Math.max(0, subtotal + deliveryCharge - discount);
+
+  // The "How did you find us?" answer is stored at the end of the order note, so
+  // it shows up in the admin Orders list without any database rule changes.
+  // The buyer's WhatsApp message and invoice keep using the plain note.
+  const storedNote = details.foundUs
+    ? (details.note ? details.note + ' · ' : '') + 'Found us: ' + details.foundUs
+    : details.note;
 
   const btn = document.getElementById('placeBtn');
   const status = document.getElementById('statusMsg');
@@ -560,7 +585,7 @@ async function placeOrder(){
       customerName: details.name,
       phone: details.phone,
       address: details.address,
-      note: details.note,
+      note: storedNote,
       items: cart.map(c=>({ id:c.id, name:c.name, price:c.price, qty:c.qty, size:c.size||null })),
       subtotal,
       deliveryZone,
@@ -592,6 +617,7 @@ async function placeOrder(){
         phone: details.phone,
         address: details.address,
         note: details.note,
+        foundUs: details.foundUs,
         items: cart.map(c=>({ name:c.name, price:c.price, qty:c.qty, size:c.size||null })),
         subtotal,
         deliveryZone,

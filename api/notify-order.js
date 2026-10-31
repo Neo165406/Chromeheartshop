@@ -70,6 +70,7 @@ function cleanOrder(body){
     saveError: str(body.saveError, 200),
     name, phone, address,
     note: str(body.note, 300),
+    foundUs: str(body.foundUs, 40),
     items,
     subtotal: num(body.subtotal),
     deliveryZone: str(body.deliveryZone, 30),
@@ -98,7 +99,8 @@ function buildText(o){
     `Name: ${o.name}`,
     `Phone: ${o.phone}`,
     `Address: ${o.address}`,
-    o.note ? `Note: ${o.note}` : ''
+    o.note ? `Note: ${o.note}` : '',
+    o.foundUs ? `Found us: ${o.foundUs}` : ''
   ].filter(Boolean).join('\n');
   return warn + [head, lines, totals, customer].join('\n\n');
 }
@@ -128,7 +130,8 @@ async function sendEmail(o, text){
         <b>Name:</b> ${esc(o.name)}<br>
         <b>Phone:</b> ${esc(o.phone)}<br>
         <b>Address:</b> ${esc(o.address)}<br>
-        ${o.note ? `<b>Note:</b> ${esc(o.note)}` : ''}
+        ${o.note ? `<b>Note:</b> ${esc(o.note)}<br>` : ''}
+        ${o.foundUs ? `<b>Found us:</b> ${esc(o.foundUs)}` : ''}
       </p>
     </div>`;
   const r = await fetch('https://api.resend.com/emails', {
