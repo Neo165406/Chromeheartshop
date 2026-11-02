@@ -518,19 +518,20 @@ function buildDescription(product, label){
   return result.length <= 160 ? result : cutAtBoundary(result, 160);
 }
 
-// Short category-aware sentence for the on-page copy. Deliberately makes no
-// claims about materials or sizing beyond what the shop already states.
+// Product-aware on-page copy. Keep claims limited to visible product data;
+// never infer frame, fabric, metal, fit or other specifications from a name.
 function categoryBlurb(product){
   const hay = `${product.category || ''} ${product.name || ''}`.toLowerCase();
+  const name = esc(titleCaseName(product.name) || 'This style');
   if(String(product.slug || '').toLowerCase() === 'red-bandana') return 'A red bandana adds a bold colour accent to streetwear outfits. Style it as a headband, neck scarf, wrist accent or accessory on a bag, and check the product photos for the exact design.';
   if(String(product.slug || '').toLowerCase() === 'chrome-heart-black-gold') return 'Black-and-gold statement glasses for Y2K, retro and streetwear outfits. Check the product photos and current BDT price before ordering.';
-  if(/bandana/.test(hay)) return 'A versatile accessory you can wear as a headband, around your neck, on your waist or hooked onto your jeans.';
+  if(/bandana/.test(hay)) return `${name} is a bandana option for adding a print or colour accent to a streetwear look. Review the photos to check the exact pattern, then explore ways to style it as a headband, neck scarf or bag accessory.`;
   if(product && product.id === 'hRTjTVeGAcjWuwFAMwcs') return 'These silver rimless glasses bring a minimalist eyewear look to Y2K outfits and everyday streetwear. Review the product photos and current BDT price before ordering.';
-  if(/glass|eyewear/.test(hay)) return 'It belongs to our eyewear range, built around gothic, Y2K and streetwear styling. Wear the frames with a plain tee or an all-black outfit to make the look stand out.';
-  if(/cloth|t-?shirt|\btee\b|shirt|hoodie|jersey/.test(hay)) return 'It belongs to our clothing range: clean, everyday streetwear cuts that are easy to style. Check the size options on this page before ordering, and message us on WhatsApp if you are unsure which size to pick.';
-  if(/bracelet|bangle/.test(hay)) return 'Style this bracelet with a watch or other accessories for a layered gothic or streetwear look. Check the product photos and current BDT price for the exact design before ordering.';
-  if(/\brings?\b|chain|necklace|pendant|grill/.test(hay)) return 'It belongs to our jewellery and accessories range for gothic and streetwear outfits. Pieces like this are easy to layer and easy to match with the rest of your look.';
-  return "It belongs to FASHIONISTA's gothic and streetwear accessories collection.";
+  if(/glass|eyewear/.test(hay)) return `${name} is part of FASHIONISTA's glasses collection for Y2K, retro and streetwear-inspired outfits. Compare the product photos to check the frame's visible shape and colour, and review the listed price and availability before ordering.`;
+  if(/cloth|t-?shirt|\\btee\\b|shirt|hoodie|jersey/.test(hay)) return `${name} is part of FASHIONISTA's streetwear clothing range. Check the size options and product photos on this page before ordering; use the listed product details rather than assuming fabric or fit.`;
+  if(/bracelet|bangle/.test(hay)) return `${name} is a bracelet option for a standalone or layered accessory look. Check the product photos for its exact design and compare the listed price before pairing it with a watch or other accessories.`;
+  if(/\\brings?\\b|chain|necklace|pendant|grill/.test(hay)) return `${name} is part of FASHIONISTA's jewellery and accessories range for gothic and streetwear outfits. Review the product photos and listed details to check the exact design before styling it with other pieces.`;
+  return `${name} is available from FASHIONISTA. Review the product photos, listed details and current BDT price to check that this style is right for you.`;
 }
 
 // Server-rendered "About this product" block. It is injected OUTSIDE
