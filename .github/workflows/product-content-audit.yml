@@ -1,0 +1,30 @@
+name: Fashionista product content audit
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Run read-only product audit
+        run: node scripts/audit-product-content.mjs
+      - name: Upload audit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: fashionista-product-content-audit
+          path: |
+            product-content-audit.md
+            product-content-audit.csv
+          if-no-files-found: error
+          retention-days: 14
