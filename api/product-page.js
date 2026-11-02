@@ -518,6 +518,27 @@ function buildDescription(product, label){
   return result.length <= 160 ? result : cutAtBoundary(result, 160);
 }
 
+// Verified-catalog copy overrides for products flagged by the 2026-11-02
+// read-only audit. These are page-rendering overrides only; Firestore is not
+// modified. Copy sticks to the product name/category and avoids unverified
+// claims about materials, dimensions, lens specs or construction.
+const PRODUCT_DESCRIPTION_OVERRIDES = {
+  'retro-double-sided-skull-cross': 'A double-sided skull cross accessory for gothic and alternative streetwear styling. The cross motif gives this piece a bold focal point; view the product photos to check the exact front and reverse design before ordering.',
+  'chrome-heart-bracelet': 'Add a defined accessory detail to everyday streetwear with this bracelet. Its statement look pairs naturally with casual layers; use the product photos to inspect the exact design and choose it to complement your existing accessories.',
+  'chrome-heart-black-silver': 'Black-and-silver glasses for a sharp Y2K-inspired or alternative streetwear look. Compare the frame appearance in the product photos and check the current BDT price and availability before placing an order.',
+  'green-bandana': 'A green bandana brings a fresh colour accent to casual and streetwear outfits. Wear it as a headband, neck accessory or waist detail, or style it with a bag; check the photos for the exact print and colour appearance.',
+  'chrome-heart-black-gold': 'Black-and-gold statement glasses that add contrast to Y2K, retro and streetwear outfits. Review the product photos for the frame design and check the current BDT price and stock status before ordering.',
+  'spider-pendant': 'A spider pendant for gothic-inspired outfits and alternative accessory styling. Let the pendant stand out on its own or pair it with other pieces; check the product photos for the exact design before ordering.',
+  'chrome-heart-bracelet-2': 'This bracelet offers another statement accessory option for building a layered streetwear look. Pair it with a watch or wear it on its own, and refer to the product photos to confirm the design of this listing.',
+  'pink-bandana': 'A pink bandana adds a brighter colour accent to everyday outfits and streetwear looks. Style it as a headband, neck scarf or waist accessory, or attach it to a bag; use the product photos to check the exact print and shade.'
+};
+
+function applyProductDescriptionOverride(product){
+  const slug = String(product && product.slug || '').toLowerCase();
+  const description = PRODUCT_DESCRIPTION_OVERRIDES[slug];
+  return description ? { ...product, description } : product;
+}
+
 // Short category-aware sentence for the on-page copy. Deliberately makes no
 // claims about materials or sizing beyond what the shop already states.
 function categoryBlurb(product){
@@ -785,6 +806,10 @@ module.exports = async function handler(req, res){
     redirectPermanent(res, productPath(product));
     return;
   }
+
+  // Apply unique, verified-catalog copy before metadata, schema and SSR markup
+  // are built so crawlers and shoppers receive the same product description.
+  product = applyProductDescriptionOverride(product);
 
   const [similar, reviews, peers] = await Promise.all([
     fetchSimilar(product.category, product.id),
