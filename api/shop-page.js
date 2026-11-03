@@ -396,8 +396,26 @@ function highlightsMarkup(cfg, items){
   return blocks.join('\n  ');
 }
 
-function relatedMarkup(cfg){
-  return `<h2>More from FASHIONISTA</h2><ul>${cfg.related.map(l => `<li><a href="${esc(l.href)}">${esc(l.text)}</a></li>`).join('')}</ul>`;
+// Only link to category pages with at least one in-stock product. Empty
+// landing pages remain noindex and are not promoted until inventory is added.
+function hasInventoryForPath(href, inventory){
+  const products = Array.isArray(inventory) ? inventory : [];
+  const rules = {
+    '/glasses': p => p.category === 'Glasses',
+    '/clothing': p => p.category === 'Clothing',
+    '/accessories': p => p.category === 'Accessories',
+    '/bracelets': p => ['bracelet', 'bracelets'].includes(String(p.subcategory || '').trim().toLowerCase()),
+    '/bandanas': p => ['bandana', 'bandanas'].includes(String(p.subcategory || '').trim().toLowerCase()),
+    '/chrome-heart-chains': p => ['chain', 'chains'].includes(String(p.subcategory || '').trim().toLowerCase()),
+    '/shop': () => products.length > 0
+  };
+  return Boolean(rules[href] && products.some(rules[href]));
+}
+
+function relatedMarkup(cfg, inventory){
+  const links = cfg.related.filter(l => hasInventoryForPath(l.href, inventory));
+  if(!links.length) return '';
+  return '<h2>More from FASHIONISTA</h2><ul>' + links.map(l => '<li><a href="' + esc(l.href) + '">' + esc(l.text) + '</a></li>').join('') + '</ul>';
 }
 
 function introMarkup(cfg, count){
@@ -411,12 +429,12 @@ function introMarkup(cfg, count){
   </div>`;
 }
 
-function supportingCopyMarkup(cfg, items){
+function supportingCopyMarkup(cfg, items, inventory){
   const sections = cfg.sections.map(s => `<h2>${esc(s.h)}</h2>${s.p.map(t => `<p>${t}</p>`).join('')}`).join('\n  ');
   const highlights = highlightsMarkup(cfg, items);
   return `<section class="cat-copy" aria-label="${esc(cfg.label)} buying guide">
   ${highlights ? highlights + '\n  ' : ''}${sections}
-  ${relatedMarkup(cfg)}
+  ${relatedMarkup(cfg, inventory)}
 </section>`;
 }
 
@@ -654,7 +672,7 @@ async function serveLandingPage(req, res, html, cfg){
     );
   }
 
-  html = html.replace('<section class="collection" id="similarSection">', () => supportingCopyMarkup(cfg, items) + '\n<section class="collection" id="similarSection">');
+  html = html.replace('<section class="collection" id="similarSection">', () => supportingCopyMarkup(cfg, items, products) + '\n<section class="collection" id="similarSection">');
   html = injectSimilar(html, similar, cardMarkup);
 
   html = html.replace('<script type="module">', () => scopeScript(cfg, items.map(p => p.id)) + '<script type="module">');
@@ -729,8 +747,8 @@ ${CATEGORY_FAQ.map(([q, a]) => `  <h3>${q}</h3>\n  <p>${a}</p>`).join('\n')}
 
 // Crawlable links from the main shop, Accessories and Glasses pages to the landing pages.
 const BROWSE_ITEMS = [['/bracelets', 'Bracelets'], ['/bandanas', 'Bandanas'], ['/chrome-heart-chains', 'Chrome Heart Chains'], ['/glasses', 'Glasses']];
-function browseLinks(excludePath){
-  const links = BROWSE_ITEMS.filter(([href]) => href !== excludePath)
+function browseLinks(excludePath, inventory){
+  const links = BROWSE_ITEMS.filter(([href]) => href !== excludePath && hasInventoryForPath(href, inventory))
     .map(([href, text]) => `<a href="${href}">${text}</a>`).join('');
   return `<nav class="cat-links" aria-label="Browse by type">Browse by type: ${links}</nav>`;
 }
@@ -843,7 +861,7 @@ module.exports = async function handler(req, res){
   // /glasses from the main shop page, the Accessories page and the Glasses page.
   if(!category || category === 'Accessories' || category === 'Glasses'){
     html = html.replace('</head>', () => LANDING_CSS + '\n</head>');
-    html = html.replace('<section class="collection" id="similarSection">', () => browseLinks(category === 'Glasses' ? '/glasses' : null) + '\n<section class="collection" id="similarSection">');
+    html = html.replace('<section class="collection" id="similarSection">', () => browseLinks(category === 'Glasses' ? '/glasses' : null, products) + '\n<section class="collection" id="similarSection">');
   }
 
   // Structured data for the real category pages; an empty category (or an
