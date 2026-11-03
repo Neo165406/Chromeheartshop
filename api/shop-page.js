@@ -733,13 +733,20 @@ const SEO_INFO_CSS = `<style>
   .seo-info a{color:var(--silver-bright);text-decoration:underline;text-underline-offset:2px;}
 </style>`;
 
-function categoryContentMarkup(category){
+function categoryContentMarkup(category, inventory){
   const c = CATEGORY_CONTENT[category];
   if(!c) return '';
+  // Static category copy must not promote an empty sub-category. The product
+  // inventory is the source of truth, matching the checks used by landing-page
+  // related links and the shop's browse-by-type navigation.
+  const inventoryAwareParas = c.paras.map(paragraph => paragraph.replace(
+    /<a href="(\/[^"]+)">([^<]+)<\/a>/g,
+    (anchor, href) => hasInventoryForPath(href, inventory) ? anchor : ''
+  ));
   return `
 <section class="seo-info" aria-labelledby="seoInfoHead">
   <h2 id="seoInfoHead" class="display">${c.h2}</h2>
-${c.paras.map(p => `  <p>${p}</p>`).join('\n')}
+${inventoryAwareParas.map(p => `  <p>${p}</p>`).join('\n')}
 ${CATEGORY_FAQ.map(([q, a]) => `  <h3>${q}</h3>\n  <p>${a}</p>`).join('\n')}
 </section>
 `;
@@ -874,7 +881,7 @@ module.exports = async function handler(req, res){
   }
 
   // Category intro text + FAQ (the four real categories only)
-  const contentHtml = categoryContentMarkup(category);
+  const contentHtml = categoryContentMarkup(category, products);
   if(contentHtml){
     html = html.replace('</head>', () => SEO_INFO_CSS + '\n</head>');
     html = html.replace('<section class="collection" id="similarSection">', () => contentHtml + '<section class="collection" id="similarSection">');
