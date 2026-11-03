@@ -281,12 +281,12 @@ const SCOPE_PAGES = {
     path: '/bandanas',
     label: 'Bandanas',
     aliases: ['bandana', 'bandanas'],
-    title: 'Printed & Streetwear Bandanas in Bangladesh | FASHIONISTA',
-    desc: 'Shop printed, streetwear and gothic bandanas in Bangladesh at FASHIONISTA. See styles and BDT prices, with cash on delivery nationwide.',
-    h1: 'Shop Bandanas in Bangladesh',
-    sub: 'Printed, streetwear and gothic bandana styles with prices in BDT',
+    title: 'Bandana Price in Bangladesh | FASHIONISTA',
+    desc: 'Compare bandana styles and current prices in Bangladesh at FASHIONISTA. Browse printed and streetwear designs, check BDT prices and order with cash on delivery nationwide.',
+    h1: 'Bandana Price in Bangladesh',
+    sub: 'Compare printed, streetwear and gothic bandanas with current BDT prices',
     intro: [
-      'Explore the bandanas currently listed at FASHIONISTA, from printed designs to streetwear and gothic-inspired styles. Each product page includes photos, a description, stock status and its current BDT price.',
+      'Browse bandanas available at FASHIONISTA in Bangladesh. Compare each style by its photos, design, stock status and current BDT price before ordering.',
       'Choose a printed, streetwear or gothic-inspired bandana to style as a headband, neck scarf or accessory. Order from anywhere in Bangladesh and pay cash on delivery.'
     ],
     highlights: [
@@ -299,7 +299,7 @@ const SCOPE_PAGES = {
         'Folded into a band and tied at the back, it works as a headband. Knotted loosely at the front, it becomes a neck scarf. You can also tie it at your waist, hook it onto a belt loop or jeans, or knot it around a wrist or bag strap for a small pop of colour.'
       ]},
       { h: 'Choosing a bandana', p: [
-        'Look at the photos on each product page for colour and print, and read the description for any details we have added. Darker, graphic designs suit gothic and streetwear outfits, while a lighter colour gives a strong contrast against all black.'
+        'Compare the current BDT price, photos and description on each bandana product page. Darker graphic designs suit gothic and streetwear outfits, while lighter colours create contrast against an all-black look.'
       ]},
       { h: 'Ordering bandanas in Bangladesh', p: [
         'Place your order and pay the courier in cash when the parcel reaches you. Delivery charges are different inside and outside Dhaka, and the <a href="/shipping">shipping info page</a> has the current charges and timelines. We confirm each order with you on WhatsApp after checkout. Our <a href="/return-policy">return and exchange policy</a> covers damaged or incorrect items.'
