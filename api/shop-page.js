@@ -142,19 +142,19 @@ function cardMarkup(p, i, eager){
 const CATEGORY_SEO = {
   "New In": {
     title: "Fashionista BD New Arrivals | Y2K Accessories",
-    desc: "Explore new and featured sunglasses, accessories and streetwear at FASHIONISTA. See BDT prices and stock status, with cash on delivery across Bangladesh."
+    desc: "Explore new and featured sunglasses, accessories and streetwear at FASHIONISTA. See BDT prices and stock status, with cash on delivery across Bangladesh.", h1: "New Y2K Accessories and Streetwear", intro: "Browse new products at FASHIONISTA, with current BDT prices and stock status.", faq: ["What is new at FASHIONISTA?", "How do I check prices?", "Can I pay cash on delivery?"]
   },
   "Glasses": {
     title: "Sunglasses for Men BD | Rimless Glasses | FASHIONISTA",
-    desc: "Compare rimless glasses and Y2K sunglasses at FASHIONISTA in Bangladesh. Browse retro, aviator and round styles, check current BDT prices and availability, and order with cash on delivery nationwide."
+    desc: "Compare rimless glasses and Y2K sunglasses at FASHIONISTA in Bangladesh. Browse retro, aviator and round styles, check current BDT prices and availability, and order with cash on delivery nationwide.", h1: "Sunglasses for Men in Bangladesh", intro: "Browse sunglasses for men and women, including rimless, aviator and retro frames.", faq: ["What is the sunglasses price in Bangladesh?", "Do you have rimless glasses?", "Can I pay cash on delivery?"]
   },
   "Accessories": {
     title: "Chain Necklace for Men BD | Chrome Heart | FASHIONISTA",
-    desc: "Shop Y2K accessories in Bangladesh at Fashionista: bracelets, chain necklaces and bandanas. See BDT prices, with cash on delivery nationwide."
+    desc: "Shop Y2K accessories in Bangladesh at Fashionista: bracelets, chain necklaces and bandanas. See BDT prices, with cash on delivery nationwide.", h1: "Chain Necklaces and Y2K Accessories", intro: "Explore chain necklaces for men, bracelets and bandanas for Y2K and streetwear looks.", faq: ["What is the chain necklace price in Bangladesh?", "Can I find Chrome Heart chains?", "Can I pay cash on delivery?"]
   },
   "Clothing": {
     title: "Streetwear Clothing BD | Y2K T-Shirts | FASHIONISTA",
-    desc: "Shop T-shirts and streetwear clothing in Bangladesh at FASHIONISTA. Check sizes, BDT prices and stock status. Cash on delivery nationwide."
+    desc: "Shop T-shirts and streetwear clothing in Bangladesh at FASHIONISTA. Check sizes, BDT prices and stock status. Cash on delivery nationwide.", h1: "Streetwear Clothing in Bangladesh", intro: "Shop streetwear clothing and Y2K T-shirts at FASHIONISTA. Check available sizes and product details.", faq: ["Where can I buy streetwear clothing in Bangladesh?", "Do you have Y2K T-shirts?", "Can I pay cash on delivery?"]
   }
 };
 
@@ -444,7 +444,7 @@ function supportingCopyMarkup(cfg, items, inventory){
   const highlights = highlightsMarkup(cfg, items);
   return `<section class="cat-copy" aria-label="${esc(cfg.label)} buying guide">
   ${highlights ? highlights + '\n  ' : ''}${sections}
-  ${relatedMarkup(cfg, inventory)}
+  ${scopeFaqMarkup(cfg, items)}\n  ${relatedMarkup(cfg, inventory)}
 </section>`;
 }
 
@@ -610,7 +610,7 @@ function applyInventoryCategoryDescription(html, category, inventory){
   if(!prices.length) return html;
   const from = ' from ৳' + Math.min(...prices);
   const copy = category === 'Glasses' ? 'Sunglasses for men in Bangladesh at FASHIONISTA' + from + '. Compare rimless and retro styles. Cash on delivery in Dhaka and nationwide.' : category === 'Accessories' ? 'Accessories shop BD at FASHIONISTA' + from + '. Explore chain necklaces, bracelets and Y2K accessories. Cash on delivery nationwide.' : category === 'Clothing' ? 'Streetwear clothing BD at FASHIONISTA' + from + '. Explore Y2K T-shirts and casual styles. Cash on delivery in Dhaka and nationwide.' : 'New Y2K accessories at FASHIONISTA' + from + '. Browse current products in Bangladesh with cash on delivery nationwide.';
-  const desc = copy.length <= 160 ? copy : copy.slice(0,157).replace(/\\s+\\S*$/, '') + '...';
+  const desc = copy.length <= 160 ? copy : copy.slice(0,157).replace(/\s+\S*$/, '') + '...';
   return setAttrById(html, 'metaDesc', 'content', esc(desc));
 }
 
