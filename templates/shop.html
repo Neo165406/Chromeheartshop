@@ -314,22 +314,10 @@ renderCategoryMenu(document.getElementById('catTree'), categoryTree);
 // server (see api/shop-page.js); this re-applies them client-side too,
 // harmless when already right. ----------
 const CATEGORY_SEO = {
-  "New In": {
-    title: "New Arrivals in Bangladesh | FASHIONISTA",
-    desc: "Explore new and featured sunglasses, accessories and streetwear at FASHIONISTA. See BDT prices and stock status, with cash on delivery across Bangladesh."
-  },
-  "Glasses": {
-    title: "Sunglasses & Glasses in Bangladesh | FASHIONISTA",
-    desc: "Shop rimless, aviator and round sunglasses at FASHIONISTA. Explore gothic, Y2K and streetwear eyewear with BDT prices and cash on delivery across Bangladesh."
-  },
-  "Accessories": {
-    title: "Gothic & Streetwear Accessories in Bangladesh | FASHIONISTA",
-    desc: "Shop bracelets, chain necklaces and bandanas at FASHIONISTA. Gothic and Y2K styles, BDT prices and cash on delivery across Bangladesh."
-  },
-  "Clothing": {
-    title: "Streetwear T-Shirts & Clothing in Bangladesh | FASHIONISTA",
-    desc: "Explore streetwear T-shirts and clothing at FASHIONISTA, Dhaka. Check product pages for sizes and BDT prices. Cash on delivery across Bangladesh."
-  }
+  "New In": { title: "Fashionista BD New Arrivals | Y2K Accessories", desc: "Discover new Y2K accessories and streetwear at FASHIONISTA in Bangladesh. Browse current products and prices, with cash on delivery nationwide.", h1: "New Y2K Accessories and Streetwear", sub: "Recently added Y2K accessories and streetwear styles" },
+  "Glasses": { title: "Sunglasses for Men BD | Rimless Glasses | FASHIONISTA", desc: "Sunglasses for men in Bangladesh at FASHIONISTA. Compare rimless and retro styles, check BDT prices, and order with cash on delivery in Dhaka and nationwide.", h1: "Sunglasses for Men in Bangladesh", sub: "Explore sunglasses for men and women, including rimless frames" },
+  "Accessories": { title: "Chain Necklace for Men BD | Chrome Heart | FASHIONISTA", desc: "Chain necklace for men BD at FASHIONISTA. Explore Chrome Heart chains, bracelets and Y2K accessories with BDT prices and cash on delivery nationwide.", h1: "Chain Necklaces and Y2K Accessories", sub: "Explore chain necklaces, bracelets and Y2K accessories" },
+  "Clothing": { title: "Streetwear Clothing BD | Y2K T-Shirts | FASHIONISTA", desc: "Streetwear clothing BD at FASHIONISTA. Explore Y2K T-shirts and casual styles, check sizes and prices, with cash on delivery in Dhaka and nationwide.", h1: "Streetwear Clothing in Bangladesh", sub: "Y2K T-shirts and streetwear styles with current BDT prices" }
 };
 function applyCategorySEO(cat){
   const s = CATEGORY_SEO[cat];
@@ -342,13 +330,16 @@ function applyCategorySEO(cat){
     ? 'https://fashion1sta.com/glasses'
     : `https://fashion1sta.com/shop.html?category=${encodeURIComponent(cat)}`;
   const setContent = (id, v)=>{ const el = document.getElementById(id); if(el) el.setAttribute('content', v); };
-  document.title = s.title;
-  setContent('metaDesc', s.desc);
-  setContent('ogTitle', s.title);
-  setContent('ogDescription', s.desc);
+  const serverRendered = !!document.getElementById('__SSR_DATA__');
+  if(!serverRendered){
+    document.title = s.title;
+    setContent('metaDesc', s.desc);
+    setContent('ogTitle', s.title);
+    setContent('ogDescription', s.desc);
+    setContent('twitterTitle', s.title);
+    setContent('twitterDescription', s.desc);
+  }
   setContent('ogUrl', url);
-  setContent('twitterTitle', s.title);
-  setContent('twitterDescription', s.desc);
   const canon = document.getElementById('canonicalLink');
   if(canon) canon.setAttribute('href', url);
 }
@@ -390,7 +381,7 @@ function cardHTML(p, i, eager){
     ? (i === 0 ? ' fetchpriority="high"' : '')
     : ' loading="lazy" decoding="async"';
   const media = p.imageUrl
-    ? `<img src="${p.imageUrl}" alt="${p.name}"${imgAttrs} style="width:100%;height:100%;object-fit:contain;${outOfStock?'opacity:0.4;':''}">`
+    ? `<img src="${p.imageUrl}" alt="${p.name} - ${p.category || "accessories"} | FASHIONISTA"${imgAttrs} style="width:100%;height:100%;object-fit:contain;${outOfStock?'opacity:0.4;':''}">`
     : iconFor(p.iconType);
   const dir = i % 2 === 0 ? 'from-left' : 'from-right';
   const delay = (i % 4) * 0.08;
@@ -546,9 +537,9 @@ async function init(){
 
   renderFilterBar(activeCategory);
 
-  document.getElementById('pageTitle').textContent = activeCategory || 'Shop All';
+  document.getElementById('pageTitle').textContent = (CATEGORY_SEO[activeCategory] && CATEGORY_SEO[activeCategory].h1) || activeCategory || 'Shop All';
   document.getElementById('pageSub').textContent = activeCategory
-    ? `Everything in ${activeCategory}`
+    ? ((CATEGORY_SEO[activeCategory] && CATEGORY_SEO[activeCategory].sub) || `Everything in ${activeCategory}`)
     : 'Every FASHIONISTA piece in one place';
   if(activeSub){
     document.getElementById('pageTitle').textContent = activeSub;

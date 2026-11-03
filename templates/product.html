@@ -631,7 +631,7 @@ function renderProduct(product, similar, reviews){
   // fetchpriority=high so the browser fetches it before lower-priority
   // requests like the thumbnail strip or similar-product images below.
   const media = images.length
-    ? `<img id="mainProductImg" src="${images[0]}" alt="${product.name}" fetchpriority="high" style="${outOfStock?'opacity:0.4;':''}">`
+    ? `<img id="mainProductImg" src="${images[0]}" alt="${product.name} - ${product.category || "accessories"} | FASHIONISTA" fetchpriority="high" style="${outOfStock?'opacity:0.4;':''}">`
     : iconFor(product.iconType);
 
   root.innerHTML = `
@@ -641,10 +641,10 @@ function renderProduct(product, similar, reviews){
       ${outOfStock ? `<span class="discount-badge" style="background:var(--text-dim);">Out of Stock</span>` : ''}
       ${media}
     </div>
-    ${images.length>1 ? `<div class="p-thumbs" id="pThumbs">${images.map((img,i)=>`<img src="${img}" alt="${product.name} - photo ${i+1}" class="${i===0?'active':''}" data-i="${i}" loading="lazy" decoding="async">`).join('')}</div>` : ''}
+    ${images.length>1 ? `<div class="p-thumbs" id="pThumbs">${images.map((img,i)=>`<img src="${img}" alt="${product.name} - ${product.category || "accessories"} photo ${i+1} | FASHIONISTA" class="${i===0?'active':''}" data-i="${i}" loading="lazy" decoding="async">`).join('')}</div>` : ''}
     <div class="p-info">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
-        <h1 class="display">${product.name}</h1>
+        <h1 class="display">${product.name} Price in BD</h1>
         <button id="favBtn" aria-label="Save" style="flex-shrink:0;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:none;color:var(--silver);display:flex;align-items:center;justify-content:center;cursor:pointer;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:17px;height:17px;"><path d="M12 20s-8-5-8-11a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 6-8 11-8 11z"/></svg>
         </button>
