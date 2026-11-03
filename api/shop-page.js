@@ -594,6 +594,16 @@ function prepareMainPage(html, category){
   return html;
 }
 
+function applyInventoryCategoryDescription(html, category, inventory){
+  const rows = (Array.isArray(inventory) ? inventory : []).filter(p => p.category === category);
+  const prices = rows.map(p => Number(p.price)).filter(n => Number.isFinite(n) && n > 0);
+  if(!prices.length) return html;
+  const from = ' from ৳' + Math.min(...prices);
+  const copy = category === 'Glasses' ? 'Sunglasses for men in Bangladesh at FASHIONISTA' + from + '. Compare rimless and retro styles. Cash on delivery in Dhaka and nationwide.' : category === 'Accessories' ? 'Accessories shop BD at FASHIONISTA' + from + '. Explore chain necklaces, bracelets and Y2K accessories. Cash on delivery nationwide.' : category === 'Clothing' ? 'Streetwear clothing BD at FASHIONISTA' + from + '. Explore Y2K T-shirts and casual styles. Cash on delivery in Dhaka and nationwide.' : 'New Y2K accessories at FASHIONISTA' + from + '. Browse current products in Bangladesh with cash on delivery nationwide.';
+  const desc = copy.length <= 160 ? copy : copy.slice(0,157).replace(/\\s+\\S*$/, '') + '...';
+  return setAttrById(html, 'metaDesc', 'content', esc(desc));
+}
+
 // Same "You Might Also Like" handling the shop page has always had.
 function injectSimilar(html, similar, cardFn){
   if(similar.length){
@@ -725,6 +735,17 @@ const CATEGORY_FAQ = [
   ["How do I ask a question before ordering?", "Message us on WhatsApp or visit our <a href=\"/contact\">contact page</a>. We usually reply within a few hours."]
 ];
 
+function categoryFaqMarkup(category, inventory){
+  const rows = (Array.isArray(inventory) ? inventory : []).filter(p => p.category === category);
+  const prices = rows.map(p => Number(p.price)).filter(n => Number.isFinite(n) && n > 0);
+  const range = prices.length ? 'Current listed prices range from BDT ' + Math.min(...prices) + ' to BDT ' + Math.max(...prices) + '.' : 'Open a product listing to see its current price and availability.';
+  const mainQ = category === 'Glasses' ? 'What is the sunglasses price in Bangladesh?' : category === 'Accessories' ? 'What is the chain necklace price in Bangladesh?' : category === 'Clothing' ? 'What is the price of streetwear clothing in Bangladesh?' : 'What is new at FASHIONISTA?';
+  const faqs = [[mainQ, range + ' Check each product page for exact details.'], ['Can I pay cash on delivery?', 'Yes. FASHIONISTA offers cash on delivery across Bangladesh, including Dhaka.'], ['How do I check product details?', 'Open a product page to view its photos, current price, stock status and any listed size information.']];
+  const visible = faqs.map(([q,a]) => '<h3>' + q + '</h3><p>' + a + '</p>').join('\\n');
+  const schema = { '@context':'https://schema.org', '@type':'FAQPage', mainEntity:faqs.map(([q,a]) => ({ '@type':'Question', name:q, acceptedAnswer:{ '@type':'Answer', text:a } })) };
+  return visible + '<script type="application/ld+json" id="categoryFaqLd">' + JSON.stringify(schema).replace(/</g, '\\u003c') + '</script>';
+}
+
 const SEO_INFO_CSS = `<style>
   .seo-info{padding:6px 22px 40px;max-width:760px;}
   .seo-info h2{font-family:'Fraunces',serif;font-weight:500;font-size:19px;margin-bottom:14px;padding-bottom:13px;border-bottom:1px solid var(--line);}
@@ -747,7 +768,7 @@ function categoryContentMarkup(category, inventory){
 <section class="seo-info" aria-labelledby="seoInfoHead">
   <h2 id="seoInfoHead" class="display">${c.h2}</h2>
 ${inventoryAwareParas.map(p => `  <p>${p}</p>`).join('\n')}
-${CATEGORY_FAQ.map(([q, a]) => `  <h3>${q}</h3>\n  <p>${a}</p>`).join('\n')}
+${categoryFaqMarkup(category, inventory)}
 </section>
 `;
 }
@@ -832,6 +853,8 @@ module.exports = async function handler(req, res){
     res.status(200).send(html);
     return;
   }
+
+  if(category) html = applyInventoryCategoryDescription(html, category, products);
 
   let filtered;
   if(category === 'New In'){
