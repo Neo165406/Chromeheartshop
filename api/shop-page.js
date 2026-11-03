@@ -505,7 +505,7 @@ const CLIENT_PATCHES = [
   ],
   [
     "document.getElementById('pageTitle').textContent = 'Shop All';",
-    "document.getElementById('pageTitle').textContent = window.__SHOP_SCOPE__ ? window.__SHOP_SCOPE__.title : 'Shop All';"
+    "document.getElementById('pageTitle').textContent = window.__SHOP_SCOPE__ ? window.__SHOP_SCOPE__.title : 'Accessories Shop BD';"
   ],
   [
     "document.getElementById('pageSub').textContent = 'Every FASHIONISTA piece in one place';",
