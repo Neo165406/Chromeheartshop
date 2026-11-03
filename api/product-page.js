@@ -474,13 +474,22 @@ function variantSuffix(product, peers){
 }
 
 function buildTitle(label){
-  const full = `${label} Price in BD | FASHIONISTA`;
-  if(full.length <= 60) return full;
+  const standardSuffix = ' Price in BD | FASHIONISTA';
+  const bdSuffix = ' Price in BD | FASHIONISTA Bangladesh';
+  const extendedSuffix = ' Price in BD | FASHIONISTA Bangladesh Online';
+  const labelLength = String(label || 'Product').trim().length;
+  let suffix = standardSuffix;
+  if(labelLength + standardSuffix.length < 50){
+    if(labelLength + bdSuffix.length >= 50 && labelLength + bdSuffix.length <= 60) suffix = bdSuffix;
+    else if(labelLength + extendedSuffix.length <= 60) suffix = extendedSuffix;
+  }
+  const full = `${label}${suffix}`;
+  if(full.length >= 50 && full.length <= 60) return full;
 
-  // Keep the product name and store brand within a predictable title length.
-  // The shorter Bangladesh price suffix is preferred before truncating a long
-  // product name; if the name itself is still too long, cut at a word boundary.
-  const suffix = ' Price in BD | FASHIONISTA';
+  // Keep the product name and store brand within the 50–60 character target.
+  // Long names are shortened at a word boundary while preserving the price phrase.
+  if(full.length < 50) return full;
+
   const maxLabelLength = 60 - suffix.length;
   let shortLabel = String(label || 'Product').trim();
   if(shortLabel.length > maxLabelLength){
