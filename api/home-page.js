@@ -155,10 +155,10 @@ function withLandingPills(html){
 // links, and removal of the placeholder TikTok icon (it linked to "#").
 // Each piece is an exact-text replace: if the template text ever changes,
 // that piece does nothing — it can't break the page.
-const HOME_TITLE = 'Fashionista Bangladesh | Glasses, Bracelets &amp; Bandanas';
+const HOME_TITLE = 'Fashionista BD Y2K Accessories and Streetwear FASHIONISTA';
 const OLD_TITLE_TAG = '<title>Fashionista</title>';
 const OLD_HOME_DESC = 'Shop glasses, bracelets and printed bandanas online in Bangladesh at Fashionista. Explore Y2K sunglasses, gothic accessories and streetwear styles with prices in BDT.';
-const HOME_DESC = 'Shop glasses, bracelets and printed bandanas in Bangladesh at Fashionista. Explore Y2K sunglasses, gothic accessories and streetwear, with prices in BDT.';
+const HOME_DESC = 'Shop Y2K accessories and streetwear at FASHIONISTA in Bangladesh. Explore glasses, bracelets and bandanas with current BDT prices and cash on delivery in Dhaka and nationwide.';
 
 const LINK_REWRITES = [
   ['href="shop.html?category=Clothing"', 'href="/clothing"'],
@@ -168,7 +168,7 @@ const LINK_REWRITES = [
   ['href="shop.html?filter=1"', 'href="/shop?filter=1"'],
   // Intro links under the homepage heading: keep Accessories and add Clothing; no Rings link because there are no ring products.
   ['<a href="/accessories">Rings &amp; Accessories</a>', '<a href="/accessories">Accessories</a>'],
-  ['<a href="/bandanas">Bandanas</a>', '<a href="/bandanas">Bandanas</a>\n    <a href="/clothing">Clothing</a>']
+  ['<a href="/bandanas">Bandanas</a>', '<a href="/bandanas">Bandanas</a>\n    <a href="/chrome-heart-chains">Chrome Heart Chains</a>\n    <a href="/clothing">Streetwear Clothing BD</a>']
 ];
 
 function withSeoTweaks(html){
@@ -178,6 +178,19 @@ function withSeoTweaks(html){
   html = html.split(OLD_HOME_DESC).join(HOME_DESC);
   LINK_REWRITES.forEach(([from, to]) => { html = html.split(from).join(to); });
   html = html.replace(/\s*<a href="#" aria-label="TikTok">[\s\S]*?<\/a>/, '');
+  html = html.replace('Shop Glasses, Bracelets &amp; Bandanas in Bangladesh', 'Fashionista BD for Y2K Accessories and Streetwear');
+  return html;
+}
+
+function applyHomeInventorySeo(html, products){
+  const prices = (Array.isArray(products) ? products : []).map(p => Number(p.price)).filter(p => Number.isFinite(p) && p > 0);
+  const from = prices.length ? ` from ৳${Math.min(...prices)}` : '';
+  const raw = `Shop Y2K accessories and streetwear${from} at FASHIONISTA. Explore glasses, bracelets and bandanas in Bangladesh. Cash on delivery in Dhaka and nationwide.`;
+  const description = raw.length <= 160 ? raw : raw.slice(0,157).replace(/\s+\S*$/, '') + '...';
+  html = html.replace(/<title>[^<]*<\/title>/, '<title>Fashionista BD Y2K Accessories and Streetwear FASHIONISTA</title>');
+  html = html.replace(/(<meta name="description"\s+content=")[^"]*(")/, `$1${description}$2`);
+  html = html.replace(/(<meta property="og:description"\s+content=")[^"]*(")/, `$1${description}$2`);
+  html = html.replace(/(<meta name="twitter:description"\s+content=")[^"]*(")/, `$1${description}$2`);
   return html;
 }
 
@@ -196,7 +209,7 @@ function cardMarkup(p, i, eagerCount){
     ? (i === 0 ? ' fetchpriority="high"' : '')
     : ' loading="lazy" decoding="async"';
   const media = p.imageUrl
-    ? `<img src="${esc(p.imageUrl)}" alt="${esc(p.name)}"${imgAttrs} style="width:100%;height:100%;object-fit:contain;${outOfStock?'opacity:0.4;':''}">`
+    ? `<img src="${esc(p.imageUrl)}" alt="${esc(p.name)} - ${esc(p.category || "accessories")} | FASHIONISTA"${imgAttrs} style="width:100%;height:100%;object-fit:contain;${outOfStock?'opacity:0.4;':''}">`
     : iconFor(p.iconType);
   const dir = i % 2 === 0 ? 'from-left' : 'from-right';
   const delay = (i % 4) * 0.08;
@@ -393,6 +406,7 @@ module.exports = async function handler(req, res){
 
   // Out-of-stock products (stock === 0) are hidden everywhere on the storefront.
   products = products.filter(p => p.stock !== 0);
+  html = applyHomeInventorySeo(html, products);
 
   const featured = products.filter(p=>p.featured).slice(0,4);
   const arrivals = featured.length ? featured : products.slice(0,4);

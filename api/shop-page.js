@@ -110,7 +110,7 @@ function cardMarkup(p, i, eager){
   // Serve product-card images from the store's own domain so crawlers don't depend on third-party image-host access.
   const cardImage = p.imageUrl ? `/product-image/${encodeURIComponent(p.id)}.jpg` : '';
   const media = cardImage
-    ? `<img src="${esc(cardImage)}" alt="${esc(p.name)}"${imgAttrs} style="width:100%;height:100%;object-fit:contain;${outOfStock?'opacity:0.4;':''}">`
+    ? `<img src="${esc(cardImage)}" alt="${esc(p.name)} - FASHIONISTA accessories"${imgAttrs} style="width:100%;height:100%;object-fit:contain;${outOfStock?'opacity:0.4;':''}">`
     : iconFor(p.iconType);
   const dir = i % 2 === 0 ? 'from-left' : 'from-right';
   const delay = (i % 4) * 0.08;
@@ -140,29 +140,17 @@ function cardMarkup(p, i, eager){
 }
 
 const CATEGORY_SEO = {
-  "New In": {
-    title: "New Arrivals in Bangladesh | FASHIONISTA",
-    desc: "Explore new and featured sunglasses, accessories and streetwear at FASHIONISTA. See BDT prices and stock status, with cash on delivery across Bangladesh."
-  },
-  "Glasses": {
-    title: "Rimless Glasses Price in Bangladesh | Y2K Sunglasses | FASHIONISTA",
-    desc: "Compare rimless glasses and Y2K sunglasses at FASHIONISTA in Bangladesh. Browse retro, aviator and round styles, check current BDT prices and availability, and order with cash on delivery nationwide."
-  },
-  "Accessories": {
-    title: "Y2K Accessories in Bangladesh | Fashionista",
-    desc: "Shop Y2K accessories in Bangladesh at Fashionista: bracelets, chain necklaces and bandanas. See BDT prices, with cash on delivery nationwide."
-  },
-  "Clothing": {
-    title: "T-Shirts & Streetwear Clothing in Bangladesh | FASHIONISTA",
-    desc: "Shop T-shirts and streetwear clothing in Bangladesh at FASHIONISTA. Check sizes, BDT prices and stock status. Cash on delivery nationwide."
-  }
+  "New In": { title: "Fashionista BD New Arrivals | Y2K Accessories", desc: "Discover new Y2K accessories and streetwear at FASHIONISTA in Bangladesh. Browse current products and prices, with cash on delivery nationwide.", h1: "New Y2K Accessories and Streetwear", intro: "Discover recently added glasses, accessories and streetwear at FASHIONISTA. Compare current product photos, BDT prices and stock status before choosing a style.", faq: ["What is new at FASHIONISTA?", "How do I check product prices?", "Can I pay cash on delivery?"] },
+  "Glasses": { title: "Sunglasses for Men BD | Rimless Glasses | FASHIONISTA", desc: "Sunglasses for men in Bangladesh at FASHIONISTA. Compare rimless and retro styles, check BDT prices, and order with cash on delivery in Dhaka and nationwide.", h1: "Sunglasses for Men in Bangladesh", intro: "Explore sunglasses for men and women, including rimless, aviator and retro frames. Check current prices, product photos and availability before ordering.", faq: ["What is the sunglasses price in Bangladesh?", "Do you have rimless glasses?", "Can I pay cash on delivery?"] },
+  "Accessories": { title: "Chain Necklace for Men BD | Chrome Heart | FASHIONISTA", desc: "Chain necklace for men BD at FASHIONISTA. Explore Chrome Heart chains, bracelets and Y2K accessories with BDT prices and cash on delivery nationwide.", h1: "Chain Necklaces and Y2K Accessories", intro: "Browse chain necklaces for men, bracelets and bandanas for Y2K and streetwear outfits. Compare product photos, prices and current stock before ordering.", faq: ["What is the chain necklace price in Bangladesh?", "Can I find Chrome Heart chains?", "Can I pay cash on delivery?"] },
+  "Clothing": { title: "Streetwear Clothing BD | Y2K T-Shirts | FASHIONISTA", desc: "Streetwear clothing BD at FASHIONISTA. Explore Y2K T-shirts and casual styles, check sizes and prices, with cash on delivery in Dhaka and nationwide.", h1: "Streetwear Clothing in Bangladesh", intro: "Shop streetwear clothing and Y2K T-shirts at FASHIONISTA. Review available sizes, product photos and current prices to choose the right listing.", faq: ["Where can I buy streetwear clothing in Bangladesh?", "Do you have Y2K T-shirts?", "Can I pay cash on delivery?"] }
 };
 
 const CATEGORY_HEADINGS = {
   "New In": "New Arrivals in Bangladesh",
-  "Glasses": "Rimless Glasses & Y2K Sunglasses in Bangladesh",
-  "Accessories": "Y2K Accessories in Bangladesh",
-  "Clothing": "T-Shirts & Streetwear Clothing in Bangladesh"
+  "Glasses": "Sunglasses for Men in Bangladesh",
+  "Accessories": "Chain Necklaces and Y2K Accessories",
+  "Clothing": "Streetwear Clothing in Bangladesh"
 };
 const CATEGORY_SUBHEADINGS = {
   "New In": "Recently added glasses, accessories and streetwear",
@@ -209,10 +197,10 @@ const SCOPE_PAGES = {
     path: '/bracelets',
     label: 'Bracelets',
     aliases: ['bracelets', 'bracelet'],
-    title: 'Gothic & Fashion Bracelets in Bangladesh | FASHIONISTA',
-    desc: 'Browse gothic and streetwear bracelets at FASHIONISTA. Prices in BDT, live stock status and cash on delivery across Bangladesh.',
-    h1: 'Fashion Bracelets in Bangladesh',
-    sub: 'Gothic and streetwear bracelets, priced in BDT',
+    title: 'Silver Bracelet Price in BD | Mens Bracelets | FASHIONISTA',
+    desc: 'Silver bracelet price in BD at FASHIONISTA. Explore mens bracelet and chain styles in Bangladesh, with cash on delivery in Dhaka and nationwide.',
+    h1: 'Silver Bracelet Price in Bangladesh',
+    sub: 'Mens bracelets and streetwear styles with current BDT prices',
     intro: [
       'FASHIONISTA is a Bangladesh-based accessories brand inspired by retro, Y2K and street fashion. This page collects the bracelets currently listed in our shop, with the price in BDT and a clear out-of-stock label on anything that has sold through.',
       'Pay cash on delivery anywhere in Bangladesh, with nothing to pay online.'
@@ -281,8 +269,8 @@ const SCOPE_PAGES = {
     path: '/bandanas',
     label: 'Bandanas',
     aliases: ['bandana', 'bandanas'],
-    title: 'Bandana Price in Bangladesh | FASHIONISTA',
-    desc: 'Compare bandana styles and current prices in Bangladesh at FASHIONISTA. Browse printed and streetwear designs, check BDT prices and order with cash on delivery nationwide.',
+    title: 'Bandana Price in Bangladesh | Y2K Styles | FASHIONISTA',
+    desc: 'Bandana price in Bangladesh at FASHIONISTA. Explore Y2K bandana styles, compare current BDT prices and order with cash on delivery in Dhaka and nationwide.',
     h1: 'Bandana Price in Bangladesh',
     sub: 'Compare printed, streetwear and gothic bandanas with current BDT prices',
     intro: [
@@ -317,10 +305,10 @@ const SCOPE_PAGES = {
     path: '/chrome-heart-chains',
     label: 'Chrome Heart Chains',
     aliases: ['chain', 'chains'],
-    title: 'Chrome Heart Chains in Bangladesh | FASHIONISTA',
-    desc: 'Shop chains and chain necklaces at FASHIONISTA, in gothic and streetwear styles. Prices in BDT, live stock status and cash on delivery across Bangladesh.',
-    h1: 'Chrome Heart Chains in Bangladesh',
-    sub: 'Gothic and streetwear chains, priced in BDT',
+    title: 'Chain Necklace for Men BD | Chrome Heart | FASHIONISTA',
+    desc: 'Chain necklace for men BD at FASHIONISTA. Browse Chrome Heart chains and Y2K necklace styles with current BDT prices and cash on delivery nationwide.',
+    h1: 'Chain Necklace for Men BD and Chrome Heart Chains',
+    sub: 'Chrome Heart chains and Y2K necklaces with current BDT prices',
     intro: [
       'Browse the chains and chain necklaces currently listed at FASHIONISTA, a Bangladesh-based fashion and accessories store. Each listing shows its photos, the price in BDT and a clear out-of-stock label on anything that has sold through.',
       'Order from anywhere in Bangladesh and pay cash on delivery.'
@@ -429,12 +417,22 @@ function introMarkup(cfg, count){
   </div>`;
 }
 
+function scopeFaqMarkup(cfg, items){
+  const prices = items.map(p => Number(p.price)).filter(n => Number.isFinite(n) && n > 0);
+  const range = prices.length ? 'Current listed prices range from BDT ' + Math.min(...prices) + ' to BDT ' + Math.max(...prices) + '.' : 'Open a product listing to see its current price and availability.';
+  const q = cfg.path === '/bracelets' ? 'What is the bracelet price in Bangladesh?' : cfg.path === '/bandanas' ? 'What is the bandana price in Bangladesh?' : 'What is the chain necklace price in Bangladesh?';
+  const faqs = [[q, range + ' Check each listing for exact product details.'], ['Can I pay cash on delivery?', 'Yes. FASHIONISTA offers cash on delivery across Bangladesh, including Dhaka.'], ['How can I check product details?', 'Open a product page to view photos, current price and stock status.']];
+  const html = faqs.map(([q,a]) => '<h3>' + q + '</h3><p>' + a + '</p>').join('\n');
+  const schema = { '@context':'https://schema.org', '@type':'FAQPage', mainEntity:faqs.map(([q,a]) => ({ '@type':'Question', name:q, acceptedAnswer:{ '@type':'Answer', text:a } })) };
+  return '<h2>Frequently asked questions</h2>' + html + '<script type="application/ld+json" id="scopeFaqLd">' + JSON.stringify(schema).replace(/</g, '\\u003c') + '</script>';
+}
+
 function supportingCopyMarkup(cfg, items, inventory){
   const sections = cfg.sections.map(s => `<h2>${esc(s.h)}</h2>${s.p.map(t => `<p>${t}</p>`).join('')}`).join('\n  ');
   const highlights = highlightsMarkup(cfg, items);
   return `<section class="cat-copy" aria-label="${esc(cfg.label)} buying guide">
   ${highlights ? highlights + '\n  ' : ''}${sections}
-  ${relatedMarkup(cfg, inventory)}
+  ${scopeFaqMarkup(cfg, items)}\n  ${relatedMarkup(cfg, inventory)}
 </section>`;
 }
 
@@ -594,6 +592,16 @@ function prepareMainPage(html, category){
   return html;
 }
 
+function applyInventoryCategoryDescription(html, category, inventory){
+  const rows = (Array.isArray(inventory) ? inventory : []).filter(p => p.category === category && (category !== 'Accessories' || ['chain','chains'].includes(String(p.subcategory || '').trim().toLowerCase())));
+  const prices = rows.map(p => Number(p.price)).filter(n => Number.isFinite(n) && n > 0);
+  if(!prices.length) return html;
+  const from = ' from ৳' + Math.min(...prices);
+  const copy = category === 'Glasses' ? 'Sunglasses for men in Bangladesh at FASHIONISTA' + from + '. Compare rimless and retro styles. Cash on delivery in Dhaka and nationwide. Check stock first.' : category === 'Accessories' ? 'Accessories shop BD at FASHIONISTA' + from + '. Explore chain necklaces, bracelets and Y2K accessories. Cash on delivery nationwide. Compare photos and designs.' : category === 'Clothing' ? 'Streetwear clothing BD at FASHIONISTA' + from + '. Explore Y2K T-shirts and casual styles. Cash on delivery in Dhaka and nationwide. Check sizes first.' : 'New Y2K accessories at FASHIONISTA' + from + '. Browse current products in Bangladesh with cash on delivery nationwide. Explore the latest additions.';
+  const desc = copy.length <= 160 ? copy : copy.slice(0,157).replace(/\s+\S*$/, '') + '...';
+  return applySeoHead(html, { title: CATEGORY_SEO[category].title, desc: desc }, SITE + categoryPath(category));
+}
+
 // Same "You Might Also Like" handling the shop page has always had.
 function injectSimilar(html, similar, cardFn){
   if(similar.length){
@@ -613,6 +621,15 @@ function scopeScript(cfg, ids){
     + `window.__shopScopeFilter=function(all){var s=window.__SHOP_SCOPE__;`
     + `if(s.ids){var m={};all.forEach(function(p){m[p.id]=p;});return s.ids.map(function(id){return m[id];}).filter(Boolean);}`
     + `return all.filter(function(p){return s.aliases.indexOf(String(p.subcategory||'').trim().toLowerCase())!==-1;});};</script>\n`;
+}
+
+function applyScopePriceDescription(html, cfg, items){
+  const prices = items.map(p => Number(p.price)).filter(n => Number.isFinite(n) && n > 0);
+  if(!prices.length) return html;
+  const from = ' from ৳' + Math.min(...prices);
+  const copy = cfg.path === '/bracelets' ? 'Silver bracelet price in Bangladesh' + from + ' at FASHIONISTA. Explore mens bracelet styles. Cash on delivery in Dhaka and nationwide. Compare photos first.' : cfg.path === '/bandanas' ? 'Bandana price in Bangladesh' + from + ' at FASHIONISTA. Explore Y2K bandana styles. Cash on delivery in Dhaka and nationwide. Compare prints first.' : 'Chain necklace for men BD' + from + ' at FASHIONISTA. Browse Chrome Heart chains and Y2K necklaces. Cash on delivery nationwide. Check product photos.';
+  const desc = copy.length <= 160 ? copy : copy.slice(0,157).replace(/\s+\S*$/, '') + '...';
+  return applySeoHead(html, { title: cfg.title, desc: desc }, SITE + cfg.path);
 }
 
 async function serveLandingPage(req, res, html, cfg){
@@ -654,6 +671,7 @@ async function serveLandingPage(req, res, html, cfg){
     .map(x => x.p);
 
   const similar = products.filter(p => !inScope(p, cfg)).sort(() => Math.random() - 0.5).slice(0, 4);
+  html = applyScopePriceDescription(html, cfg, items);
 
   const head = [LANDING_CSS, landingJsonLd(cfg, items)];
   // A landing page with no products would be a thin page: keep it out of the index.
@@ -725,6 +743,17 @@ const CATEGORY_FAQ = [
   ["How do I ask a question before ordering?", "Message us on WhatsApp or visit our <a href=\"/contact\">contact page</a>. We usually reply within a few hours."]
 ];
 
+function categoryFaqMarkup(category, inventory){
+  const rows = (Array.isArray(inventory) ? inventory : []).filter(p => p.category === category && (category !== 'Accessories' || ['chain','chains'].includes(String(p.subcategory || '').trim().toLowerCase())));
+  const prices = rows.map(p => Number(p.price)).filter(n => Number.isFinite(n) && n > 0);
+  const range = prices.length ? 'Current listed prices range from BDT ' + Math.min(...prices) + ' to BDT ' + Math.max(...prices) + '.' : 'Open a product listing to see its current price and availability.';
+  const mainQ = CATEGORY_SEO[category] && CATEGORY_SEO[category].faq ? CATEGORY_SEO[category].faq[0] : 'What is the current price in Bangladesh?';
+  const faqs = [[mainQ, range + ' Check each product page for exact details.'], ['Can I pay cash on delivery?', 'Yes. FASHIONISTA offers cash on delivery across Bangladesh, including Dhaka.'], ['How do I check product details?', 'Open a product page to view its photos, current price, stock status and any listed size information.']];
+  const visible = faqs.map(([q,a]) => '<h3>' + q + '</h3><p>' + a + '</p>').join('\n');
+  const schema = { '@context':'https://schema.org', '@type':'FAQPage', mainEntity:faqs.map(([q,a]) => ({ '@type':'Question', name:q, acceptedAnswer:{ '@type':'Answer', text:a } })) };
+  return visible + '<script type="application/ld+json" id="categoryFaqLd">' + JSON.stringify(schema).replace(/</g, '\\u003c') + '</script>';
+}
+
 const SEO_INFO_CSS = `<style>
   .seo-info{padding:6px 22px 40px;max-width:760px;}
   .seo-info h2{font-family:'Fraunces',serif;font-weight:500;font-size:19px;margin-bottom:14px;padding-bottom:13px;border-bottom:1px solid var(--line);}
@@ -747,7 +776,7 @@ function categoryContentMarkup(category, inventory){
 <section class="seo-info" aria-labelledby="seoInfoHead">
   <h2 id="seoInfoHead" class="display">${c.h2}</h2>
 ${inventoryAwareParas.map(p => `  <p>${p}</p>`).join('\n')}
-${CATEGORY_FAQ.map(([q, a]) => `  <h3>${q}</h3>\n  <p>${a}</p>`).join('\n')}
+${categoryFaqMarkup(category, inventory)}
 </section>
 `;
 }
@@ -833,6 +862,8 @@ module.exports = async function handler(req, res){
     return;
   }
 
+  if(category) html = applyInventoryCategoryDescription(html, category, products);
+
   let filtered;
   if(category === 'New In'){
     const featured = products.filter(p=>p.featured);
@@ -847,7 +878,7 @@ module.exports = async function handler(req, res){
   const similar = [...pool].sort(()=>Math.random()-0.5).slice(0, 4);
 
   // Page title/subtitle
-  const titleText = category ? (CATEGORY_HEADINGS[category] || category) : 'Shop All';
+  const titleText = category ? ((CATEGORY_SEO[category] && CATEGORY_SEO[category].h1) || CATEGORY_HEADINGS[category] || category) : 'Shop All';
   const subText = CATEGORY_SUBHEADINGS[category] || (category ? `Browse current ${category.toLowerCase()} listings at FASHIONISTA` : 'Every FASHIONISTA piece in one place');
   html = setTextById(html, 'pageTitle', 'h1', esc(titleText));
   html = setTextById(html, 'pageSub', 'p', esc(subText));

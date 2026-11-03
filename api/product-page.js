@@ -474,7 +474,7 @@ function variantSuffix(product, peers){
 }
 
 function buildTitle(label){
-  const full = `${label} Price in Bangladesh | FASHIONISTA`;
+  const full = `${label} Price in BD | FASHIONISTA`;
   if(full.length <= 60) return full;
 
   // Keep the product name and store brand within a predictable title length.
@@ -497,11 +497,11 @@ function buildTitle(label){
 // lead, so products that share the same stored description (the bandana
 // colours, say) still differ, and the price shows up in search snippets.
 function buildDescription(product, label){
-  const suffix = ' Price in Bangladesh — cash on delivery.';
+  const suffix = ' in Bangladesh at FASHIONISTA — cash on delivery in Dhaka and nationwide.';
   const cleaned = cleanDescription(product.description);
   if(!cleaned){
     const cat = product.category ? `${product.category} from FASHIONISTA` : 'from FASHIONISTA';
-    const fallback = `${label} — BDT ${product.price}. ${cat}, price in Bangladesh, cash on delivery nationwide.`;
+    const fallback = `${label} price in BD — BDT ${product.price}. ${cat}, cash on delivery in Dhaka and nationwide.`;
     return fallback.length <= 160 ? fallback : cutAtBoundary(fallback, 160);
   }
   // Lead with the product name unless the description already opens with it
@@ -702,10 +702,10 @@ function renderSnapshot(product, similar){
   const soldText = product.sold ? `${product.sold >= 1000 ? (product.sold/1000).toFixed(1).replace('.0','')+'k' : product.sold} sold` : '';
   const images = (product.images && product.images.length) ? product.images : (product.imageUrl ? [product.imageUrl] : []);
   const media = images.length
-    ? `<img id="mainProductImg" src="${esc(images[0])}" alt="${esc(product.name)}" fetchpriority="high" style="${outOfStock?'opacity:0.4;':''}">`
+    ? `<img id="mainProductImg" src="${esc(images[0])}" alt="${esc(product.name)} - ${esc(String(product.category || "accessories").toLowerCase())} | FASHIONISTA" fetchpriority="high" style="${outOfStock?'opacity:0.4;':''}">`
     : '';
   const thumbs = images.length > 1
-    ? `<div class="p-thumbs" id="pThumbs">${images.map((img,i)=>`<img src="${esc(img)}" alt="${esc(product.name)} - photo ${i+1}" class="${i===0?'active':''}" data-i="${i}" loading="lazy" decoding="async">`).join('')}</div>`
+    ? `<div class="p-thumbs" id="pThumbs">${images.map((img,i)=>`<img src="${esc(img)}" alt="${esc(product.name)} - ${esc(String(product.category || "accessories").toLowerCase())} photo ${i+1} | FASHIONISTA" class="${i===0?'active':''}" data-i="${i}" loading="lazy" decoding="async">`).join('')}</div>`
     : '';
 
   const actions = outOfStock
@@ -732,7 +732,7 @@ function renderSnapshot(product, similar){
       </div>`;
 
   const similarCards = similar.map(p=>{
-    const m = p.imageUrl ? `<img src="${esc(p.imageUrl)}" alt="${esc(p.name)}" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:contain;">` : '';
+    const m = p.imageUrl ? `<img src="${esc(p.imageUrl)}" alt="${esc(p.name)} - FASHIONISTA accessories" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:contain;">` : '';
     return `<div class="card"><a href="${esc(productPath(p))}" class="card-link"><div class="frame">${m}</div><h3>${esc(p.name)}</h3></a><div class="price"><span class="now">BDT ${p.price}</span>${p.was?`<span class="was">BDT ${p.was}</span>`:''}</div></div>`;
   }).join('');
 
@@ -746,7 +746,7 @@ function renderSnapshot(product, similar){
     ${thumbs}
     <div class="p-info">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
-        <h1 class="display">${esc(product.name)}</h1>
+        <h1 class="display">${esc(titleCaseName(product.name))} Price in BD</h1>
         <button id="favBtn" aria-label="Save" style="flex-shrink:0;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:none;color:var(--silver);display:flex;align-items:center;justify-content:center;cursor:pointer;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:17px;height:17px;"><path d="M12 20s-8-5-8-11a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 6-8 11-8 11z"/></svg>
         </button>
@@ -905,19 +905,7 @@ module.exports = async function handler(req, res){
   const isRaglanTeeOverride = String(product.slug || '').toLowerCase() === 'raglan-long-sleeve-t-shirt';
   const isY2kStarGlassesOverride = String(product.slug || '').toLowerCase() === 'retro-y2k-star-glass';
   const productContentOverride = PRODUCT_CONTENT_OVERRIDES[String(product.slug || '').toLowerCase()] || null;
-  const desc = productContentOverride ? productContentOverride.description : isY2kStarGlassesOverride
-    ? 'Shop Y2K star glasses in Bangladesh at FASHIONISTA. Check the current BDT price, product photos and availability, with cash on delivery nationwide.'
-    : isRaglanTeeOverride
-      ? 'Shop a raglan long sleeve T-shirt in Bangladesh at FASHIONISTA. Check the current BDT price, product photos, available sizes and stock status, with cash on delivery nationwide.'
-      : isRedBandanaOverride
-      ? 'Buy a red bandana in Bangladesh at FASHIONISTA. Check the current price in BDT, view product photos, and order online with cash on delivery nationwide.'
-      : isChromeHeartRimlessGoldOverride
-      ? 'Check the Chrome Heart rimless glasses price in Bangladesh at FASHIONISTA. View this gold-tone rimless frame, current BDT price and stock status, then order online with cash on delivery nationwide.'
-      : isSilverRimlessOverride
-      ? 'Shop silver rimless glasses in Bangladesh at FASHIONISTA. Silver-tone eyewear for Y2K and streetwear looks, with cash on delivery nationwide.'
-      : isBlackGoldGlassesOverride
-      ? `Shop Chrome Heart-style glasses in Bangladesh at FASHIONISTA. Check the current price in BDT, product photos and availability for this black-and-gold frame, with cash on delivery nationwide.`
-      : buildDescription(product, label);
+  const desc = buildDescription(product, label);
   // Use first-party image URLs in metadata/schema so Google can crawl the photos
   // without depending on the external image host. Keep order identical to
   // api/product-image.js: imageUrl first, then the remaining images array.
@@ -936,19 +924,7 @@ module.exports = async function handler(req, res){
     ? originalImages.map((src, i) => `${SITE}/product-image/${encodeURIComponent(product.id)}.jpg${i ? `?n=${i}` : ''}`)
     : [`${SITE}/og-image.png`];
   const image = productImages[0];
-  const titleTag = productContentOverride ? productContentOverride.title : isY2kStarGlassesOverride
-    ? 'Y2K Star Glasses Price in Bangladesh | FASHIONISTA'
-    : isRaglanTeeOverride
-      ? 'Raglan Long Sleeve T-Shirt Price in Bangladesh | FASHIONISTA'
-      : isRedBandanaOverride
-      ? 'Red Bandana Price in Bangladesh | FASHIONISTA'
-      : isChromeHeartRimlessGoldOverride
-      ? 'Chrome Heart Rimless Glasses Price in Bangladesh | FASHIONISTA'
-      : isSilverRimlessOverride
-      ? 'Silver Rimless Glasses Price in Bangladesh | FASHIONISTA'
-      : isBlackGoldGlassesOverride
-        ? 'Chrome Heart Glasses Price in Bangladesh | FASHIONISTA'
-        : esc(buildTitle(label));
+  const titleTag = esc(buildTitle(label));
   const keywordsContent = esc(buildKeywords(product).join(', '));
 
   html = html
@@ -1059,6 +1035,7 @@ ${SEO_INFO_CSS}
     "itemListElement": breadcrumbItems(product, url)
   }).replace(/</g,'\\u003c')}</script>
 </head>`;
+
   html = html.replace('</head>', jsonLd);
 
   const snapshot = renderSnapshot(product, similar);
