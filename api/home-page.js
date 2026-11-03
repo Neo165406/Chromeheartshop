@@ -187,10 +187,10 @@ function applyHomeInventorySeo(html, products){
   const from = prices.length ? ` from ৳${Math.min(...prices)}` : '';
   const raw = `Shop Y2K accessories and streetwear${from} at FASHIONISTA in Bangladesh. Explore glasses, bracelets and bandanas with cash on delivery in Dhaka and nationwide.`;
   const description = raw.length <= 160 ? raw : raw.slice(0,157).replace(/\s+\S*$/, '') + '...';
-  html = html.replace(/<title>[^<]*<\\/title>/, '<title>Fashionista BD Y2K Accessories and Streetwear FASHIONISTA</title>');
-  html = html.replace(/(<meta name="description"\\s+content=")[^"]*(")/, `$1${description}$2`);
-  html = html.replace(/(<meta property="og:description"\\s+content=")[^"]*(")/, `$1${description}$2`);
-  html = html.replace(/(<meta name="twitter:description"\\s+content=")[^"]*(")/, `$1${description}$2`);
+  html = html.replace(/<title>[^<]*<\/title>/, '<title>Fashionista BD Y2K Accessories and Streetwear FASHIONISTA</title>');
+  html = html.replace(/(<meta name="description"\s+content=")[^"]*(")/, `$1${description}$2`);
+  html = html.replace(/(<meta property="og:description"\s+content=")[^"]*(")/, `$1${description}$2`);
+  html = html.replace(/(<meta name="twitter:description"\s+content=")[^"]*(")/, `$1${description}$2`);
   return html;
 }
 
