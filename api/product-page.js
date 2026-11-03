@@ -546,6 +546,7 @@ function categoryBlurb(product){
   const name = esc(titleCaseName(product.name) || 'This style');
   if(String(product.slug || '').toLowerCase() === 'red-bandana') return 'A red bandana adds a bold colour accent to streetwear outfits. Style it as a headband, neck scarf, wrist accent or accessory on a bag, and check the product photos for the exact design.';
   if(String(product.slug || '').toLowerCase() === 'chrome-heart-black-gold') return 'Black-and-gold statement glasses for Y2K, retro and streetwear outfits. Check the product photos and current BDT price before ordering.';
+  if(String(product.slug || '').toLowerCase() === 'chrome-heart-rimless-gold') return 'Gold-tone rimless glasses for Y2K and streetwear looks. Review the product photos to confirm the exact frame appearance, then check the current BDT price and availability.';
   if(/bandana/.test(hay)) return `${name} is a bandana option for adding a print or colour accent to a streetwear look. Review the photos to check the exact pattern, then explore ways to style it as a headband, neck scarf or bag accessory.`;
   if(product && product.id === 'hRTjTVeGAcjWuwFAMwcs') return 'These silver rimless glasses bring a minimalist eyewear look to Y2K outfits and everyday streetwear. Review the product photos and current BDT price before ordering.';
   if(/glass|eyewear/.test(hay)) return `${name} is part of FASHIONISTA's glasses collection for Y2K, retro and streetwear-inspired outfits. Compare the product photos to check the frame's visible shape and colour, and review the listed price and availability before ordering.`;
@@ -570,6 +571,7 @@ function renderInfoSection(product){
   const discount = hasPrice && was > price ? Math.round((1 - price / was) * 100) : 0;
   const subPage = subcategoryPage(product);
   const isBlackGoldGlasses = String(product.slug || '').toLowerCase() === 'chrome-heart-black-gold';
+  const isChromeHeartRimlessGold = String(product.slug || '').toLowerCase() === 'chrome-heart-rimless-gold';
   const isRaglanLongSleeveTShirt = String(product.slug || '').toLowerCase() === 'raglan-long-sleeve-t-shirt';
   const isRedBandana = String(product.slug || '').toLowerCase() === 'red-bandana';
   const isY2kStarGlasses = String(product.slug || '').toLowerCase() === 'retro-y2k-star-glass';
@@ -585,16 +587,17 @@ function renderInfoSection(product){
 
   return `
 <section class="seo-info" aria-labelledby="seoInfoHead">
-  <h2 id="seoInfoHead" class="display">${isBlackGoldGlasses ? 'Chrome Heart Glasses Price in Bangladesh' : isRaglanLongSleeveTShirt ? 'Raglan Long Sleeve T-Shirt Price in Bangladesh' : isRedBandana ? 'Red Bandana Price in Bangladesh' : `About ${name}`}</h2>
+  <h2 id="seoInfoHead" class="display">${isChromeHeartRimlessGold ? 'Chrome Heart Rimless Glasses Price in Bangladesh' : isBlackGoldGlasses ? 'Chrome Heart Glasses Price in Bangladesh' : isRaglanLongSleeveTShirt ? 'Raglan Long Sleeve T-Shirt Price in Bangladesh' : isRedBandana ? 'Red Bandana Price in Bangladesh' : `About ${name}`}</h2>
   <p>${intro}</p>
   <p>${isRaglanLongSleeveTShirt ? 'A long sleeve raglan T-shirt is an easy streetwear layer for casual everyday outfits. Check the product photos, available sizes and current price before ordering; fabric and fit details should be confirmed from the listed product information.' : esc(categoryBlurb(product))}</p>
+  ${isChromeHeartRimlessGold ? `<p>Looking for Chrome Heart rimless glasses in Bangladesh? This gold-tone rimless style is listed at BDT ${hasPrice ? price : 'the price shown above'} at FASHIONISTA. Check the product photos for the exact frame appearance and confirm availability before ordering.</p><p>Browse more styles in our <a href="${esc(productCategoryUrl)}">glasses collection</a> or check <a href="/shipping">delivery charges and timelines</a>.</p>` : ''}
   ${isBlackGoldGlasses ? `<p>Looking for Chrome Heart-style glasses in Bangladesh? The current listed price for this black-and-gold pair at FASHIONISTA is BDT ${hasPrice ? price : 'shown above'}. Review the product photos and availability on this page before ordering; we do not list frame or lens specifications unless they are confirmed in the product details.</p><p>Explore more eyewear in our <a href="${esc(productCategoryUrl)}">glasses collection</a>, or check <a href="/shipping">delivery charges and timelines</a> for your location.</p>` : ''}
   ${isRaglanLongSleeveTShirt ? `<p>Looking for a raglan long sleeve T-shirt in Bangladesh? The current listed price at FASHIONISTA is BDT ${hasPrice ? price : 'shown above'}. Check the available size options and product photos before placing your order. Browse more styles in our <a href="${esc(productCategoryUrl)}">clothing collection</a> or review <a href="/shipping">delivery charges and timelines</a>.</p>` : ''}
   ${isRedBandana ? `<p>Looking for a red bandana in Bangladesh? Check the current BDT price, availability and product photos above before ordering. A red bandana can add a strong colour accent to a streetwear outfit; try it as a headband, neck scarf or wrist accessory. Browse the <a href="/bandanas">bandana collection</a>, explore <a href="/accessories">Fashionista accessories</a>, and review <a href="/shipping">delivery charges and timelines</a>.</p>` : ''}
   ${isY2kStarGlasses ? `<p>Looking for Y2K star glasses in Bangladesh? This pair is listed at BDT ${hasPrice ? price : 'the price shown above'} at FASHIONISTA. Use the product gallery to inspect the frame shape and details, and check current stock before ordering. Browse more <a href="/glasses">Y2K glasses and sunglasses</a> or review <a href="/shipping">delivery charges and timelines</a>.</p>` : ''}
   ${subPage ? `<p>Browse all <a href="${subPage.path}">${esc(subPage.label.toLowerCase())}</a> at FASHIONISTA.</p>` : ''}
-  <h3>${isBlackGoldGlasses ? 'What is the price of Chrome Heart glasses in Bangladesh?' : isRaglanLongSleeveTShirt ? 'What is the price of a raglan long sleeve T-shirt in Bangladesh?' : isRedBandana ? 'Where can I buy a red bandana in Bangladesh?' : isY2kStarGlasses ? 'Where can I buy Y2K star glasses in Bangladesh?' : `What is the price of ${name} in Bangladesh?`}</h3>
-  <p>${hasPrice ? `${isBlackGoldGlasses ? 'Chrome Heart-style glasses' : isRaglanLongSleeveTShirt ? 'Raglan long sleeve T-shirt' : isRedBandana ? 'The red bandana' : isY2kStarGlasses ? 'Y2K star glasses' : name} costs BDT ${price} at FASHIONISTA. ` : ''}${isRedBandana ? 'Order online from FASHIONISTA and pay cash on delivery across Bangladesh. Check the product photos and stock status before placing your order. ' : isY2kStarGlasses ? 'Check the gallery and availability before placing your order. ' : ''}Delivery charges depend on where you live; see our <a href="/shipping">shipping info</a> for charges, timelines and how order confirmation works.</p>
+  <h3>${isChromeHeartRimlessGold ? 'What is the price of Chrome Heart rimless glasses in Bangladesh?' : isBlackGoldGlasses ? 'What is the price of Chrome Heart glasses in Bangladesh?' : isRaglanLongSleeveTShirt ? 'What is the price of a raglan long sleeve T-shirt in Bangladesh?' : isRedBandana ? 'Where can I buy a red bandana in Bangladesh?' : isY2kStarGlasses ? 'Where can I buy Y2K star glasses in Bangladesh?' : `What is the price of ${name} in Bangladesh?`}</h3>
+  <p>${hasPrice ? `${isChromeHeartRimlessGold ? 'Chrome Heart-style rimless glasses' : isBlackGoldGlasses ? 'Chrome Heart-style glasses' : isRaglanLongSleeveTShirt ? 'Raglan long sleeve T-shirt' : isRedBandana ? 'The red bandana' : isY2kStarGlasses ? 'Y2K star glasses' : name} costs BDT ${price} at FASHIONISTA. ` : ''}${isRedBandana ? 'Order online from FASHIONISTA and pay cash on delivery across Bangladesh. Check the product photos and stock status before placing your order. ' : isY2kStarGlasses ? 'Check the gallery and availability before placing your order. ' : ''}Delivery charges depend on where you live; see our <a href="/shipping">shipping info</a> for charges, timelines and how order confirmation works.</p>
   <h3>Can I pay cash on delivery?</h3>
   <p>Yes. We offer cash on delivery nationwide across Bangladesh, so there is nothing to pay online.</p>
   <h3>What if the item is damaged or the wrong size?</h3>
@@ -828,6 +831,7 @@ module.exports = async function handler(req, res){
   // naming a third-party brand.
   const isSilverRimlessOverride = product.id === 'hRTjTVeGAcjWuwFAMwcs';
   const isBlackGoldGlassesOverride = String(product.slug || '').toLowerCase() === 'chrome-heart-black-gold';
+  const isChromeHeartRimlessGoldOverride = String(product.slug || '').toLowerCase() === 'chrome-heart-rimless-gold';
   const isRedBandanaOverride = String(product.slug || '').toLowerCase() === 'red-bandana';
   const isRaglanTeeOverride = String(product.slug || '').toLowerCase() === 'raglan-long-sleeve-t-shirt';
   const isY2kStarGlassesOverride = String(product.slug || '').toLowerCase() === 'retro-y2k-star-glass';
@@ -837,6 +841,8 @@ module.exports = async function handler(req, res){
       ? 'Shop a raglan long sleeve T-shirt in Bangladesh at FASHIONISTA. Check the current BDT price, product photos, available sizes and stock status, with cash on delivery nationwide.'
       : isRedBandanaOverride
       ? 'Buy a red bandana in Bangladesh at FASHIONISTA. Check the current price in BDT, view product photos, and order online with cash on delivery nationwide.'
+      : isChromeHeartRimlessGoldOverride
+      ? 'Shop Chrome Heart-style rimless glasses in Bangladesh at FASHIONISTA. Check the current BDT price, product photos and availability, with cash on delivery nationwide.'
       : isSilverRimlessOverride
       ? 'Shop silver rimless glasses in Bangladesh at FASHIONISTA. Silver-tone eyewear for Y2K and streetwear looks, with cash on delivery nationwide.'
       : isBlackGoldGlassesOverride
@@ -866,6 +872,8 @@ module.exports = async function handler(req, res){
       ? 'Raglan Long Sleeve T-Shirt Price in Bangladesh | FASHIONISTA'
       : isRedBandanaOverride
       ? 'Red Bandana Price in Bangladesh | FASHIONISTA'
+      : isChromeHeartRimlessGoldOverride
+      ? 'Chrome Heart Rimless Glasses Price in Bangladesh | FASHIONISTA'
       : isSilverRimlessOverride
       ? 'Silver Rimless Glasses Price in Bangladesh | FASHIONISTA'
       : isBlackGoldGlassesOverride
