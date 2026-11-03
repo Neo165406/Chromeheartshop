@@ -149,7 +149,7 @@ const CATEGORY_SEO = {
     desc: "Compare rimless glasses and Y2K sunglasses at FASHIONISTA in Bangladesh. Browse retro, aviator and round styles, check current BDT prices and availability, and order with cash on delivery nationwide."
   },
   "Accessories": {
-    title: "Y2K Accessories in Bangladesh | Fashionista",
+    title: "Men's Y2K Accessories in Bangladesh | Fashionista",
     desc: "Shop Y2K accessories in Bangladesh at Fashionista: bracelets, chain necklaces and bandanas. See BDT prices, with cash on delivery nationwide."
   },
   "Clothing": {
@@ -160,7 +160,7 @@ const CATEGORY_SEO = {
 
 const CATEGORY_HEADINGS = {
   "New In": "New Arrivals in Bangladesh",
-  "Glasses": "Rimless Glasses & Y2K Sunglasses in Bangladesh",
+  "Glasses": "Men's Glasses & Y2K Sunglasses in Bangladesh",
   "Accessories": "Y2K Accessories in Bangladesh",
   "Clothing": "T-Shirts & Streetwear Clothing in Bangladesh"
 };
@@ -209,12 +209,12 @@ const SCOPE_PAGES = {
     path: '/bracelets',
     label: 'Bracelets',
     aliases: ['bracelets', 'bracelet'],
-    title: 'Gothic & Fashion Bracelets in Bangladesh | FASHIONISTA',
-    desc: 'Browse gothic and streetwear bracelets at FASHIONISTA. Prices in BDT, live stock status and cash on delivery across Bangladesh.',
-    h1: 'Fashion Bracelets in Bangladesh',
-    sub: 'Gothic and streetwear bracelets, priced in BDT',
+    title: 'Men's Bracelets & Gothic Fashion in Bangladesh | FASHIONISTA',
+    desc: 'Shop men's bracelets and gothic streetwear styles at FASHIONISTA in Bangladesh. Compare current BDT prices and stock, with cash on delivery nationwide.',
+    h1: 'Men's Bracelets in Bangladesh',
+    sub: 'Gothic and streetwear bracelets for men, with current BDT prices',
     intro: [
-      'FASHIONISTA is a Bangladesh-based accessories brand inspired by retro, Y2K and street fashion. This page collects the bracelets currently listed in our shop, with the price in BDT and a clear out-of-stock label on anything that has sold through.',
+      'FASHIONISTA is a Bangladesh-based accessories brand inspired by retro, Y2K and street fashion. Browse men's bracelets and compare the designs currently listed in our shop, with the price in BDT and a clear out-of-stock label on anything that has sold through.',
       'Pay cash on delivery anywhere in Bangladesh, with nothing to pay online.'
     ],
     highlights: [
@@ -245,10 +245,10 @@ const SCOPE_PAGES = {
     path: '/rings',
     label: 'Rings',
     aliases: ['rings', 'ring'],
-    title: 'Silver & Gothic Rings in Bangladesh | FASHIONISTA',
-    desc: 'Explore silver-tone and gothic-inspired fashion rings at FASHIONISTA. Prices in BDT, with cash on delivery across Bangladesh.',
-    h1: 'Fashion Rings in Bangladesh',
-    sub: 'Silver-tone, gothic and streetwear rings, priced in BDT',
+    title: 'Men's Silver & Gothic Rings in Bangladesh | FASHIONISTA',
+    desc: 'Explore men's silver-tone and gothic-inspired fashion rings at FASHIONISTA. Prices in BDT, with cash on delivery across Bangladesh.',
+    h1: 'Men's Fashion Rings in Bangladesh',
+    sub: 'Silver-tone and gothic fashion rings for men, priced in BDT',
     intro: [
       'Discover the rings currently listed at FASHIONISTA, a Bangladesh-based fashion and accessories store. Each listing includes product photos, a current BDT price and stock status so you can check the details before ordering.',
       'Order from anywhere in Bangladesh and pay cash on delivery.'
@@ -281,12 +281,12 @@ const SCOPE_PAGES = {
     path: '/bandanas',
     label: 'Bandanas',
     aliases: ['bandana', 'bandanas'],
-    title: 'Bandana Price in Bangladesh | FASHIONISTA',
-    desc: 'Compare bandana styles and current prices in Bangladesh at FASHIONISTA. Browse printed and streetwear designs, check BDT prices and order with cash on delivery nationwide.',
+    title: 'Bandana Price in Bangladesh for Men for Men | FASHIONISTA',
+    desc: 'Shop men's bandanas in Bangladesh at FASHIONISTA. Browse printed and streetwear designs, check BDT prices and order with cash on delivery nationwide.',
     h1: 'Bandana Price in Bangladesh',
-    sub: 'Compare printed, streetwear and gothic bandanas with current BDT prices',
+    sub: 'Compare men's printed, streetwear and gothic bandanas with current BDT prices',
     intro: [
-      'Browse bandanas available at FASHIONISTA in Bangladesh. Compare each style by its photos, design, stock status and current BDT price before ordering.',
+      'Browse men's bandanas available at FASHIONISTA in Bangladesh. Compare each style by its photos, design, stock status and current BDT price before ordering.',
       'Choose a printed, streetwear or gothic-inspired bandana to style as a headband, neck scarf or accessory. Order from anywhere in Bangladesh and pay cash on delivery.'
     ],
     highlights: [
@@ -317,12 +317,12 @@ const SCOPE_PAGES = {
     path: '/chrome-heart-chains',
     label: 'Chrome Heart Chains',
     aliases: ['chain', 'chains'],
-    title: 'Chrome Heart Chains in Bangladesh | FASHIONISTA',
-    desc: 'Shop chains and chain necklaces at FASHIONISTA, in gothic and streetwear styles. Prices in BDT, live stock status and cash on delivery across Bangladesh.',
-    h1: 'Chrome Heart Chains in Bangladesh',
-    sub: 'Gothic and streetwear chains, priced in BDT',
+    title: 'Men's Chain Necklaces in Bangladesh | FASHIONISTA',
+    desc: 'Shop men's chains and chain necklaces at FASHIONISTA in Bangladesh, in gothic and streetwear styles. Prices in BDT, live stock status and cash on delivery across Bangladesh.',
+    h1: 'Men's Chain Necklaces in Bangladesh',
+    sub: 'Gothic and streetwear chains for men, with current BDT prices',
     intro: [
-      'Browse the chains and chain necklaces currently listed at FASHIONISTA, a Bangladesh-based fashion and accessories store. Each listing shows its photos, the price in BDT and a clear out-of-stock label on anything that has sold through.',
+      'Browse men's chains and chain necklaces currently listed at FASHIONISTA in Bangladesh. Each listing shows its photos, the price in BDT and a clear out-of-stock label on anything that has sold through.',
       'Order from anywhere in Bangladesh and pay cash on delivery.'
     ],
     highlights: [
@@ -697,16 +697,16 @@ const CATEGORY_CONTENT = {
     ]
   },
   "Glasses": {
-    h2: "Rimless glasses and Y2K sunglasses in Bangladesh",
+    h2: "Men's rimless glasses and Y2K sunglasses in Bangladesh",
     paras: [
-      "Looking for rimless glasses in Bangladesh? Browse rimless frames and Y2K sunglasses at FASHIONISTA, alongside aviator and round styles for retro and streetwear outfits. Compare the current BDT price shown on each product card, then open a listing for photos, product details and availability before ordering.",
+      "Looking for men's glasses in Bangladesh? Browse rimless frames and Y2K sunglasses at FASHIONISTA, alongside aviator and round styles for retro and streetwear outfits. Compare the current BDT price shown on each product card, then open a listing for photos, product details and availability before ordering.",
       "Compare rimless frames for a minimal look, aviator shapes for a classic profile and round glasses for a retro accent. Prices and stock can vary by design, so use each product page for the latest BDT price, photos and availability. Complete the look with our <a href=\"/accessories\">accessories</a>."
     ]
   },
   "Accessories": {
-    h2: "Bracelets and streetwear accessories in Bangladesh",
+    h2: "Men's bracelets and streetwear accessories in Bangladesh",
     paras: [
-      "Explore bracelets, chain necklaces and bandanas for gothic, Y2K and streetwear outfits at FASHIONISTA. Each product listing shows photos, the current BDT price and stock status, so you can compare styles before ordering.",
+      "Explore men's bracelets, chain necklaces and bandanas for gothic, Y2K and streetwear outfits at FASHIONISTA. Each product listing shows photos, the current BDT price and stock status, so you can compare styles before ordering.",
       "Browse our dedicated <a href=\"/bracelets\">bracelet collection</a>, <a href=\"/chrome-heart-chains\">chains</a> and <a href=\"/bandanas\">bandanas</a>, or explore <a href=\"/glasses\">sunglasses</a> and <a href=\"/clothing\">streetwear clothing</a>. Open any listing for product photos, current price and availability."
     ]
   },
