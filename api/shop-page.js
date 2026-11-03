@@ -429,6 +429,16 @@ function introMarkup(cfg, count){
   </div>`;
 }
 
+function scopeFaqMarkup(cfg, items){
+  const prices = items.map(p => Number(p.price)).filter(n => Number.isFinite(n) && n > 0);
+  const range = prices.length ? 'Current listed prices range from BDT ' + Math.min(...prices) + ' to BDT ' + Math.max(...prices) + '.' : 'Open a product listing to see its current price and availability.';
+  const q = cfg.path === '/bracelets' ? 'What is the bracelet price in Bangladesh?' : cfg.path === '/bandanas' ? 'What is the bandana price in Bangladesh?' : 'What is the chain necklace price in Bangladesh?';
+  const faqs = [[q, range + ' Check each listing for exact product details.'], ['Can I pay cash on delivery?', 'Yes. FASHIONISTA offers cash on delivery across Bangladesh, including Dhaka.'], ['How can I check product details?', 'Open a product page to view photos, current price and stock status.']];
+  const html = faqs.map(([q,a]) => '<h3>' + q + '</h3><p>' + a + '</p>').join('\n');
+  const schema = { '@context':'https://schema.org', '@type':'FAQPage', mainEntity:faqs.map(([q,a]) => ({ '@type':'Question', name:q, acceptedAnswer:{ '@type':'Answer', text:a } })) };
+  return '<h2>Frequently asked questions</h2>' + html + '<script type="application/ld+json" id="scopeFaqLd">' + JSON.stringify(schema).replace(/</g, '\\u003c') + '</script>';
+}
+
 function supportingCopyMarkup(cfg, items, inventory){
   const sections = cfg.sections.map(s => `<h2>${esc(s.h)}</h2>${s.p.map(t => `<p>${t}</p>`).join('')}`).join('\n  ');
   const highlights = highlightsMarkup(cfg, items);
@@ -625,6 +635,15 @@ function scopeScript(cfg, ids){
     + `return all.filter(function(p){return s.aliases.indexOf(String(p.subcategory||'').trim().toLowerCase())!==-1;});};</script>\n`;
 }
 
+function applyScopePriceDescription(html, cfg, items){
+  const prices = items.map(p => Number(p.price)).filter(n => Number.isFinite(n) && n > 0);
+  if(!prices.length) return html;
+  const from = ' from ৳' + Math.min(...prices);
+  const copy = cfg.path === '/bracelets' ? 'Silver bracelet price in Bangladesh' + from + ' at FASHIONISTA. Explore mens bracelet styles. Cash on delivery in Dhaka and nationwide.' : cfg.path === '/bandanas' ? 'Bandana price in Bangladesh' + from + ' at FASHIONISTA. Explore Y2K bandana styles. Cash on delivery in Dhaka and nationwide.' : 'Chain necklace for men BD' + from + ' at FASHIONISTA. Browse Chrome Heart chains and Y2K necklaces. Cash on delivery nationwide.';
+  const desc = copy.length <= 160 ? copy : copy.slice(0,157).replace(/\\s+\\S*$/, '') + '...';
+  return applySeoHead(html, { title: cfg.title, desc: desc }, SITE + cfg.path);
+}
+
 async function serveLandingPage(req, res, html, cfg){
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   const url = SITE + cfg.path;
@@ -664,6 +683,7 @@ async function serveLandingPage(req, res, html, cfg){
     .map(x => x.p);
 
   const similar = products.filter(p => !inScope(p, cfg)).sort(() => Math.random() - 0.5).slice(0, 4);
+  html = applyScopePriceDescription(html, cfg, items);
 
   const head = [LANDING_CSS, landingJsonLd(cfg, items)];
   // A landing page with no products would be a thin page: keep it out of the index.
@@ -741,7 +761,7 @@ function categoryFaqMarkup(category, inventory){
   const range = prices.length ? 'Current listed prices range from BDT ' + Math.min(...prices) + ' to BDT ' + Math.max(...prices) + '.' : 'Open a product listing to see its current price and availability.';
   const mainQ = category === 'Glasses' ? 'What is the sunglasses price in Bangladesh?' : category === 'Accessories' ? 'What is the chain necklace price in Bangladesh?' : category === 'Clothing' ? 'What is the price of streetwear clothing in Bangladesh?' : 'What is new at FASHIONISTA?';
   const faqs = [[mainQ, range + ' Check each product page for exact details.'], ['Can I pay cash on delivery?', 'Yes. FASHIONISTA offers cash on delivery across Bangladesh, including Dhaka.'], ['How do I check product details?', 'Open a product page to view its photos, current price, stock status and any listed size information.']];
-  const visible = faqs.map(([q,a]) => '<h3>' + q + '</h3><p>' + a + '</p>').join('\\n');
+  const visible = faqs.map(([q,a]) => '<h3>' + q + '</h3><p>' + a + '</p>').join('\n');
   const schema = { '@context':'https://schema.org', '@type':'FAQPage', mainEntity:faqs.map(([q,a]) => ({ '@type':'Question', name:q, acceptedAnswer:{ '@type':'Answer', text:a } })) };
   return visible + '<script type="application/ld+json" id="categoryFaqLd">' + JSON.stringify(schema).replace(/</g, '\\u003c') + '</script>';
 }
