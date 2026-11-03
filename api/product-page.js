@@ -924,7 +924,118 @@ module.exports = async function handler(req, res){
     ? originalImages.map((src, i) => `${SITE}/product-image/${encodeURIComponent(product.id)}.jpg${i ? `?n=${i}` : ''}`)
     : [`${SITE}/og-image.png`];
   const image = productImages[0];
-  const titleTag = buildTitle(label);
+  const titleTag = esc(buildTitle(label));
+  const keywordsContent = esc(buildKeywords(product).join(', '));
+
+  html = html
+    .replace('<title>FASHIONISTA</title>', `<title>${titleTag}</title>`)
+    .replace(
+      '<meta name="description" content="Shop neon silver accessories and eyewear at FASHIONISTA. Cash on delivery across Bangladesh.">',
+      `<meta name="description" content="${esc(desc)}">\n<meta name="keywords" content="${keywordsContent}">`
+    )
+    .replace(
+      '<link rel="canonical" id="canonicalLink" href="https://fashion1sta.com/product.html">',
+      `<link rel="canonical" id="canonicalLink" href="${esc(url)}">`
+    )
+    .replace(
+      '<meta id="ogTitle" property="og:title" content="FASHIONISTA">',
+      `<meta id="ogTitle" property="og:title" content="${titleTag}">`
+    )
+    .replace(
+      '<meta id="ogDescription" property="og:description" content="Shop neon silver accessories and eyewear at FASHIONISTA.">',
+      `<meta id="ogDescription" property="og:description" content="${esc(desc)}">`
+    )
+    .replace(
+      '<meta id="ogUrl" property="og:url" content="https://fashion1sta.com/product.html">',
+      `<meta id="ogUrl" property="og:url" content="${esc(url)}">`
+    )
+    .replace(
+      '<meta id="ogImage" property="og:image" content="https://fashion1sta.com/og-image.png">',
+      `<meta id="ogImage" property="og:image" content="${esc(image)}">`
+    )
+    .replace(
+      '<meta id="ogPriceAmount" property="product:price:amount" content="">',
+      `<meta id="ogPriceAmount" property="product:price:amount" content="${esc(product.price)}">`
+    )
+    .replace(
+      '<meta id="twitterTitle" name="twitter:title" content="FASHIONISTA">',
+      `<meta id="twitterTitle" name="twitter:title" content="${titleTag}">`
+    )
+    .replace(
+      '<meta id="twitterDescription" name="twitter:description" content="Shop neon silver accessories and eyewear at FASHIONISTA.">',
+      `<meta id="twitterDescription" name="twitter:description" content="${esc(desc)}">`
+    )
+    .replace(
+      '<meta id="twitterImage" name="twitter:image" content="https://fashion1sta.com/og-image.png">',
+      `<meta id="twitterImage" name="twitter:image" content="${esc(image)}">`
+    );
+
+  const productSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": product.name,
+    "sku": String(product.id),
+    "brand": { "@type": "Brand", "name": "FASHIONISTA" },
+    "url": url,
+    "image": productImages.length ? productImages : undefined,
+    "description": desc,
+    "category": product.category || undefined,
+    "offers": {
+      "@type": "Offer",
+      "url": url,
+      "priceCurrency": "BDT",
+      "price": product.price,
+      "availability": product.stock === 0 ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
+      "itemCondition": "https://schema.org/NewCondition",
+      "seller": {
+        "@type": "Organization",
+        "name": "FASHIONISTA",
+        "url": SITE
+      },
+      "shippingDetails": SHIPPING_DETAILS,
+      "hasMerchantReturnPolicy": {
+        "@type": "MerchantReturnPolicy",
+        "applicableCountry": "BD",
+        "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+        "merchantReturnDays": 7,
+        "returnMethod": "https://schema.org/ReturnByMail",
+        "returnFees": "https://schema.org/ReturnFeesCustomerResponsibility",
+        "refundType": "https://schema.org/ExchangeRefund",
+        "merchantReturnDescription": "The customer is responsible for return shipping fees. For a confirmed damaged, defective or incorrect item covered by this policy, FASHIONISTA pays the return shipping cost. Contact FASHIONISTA before returning an item to receive instructions.",
+        "url": `${SITE}/return-policy`
+      }
+    }
+  };
+  // Only real customer reviews ever go into the schema: products with no
+  // reviews (or when the reviews query failed) get no rating markup at all.
+  if(Array.isArray(reviews) && reviews.length){
+    const avg = reviews.reduce((s, rv) => s + rv.rating, 0) / reviews.length;
+    productSchema.aggregateRating = {
+      "@type": "AggregateRating",
+      "ratingValue": Math.round(avg * 10) / 10,
+      "reviewCount": reviews.length,
+      "bestRating": 5,
+      "worstRating": 1
+    };
+    productSchema.review = reviews.slice(0, 5).map(rv => ({
+      "@type": "Review",
+      "author": { "@type": "Person", "name": rv.name || 'Customer' },
+      "datePublished": rv.createdAt ? String(rv.createdAt).slice(0, 10) : undefined,
+      "reviewRating": { "@type": "Rating", "ratingValue": rv.rating, "bestRating": 5, "worstRating": 1 },
+      "reviewBody": rv.comment || undefined
+    }));
+  }
+
+  const jsonLd = `
+${SEO_INFO_CSS}
+<script type="application/ld+json" id="productLd">${JSON.stringify(productSchema).replace(/</g,'\\u003c')}</script>
+<script type="application/ld+json" id="breadcrumbLd">${JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": breadcrumbItems(product, url)
+  }).replace(/</g,'\\u003c')}</script>
+</head>`;
+
   html = html.replace('</head>', jsonLd);
 
   const snapshot = renderSnapshot(product, similar);
