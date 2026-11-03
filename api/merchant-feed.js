@@ -83,6 +83,33 @@ function isHttpUrl(u){
   return typeof u === 'string' && /^https?:\/\//i.test(u);
 }
 
+// Product-specific Merchant Center copy. This improves the feed without
+// changing Firestore product records or customer-facing catalog data.
+const FEED_COPY_BY_SLUG = Object.freeze({
+'chrome-heart-bracelet':{title:'Gothic Style Bracelet',description:'A bold gothic-style bracelet for alternative outfits and everyday streetwear. View the product photos, current BDT price and availability before ordering from FASHIONISTA.'},
+'chrome-heart-black-silver':{title:'Black and Silver Style Glasses',description:'Black-and-silver style glasses for Y2K-inspired outfits and everyday streetwear. Explore the product photos, current BDT price and availability at FASHIONISTA.'},
+'chrome-heart-bracelet-3':{title:'Statement Gothic Bracelet',description:'A statement bracelet with an edgy streetwear look. Style it with casual or alternative outfits and check the current price and stock status at FASHIONISTA.'},
+'sun-moon-couple-set':{title:'Sun and Moon Couple Set',description:'A coordinated sun-and-moon design set with a distinctive decorative look. Explore the product photos and current BDT price at FASHIONISTA before ordering.'},
+'green-bandana':{title:'Green Bandana',description:'A green bandana that can be styled around your head, neck or waist. Add a versatile accent to casual and streetwear outfits with this FASHIONISTA accessory.'},
+'chrome-heart-rimless-silver':{title:'Silver Rimless Glasses',description:'Silver-tone rimless glasses for a clean, understated Y2K-inspired look. View the frame photos, current BDT price and availability at FASHIONISTA.'},
+'raglan-long-sleeve-t-shirt':{title:'Raglan Long Sleeve T-Shirt',description:'A long-sleeve raglan T-shirt for casual everyday outfits. Check the product photos, available stock and current BDT price at FASHIONISTA before ordering.'},
+'red-bandana':{title:'Red Bandana',description:'A red bandana for styling around your head, neck or waist. Add a bright accent to casual and streetwear outfits with this FASHIONISTA accessory.'},
+'pink-bandana':{title:'Pink Bandana',description:'A pink bandana for styling around your head, neck or waist. Add a colour accent to casual and streetwear outfits with this FASHIONISTA accessory.'},
+'chrome-heart-rimless-gold':{title:'Gold Rimless Glasses',description:'Gold-tone rimless glasses for a refined Y2K-inspired outfit. View the frame photos, current BDT price and availability at FASHIONISTA.'},
+'retro-y2k-star-glass':{title:'Retro Y2K Star Glasses',description:'Retro star-shaped glasses with a Y2K-inspired look. Explore the product photos, current BDT price and availability at FASHIONISTA.'},
+'chrome-heart-bracelet-2':{title:'Alternative Style Bracelet',description:'An alternative-style bracelet designed to add an edgy detail to casual outfits. Check the product photos, current BDT price and stock status at FASHIONISTA.'},
+'chrome-heart-black-gold':{title:'Black and Gold Style Glasses',description:'Black-and-gold style glasses for Y2K-inspired outfits and everyday streetwear. Explore the frame photos, current BDT price and availability at FASHIONISTA.'},
+'chrome-fire-heart-chain':{title:'Gothic Heart Pendant Necklace',description:'A heart-themed pendant necklace with a dark, alternative style. Explore the product photos, current BDT price and availability at FASHIONISTA.'},
+'chrome-double-heart-chain':{title:'Double Heart Pendant Necklace',description:'A double-heart pendant necklace for layered looks or a standalone accessory. View the product photos and current BDT price at FASHIONISTA.'},
+'retro-double-sided-skull-cross':{title:'Double-Sided Skull Cross Pendant',description:'A skull-and-cross inspired pendant with a reversible design. Add a distinctive detail to alternative outfits and check the current BDT price at FASHIONISTA.'},
+'spider-pendant':{title:'Spider Pendant Necklace',description:'A spider-themed pendant for gothic and alternative styling. Explore the product photos, current BDT price and availability at FASHIONISTA.'},
+'gothic-fleur-de-lis-cross-pendant':{title:'Gothic Fleur-de-Lis Cross Pendant',description:'A fleur-de-lis cross pendant with a gothic-inspired look. Style it with alternative outfits or layer it with other accessories from FASHIONISTA.'},
+'y2k-star-necklace':{title:'Y2K Star Necklace',description:'A star pendant necklace for Y2K, cybercore and everyday streetwear looks. Explore the product photos and current BDT price at FASHIONISTA.'},
+'chrome-heart-chain':{title:'Gothic Cross Pendant Necklace',description:'A cross pendant necklace for gothic-inspired outfits and alternative streetwear. View the product photos and current BDT price at FASHIONISTA.'},
+'vintage-dark-cross-hollow-out-necklace':{title:'Vintage Dark Cross Hollow-Out Necklace',description:'A hollow-out cross necklace with a vintage, dark aesthetic. Add a distinctive accessory to alternative outfits and explore the current price at FASHIONISTA.'},
+'chrome-hearts-raised-cross-dog-tag':{title:'Raised Cross Dog Tag Necklace',description:'A raised-cross dog tag necklace for bold, alternative styling. Explore the product photos and current BDT price at FASHIONISTA before ordering.'}
+});
+
 function itemXml(p){
   const price = Number(p.price);
   if(!Number.isFinite(price) || price <= 0) return '';
@@ -103,17 +130,18 @@ function itemXml(p){
   );
 
   const category = clean(p.category);
-  let title = titleCase(p.name);
-  // A stripped third-party brand name would leave a bare "Bracelet": lead with our own brand instead.
-  if(String(p.name || '').search(BLOCKED_TERM_RE) !== -1 && title) title = `${BRAND} ${title}`;
+  const slug = clean(p.slug).toLowerCase();
+  const copy = FEED_COPY_BY_SLUG[slug] || null;
+  let title = copy ? copy.title : titleCase(p.name);
+  // Avoid a generic title when a third-party trademark is stripped.
+  if(!copy && String(p.name || '').search(BLOCKED_TERM_RE) !== -1 && title) title = `${BRAND} ${title}`;
   BLOCKED_TERM_RE.lastIndex = 0;
   if(title.length < 3) title = `${category || 'Accessory'} — ${BRAND}`;
   title = title.slice(0, 150);
 
-  let desc = clean(p.description)
-    // strip decorative stars / bullets / emoji typed into descriptions
-    .replace(/[★☆✦✧✨•●▪◆◇➤➜✔✓⭐️]|[\u{1F300}-\u{1FAFF}]/gu, ' ')
-    .replace(/\s+/g, ' ').trim();
+  let desc = copy ? copy.description : clean(p.description)
+    .replace(/[★☆✦✧✨•●▪◆◇➤➜✔✓⭐️]|[\\u{1F300}-\\u{1FAFF}]/gu, ' ')
+    .replace(/\\s+/g, ' ').trim();
   if(desc.length < 10) desc = `${title} from ${BRAND}, Dhaka. Cash on delivery across Bangladesh.`;
   desc = desc.slice(0, 5000);
 
