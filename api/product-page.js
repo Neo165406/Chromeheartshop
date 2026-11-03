@@ -609,9 +609,9 @@ const PRODUCT_CONTENT_OVERRIDES = {
   'chrome-heart-black-gold': {
     title: 'Chrome Heart Glasses Price in Bangladesh | FASHIONISTA',
     description: 'Shop Chrome Heart-style glasses in Bangladesh at FASHIONISTA. Check the current price in BDT, product photos and availability for this black-and-gold frame, with cash on delivery nationwide.',
-    h2: 'Black and Gold Glasses',
+    h2: 'Chrome Heart Glasses Price in Bangladesh',
     body: 'This black-and-gold eyewear style pairs a dark frame look with gold-tone detailing. Review the product gallery for the exact frame appearance and check the current BDT price and availability before ordering.',
-    faq: 'What is the price of black-and-gold glasses in Bangladesh?'
+    faq: 'What is the price of Chrome Heart glasses in Bangladesh?'
   }
 };
 
