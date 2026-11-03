@@ -562,56 +562,56 @@ const PRODUCT_CONTENT_OVERRIDES = {
     description: 'Explore the Retro Double-Sided Skull Cross at FASHIONISTA. View the front-and-back design in the product photos, check the current BDT price and availability, and order with cash on delivery across Bangladesh.',
     h2: 'Retro Double-Sided Skull Cross Design',
     body: 'The Retro Double-Sided Skull Cross features a skull-and-cross design made to be viewed from both sides. Check the product gallery to inspect the details and confirm the current price and stock before ordering.',
-    faq: 'How can I check both sides of the skull cross design?'
+    faq: 'What is the price of the Retro Double-Sided Skull Cross in Bangladesh?'
   },
   'spider-pendant': {
     title: 'Spider Pendant Price in Bangladesh | FASHIONISTA',
     description: 'Shop the Spider Pendant at FASHIONISTA in Bangladesh. Inspect the product photos for the exact pendant design, check the current BDT price and availability, and order with cash on delivery.',
     h2: 'Spider Pendant Design',
     body: 'The Spider Pendant adds a spider-inspired detail to gothic and alternative outfits. Review the gallery for the exact pendant design and check the listing details to confirm what is included before ordering.',
-    faq: 'What should I check before ordering the Spider Pendant?'
+    faq: 'What is the current Spider Pendant price in Bangladesh?'
   },
   'chrome-heart-bracelet': {
     title: 'Chrome Heart Bracelet Price in Bangladesh | FASHIONISTA',
     description: 'Browse this Chrome Heart-style bracelet at FASHIONISTA. Check its product photos, current BDT price and stock status, with cash on delivery available across Bangladesh.',
     h2: 'Chrome Heart-Style Bracelet',
     body: 'This bracelet is listed in FASHIONISTA’s gothic and streetwear accessories range. Inspect the product photos for its exact motif and finish, and check the current BDT price and stock before ordering.',
-    faq: 'How can I check the bracelet design before ordering?'
+    faq: 'What is the price of this Chrome Heart-style bracelet in Bangladesh?'
   },
   'chrome-heart-bracelet-2': {
     title: 'Chrome Heart Bracelet Design & Price | FASHIONISTA',
     description: 'Compare this Chrome Heart-style bracelet with other bracelet listings at FASHIONISTA. View its photos, current BDT price and availability before ordering with cash on delivery.',
     h2: 'Another Chrome Heart Bracelet Style',
     body: 'This is a separate bracelet listing in FASHIONISTA’s accessories collection. Compare its gallery and current BDT price with the other bracelet designs to choose the style you prefer.',
-    faq: 'How is this bracelet listing different from the other styles?'
+    faq: 'What is the price of this bracelet in Bangladesh?'
   },
   'chrome-heart-black-silver': {
     title: 'Black and Silver Glasses Price in Bangladesh | FASHIONISTA',
     description: 'Shop black-and-silver glasses at FASHIONISTA in Bangladesh. Check the frame photos, current BDT price and availability, with cash on delivery nationwide.',
     h2: 'Black and Silver Glasses',
     body: 'This black-and-silver eyewear style brings a contrasting colour combination to retro and streetwear outfits. Use the product gallery to inspect the frame shape and details, then check the current BDT price and availability.',
-    faq: 'How can I inspect the black-and-silver frame before buying?'
+    faq: 'What is the price of black-and-silver glasses in Bangladesh?'
   },
   'green-bandana': {
     title: 'Green Bandana Price in Bangladesh | FASHIONISTA',
     description: 'Shop a green bandana at FASHIONISTA in Bangladesh. View the product photos, check the current BDT price and stock, and order with cash on delivery nationwide.',
     h2: 'Green Bandana Styling',
     body: 'A green bandana adds a colour accent to casual and streetwear outfits. Try styling it as a headband, neck scarf or accessory on a bag, and check the photos for the exact shade and pattern.',
-    faq: 'How can I style a green bandana?'
+    faq: 'What is the current green bandana price in Bangladesh?'
   },
   'pink-bandana': {
     title: 'Pink Bandana Price in Bangladesh | FASHIONISTA',
     description: 'Shop a pink bandana at FASHIONISTA in Bangladesh. Compare its photos and current BDT price, check availability, and order with cash on delivery nationwide.',
     h2: 'Pink Bandana Styling',
     body: 'A pink bandana adds a softer colour accent to everyday and streetwear outfits. Style it as a headband, neck scarf or bag accessory, and use the product photos to check the exact shade and pattern.',
-    faq: 'How can I wear a pink bandana?'
+    faq: 'What is the current pink bandana price in Bangladesh?'
   },
   'chrome-heart-black-gold': {
     title: 'Chrome Heart Glasses Price in Bangladesh | FASHIONISTA',
     description: 'Shop Chrome Heart-style glasses in Bangladesh at FASHIONISTA. Check the current price in BDT, product photos and availability for this black-and-gold frame, with cash on delivery nationwide.',
     h2: 'Black and Gold Glasses',
     body: 'This black-and-gold eyewear style pairs a dark frame look with gold-tone detailing. Review the product gallery for the exact frame appearance and check the current BDT price and availability before ordering.',
-    faq: 'What should I check on the black-and-gold glasses listing?'
+    faq: 'What is the price of black-and-gold glasses in Bangladesh?'
   }
 };
 
