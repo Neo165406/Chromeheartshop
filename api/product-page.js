@@ -314,7 +314,9 @@ const BLOCKED_KEYWORD_RE = /chrome\s*-?\s*hearts?/i;
 // Matched against "<category> <product name>" (lowercase).
 const CATEGORY_KEYWORDS = [
   { match: /glass|eyewear/, words: [
-    'sunglasses price in bangladesh', 'sunglasses bangladesh', "men's sunglasses bd",
+    'glasses for men', "men's glasses bangladesh", "men's glasses bd",
+    'sunglasses for men', "men's sunglasses bd", 'fashion glasses bangladesh',
+    'eyewear for men', 'sunglasses price in bangladesh', 'sunglasses bangladesh',
     'gothic sunglasses bangladesh', 'rimless glasses bd', 'aviator sunglasses bd',
     'round sunglasses bd', 'gothic accessories bd'
   ]},
@@ -324,20 +326,27 @@ const CATEGORY_KEYWORDS = [
     't-shirt price in bangladesh'
   ]},
   { match: /chain|necklace|pendant/, words: [
-    'chain necklace bangladesh', "men's chain necklace bd", 'chain necklace bd',
-    'gothic jewelry bangladesh', 'silver chain price in bangladesh'
+    'necklace for men', "men's necklace bangladesh", "men's necklace bd",
+    'chain for men', "men's chain necklace bd", 'chain necklace bangladesh',
+    'chain necklace bd', 'gothic jewelry bangladesh', 'silver chain price in bangladesh'
   ]},
   { match: /bracelet|bangle/, words: [
-    "men's bracelet bangladesh", 'silver bracelet bd', 'silver bracelet men bd',
+    'bracelet for men', "men's bracelet bangladesh", "men's bracelet bd",
+    'bracelets for men', 'silver bracelet bd', 'silver bracelet men bd',
     'gothic bracelet bangladesh', 'gothic jewelry bangladesh', 'bracelet price in bangladesh'
   ]},
   { match: /grill|grillz|teeth/, words: [
     'teeth grillz bangladesh', 'teeth grillz bd', 'grillz price in bangladesh'
   ]},
   { match: /bandana/, words: [
-    'bandana bangladesh', 'bandana bd', 'bandana price in bangladesh',
-    'bandana price in bd', 'bandana bd price',
+    'bandana for men', "men's bandana bangladesh", "men's bandana bd",
+    'bandanas bangladesh', 'bandana bangladesh', 'bandana bd',
+    'bandana price in bangladesh', 'bandana price in bd', 'bandana bd price',
     'printed bandana bangladesh', 'streetwear bandana bd', 'gothic bandana bangladesh'
+  ]},
+  { match: /\bring\b|\brings\b/, words: [
+    'rings for men', "men's rings bangladesh", "men's rings bd",
+    'men ring price in bangladesh', 'fashion rings for men'
   ]},
   { match: /watch/, words: [
     "men's watches bangladesh", 'watch price in bangladesh', 'watch bd'
