@@ -344,7 +344,7 @@ const CATEGORY_KEYWORDS = [
     'bandana price in bangladesh', 'bandana price in bd', 'bandana bd price',
     'printed bandana bangladesh', 'streetwear bandana bd', 'gothic bandana bangladesh'
   ]},
-  { match: /ring|rings/, words: [
+  { match: /\bring\b|\brings\b/, words: [
     'rings for men', "men's rings bangladesh", "men's rings bd",
     'men ring price in bangladesh', 'fashion rings for men'
   ]},
