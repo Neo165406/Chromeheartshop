@@ -556,6 +556,65 @@ function categoryBlurb(product){
   return `${name} is available from FASHIONISTA. Review the product photos, listed details and current BDT price to check that this style is right for you.`;
 }
 
+const PRODUCT_CONTENT_OVERRIDES = {
+  'retro-double-sided-skull-cross': {
+    title: 'Retro Double-Sided Skull Cross | FASHIONISTA',
+    description: 'Explore the Retro Double-Sided Skull Cross at FASHIONISTA. View the front-and-back design in the product photos, check the current BDT price and availability, and order with cash on delivery across Bangladesh.',
+    h2: 'Retro Double-Sided Skull Cross Design',
+    body: 'The Retro Double-Sided Skull Cross features a skull-and-cross design made to be viewed from both sides. Check the product gallery to inspect the details and confirm the current price and stock before ordering.',
+    faq: 'What is the price of the Retro Double-Sided Skull Cross in Bangladesh?'
+  },
+  'spider-pendant': {
+    title: 'Spider Pendant Price in Bangladesh | FASHIONISTA',
+    description: 'Shop the Spider Pendant at FASHIONISTA in Bangladesh. Inspect the product photos for the exact pendant design, check the current BDT price and availability, and order with cash on delivery.',
+    h2: 'Spider Pendant Design',
+    body: 'The Spider Pendant adds a spider-inspired detail to gothic and alternative outfits. Review the gallery for the exact pendant design and check the listing details to confirm what is included before ordering.',
+    faq: 'What is the current Spider Pendant price in Bangladesh?'
+  },
+  'chrome-heart-bracelet': {
+    title: 'Chrome Heart Bracelet Price in Bangladesh | FASHIONISTA',
+    description: 'Browse this Chrome Heart-style bracelet at FASHIONISTA. Check its product photos, current BDT price and stock status, with cash on delivery available across Bangladesh.',
+    h2: 'Chrome Heart-Style Bracelet',
+    body: 'This bracelet is listed in FASHIONISTA’s gothic and streetwear accessories range. Inspect the product photos for its exact motif and finish, and check the current BDT price and stock before ordering.',
+    faq: 'What is the price of this Chrome Heart-style bracelet in Bangladesh?'
+  },
+  'chrome-heart-bracelet-2': {
+    title: 'Chrome Heart Bracelet Design & Price | FASHIONISTA',
+    description: 'Compare this Chrome Heart-style bracelet with other bracelet listings at FASHIONISTA. View its photos, current BDT price and availability before ordering with cash on delivery.',
+    h2: 'Another Chrome Heart Bracelet Style',
+    body: 'This is a separate bracelet listing in FASHIONISTA’s accessories collection. Compare its gallery and current BDT price with the other bracelet designs to choose the style you prefer.',
+    faq: 'What is the price of this bracelet in Bangladesh?'
+  },
+  'chrome-heart-black-silver': {
+    title: 'Black and Silver Glasses Price in Bangladesh | FASHIONISTA',
+    description: 'Shop black-and-silver glasses at FASHIONISTA in Bangladesh. Check the frame photos, current BDT price and availability, with cash on delivery nationwide.',
+    h2: 'Black and Silver Glasses',
+    body: 'This black-and-silver eyewear style brings a contrasting colour combination to retro and streetwear outfits. Use the product gallery to inspect the frame shape and details, then check the current BDT price and availability.',
+    faq: 'What is the price of black-and-silver glasses in Bangladesh?'
+  },
+  'green-bandana': {
+    title: 'Green Bandana Price in Bangladesh | FASHIONISTA',
+    description: 'Shop a green bandana at FASHIONISTA in Bangladesh. View the product photos, check the current BDT price and stock, and order with cash on delivery nationwide.',
+    h2: 'Green Bandana Styling',
+    body: 'A green bandana adds a colour accent to casual and streetwear outfits. Try styling it as a headband, neck scarf or accessory on a bag, and check the photos for the exact shade and pattern.',
+    faq: 'What is the current green bandana price in Bangladesh?'
+  },
+  'pink-bandana': {
+    title: 'Pink Bandana Price in Bangladesh | FASHIONISTA',
+    description: 'Shop a pink bandana at FASHIONISTA in Bangladesh. Compare its photos and current BDT price, check availability, and order with cash on delivery nationwide.',
+    h2: 'Pink Bandana Styling',
+    body: 'A pink bandana adds a softer colour accent to everyday and streetwear outfits. Style it as a headband, neck scarf or bag accessory, and use the product photos to check the exact shade and pattern.',
+    faq: 'What is the current pink bandana price in Bangladesh?'
+  },
+  'chrome-heart-black-gold': {
+    title: 'Chrome Heart Glasses Price in Bangladesh | FASHIONISTA',
+    description: 'Shop Chrome Heart-style glasses in Bangladesh at FASHIONISTA. Check the current price in BDT, product photos and availability for this black-and-gold frame, with cash on delivery nationwide.',
+    h2: 'Chrome Heart Glasses Price in Bangladesh',
+    body: 'This black-and-gold eyewear style pairs a dark frame look with gold-tone detailing. Review the product gallery for the exact frame appearance and check the current BDT price and availability before ordering.',
+    faq: 'What is the price of Chrome Heart glasses in Bangladesh?'
+  }
+};
+
 // Server-rendered "About this product" block. It is injected OUTSIDE
 // #productRoot on purpose: the client-side hydration replaces everything inside
 // #productRoot, which would remove this text again and leave the page thin.
@@ -575,6 +634,7 @@ function renderInfoSection(product){
   const isRaglanLongSleeveTShirt = String(product.slug || '').toLowerCase() === 'raglan-long-sleeve-t-shirt';
   const isRedBandana = String(product.slug || '').toLowerCase() === 'red-bandana';
   const isY2kStarGlasses = String(product.slug || '').toLowerCase() === 'retro-y2k-star-glass';
+  const productContentOverride = PRODUCT_CONTENT_OVERRIDES[String(product.slug || '').toLowerCase()] || null;
   const productCategoryUrl = categoryPath(product.category);
 
   const intro = [
@@ -587,16 +647,16 @@ function renderInfoSection(product){
 
   return `
 <section class="seo-info" aria-labelledby="seoInfoHead">
-  <h2 id="seoInfoHead" class="display">${isChromeHeartRimlessGold ? 'Chrome Heart Rimless Glasses Price in Bangladesh' : isBlackGoldGlasses ? 'Chrome Heart Glasses Price in Bangladesh' : isRaglanLongSleeveTShirt ? 'Raglan Long Sleeve T-Shirt Price in Bangladesh' : isRedBandana ? 'Red Bandana Price in Bangladesh' : `About ${name}`}</h2>
+  <h2 id="seoInfoHead" class="display">${productContentOverride ? productContentOverride.h2 : isChromeHeartRimlessGold ? 'Chrome Heart Rimless Glasses Price in Bangladesh' : isBlackGoldGlasses ? 'Chrome Heart Glasses Price in Bangladesh' : isRaglanLongSleeveTShirt ? 'Raglan Long Sleeve T-Shirt Price in Bangladesh' : isRedBandana ? 'Red Bandana Price in Bangladesh' : `About ${name}`}</h2>
   <p>${intro}</p>
-  <p>${isRaglanLongSleeveTShirt ? 'A long sleeve raglan T-shirt is an easy streetwear layer for casual everyday outfits. Check the product photos, available sizes and current price before ordering; fabric and fit details should be confirmed from the listed product information.' : esc(categoryBlurb(product))}</p>
+  <p>${isRaglanLongSleeveTShirt ? 'A long sleeve raglan T-shirt is an easy streetwear layer for casual everyday outfits. Check the product photos, available sizes and current price before ordering; fabric and fit details should be confirmed from the listed product information.' : esc(productContentOverride ? productContentOverride.body : categoryBlurb(product))}</p>
   ${isChromeHeartRimlessGold ? `<p>Looking for Chrome Heart rimless glasses in Bangladesh? This gold-tone rimless style is listed at BDT ${hasPrice ? price : 'the price shown above'} at FASHIONISTA. Check the product photos for the exact frame appearance and confirm availability before ordering.</p><p>Browse more styles in our <a href="${esc(productCategoryUrl)}">glasses collection</a> or check <a href="/shipping">delivery charges and timelines</a>.</p>` : ''}
   ${isBlackGoldGlasses ? `<p>Looking for Chrome Heart-style glasses in Bangladesh? The current listed price for this black-and-gold pair at FASHIONISTA is BDT ${hasPrice ? price : 'shown above'}. Review the product photos and availability on this page before ordering; we do not list frame or lens specifications unless they are confirmed in the product details.</p><p>Explore more eyewear in our <a href="${esc(productCategoryUrl)}">glasses collection</a>, or check <a href="/shipping">delivery charges and timelines</a> for your location.</p>` : ''}
   ${isRaglanLongSleeveTShirt ? `<p>Looking for a raglan long sleeve T-shirt in Bangladesh? The current listed price at FASHIONISTA is BDT ${hasPrice ? price : 'shown above'}. Check the available size options and product photos before placing your order. Browse more styles in our <a href="${esc(productCategoryUrl)}">clothing collection</a> or review <a href="/shipping">delivery charges and timelines</a>.</p>` : ''}
   ${isRedBandana ? `<p>Looking for a red bandana in Bangladesh? Check the current BDT price, availability and product photos above before ordering. A red bandana can add a strong colour accent to a streetwear outfit; try it as a headband, neck scarf or wrist accessory. Browse the <a href="/bandanas">bandana collection</a>, explore <a href="/accessories">Fashionista accessories</a>, and review <a href="/shipping">delivery charges and timelines</a>.</p>` : ''}
   ${isY2kStarGlasses ? `<p>Looking for Y2K star glasses in Bangladesh? This pair is listed at BDT ${hasPrice ? price : 'the price shown above'} at FASHIONISTA. Use the product gallery to inspect the frame shape and details, and check current stock before ordering. Browse more <a href="/glasses">Y2K glasses and sunglasses</a> or review <a href="/shipping">delivery charges and timelines</a>.</p>` : ''}
   ${subPage ? `<p>Browse all <a href="${subPage.path}">${esc(subPage.label.toLowerCase())}</a> at FASHIONISTA.</p>` : ''}
-  <h3>${isChromeHeartRimlessGold ? 'What is the price of Chrome Heart rimless glasses in Bangladesh?' : isBlackGoldGlasses ? 'What is the price of Chrome Heart glasses in Bangladesh?' : isRaglanLongSleeveTShirt ? 'What is the price of a raglan long sleeve T-shirt in Bangladesh?' : isRedBandana ? 'Where can I buy a red bandana in Bangladesh?' : isY2kStarGlasses ? 'Where can I buy Y2K star glasses in Bangladesh?' : `What is the price of ${name} in Bangladesh?`}</h3>
+  <h3>${productContentOverride ? productContentOverride.faq : isChromeHeartRimlessGold ? 'What is the price of Chrome Heart rimless glasses in Bangladesh?' : isBlackGoldGlasses ? 'What is the price of Chrome Heart glasses in Bangladesh?' : isRaglanLongSleeveTShirt ? 'What is the price of a raglan long sleeve T-shirt in Bangladesh?' : isRedBandana ? 'Where can I buy a red bandana in Bangladesh?' : isY2kStarGlasses ? 'Where can I buy Y2K star glasses in Bangladesh?' : `What is the price of ${name} in Bangladesh?`}</h3>
   <p>${hasPrice ? `${isChromeHeartRimlessGold ? 'Chrome Heart-style rimless glasses' : isBlackGoldGlasses ? 'Chrome Heart-style glasses' : isRaglanLongSleeveTShirt ? 'Raglan long sleeve T-shirt' : isRedBandana ? 'The red bandana' : isY2kStarGlasses ? 'Y2K star glasses' : name} costs BDT ${price} at FASHIONISTA. ` : ''}${isRedBandana ? 'Order online from FASHIONISTA and pay cash on delivery across Bangladesh. Check the product photos and stock status before placing your order. ' : isY2kStarGlasses ? 'Check the gallery and availability before placing your order. ' : ''}Delivery charges depend on where you live; see our <a href="/shipping">shipping info</a> for charges, timelines and how order confirmation works.</p>
   <h3>Can I pay cash on delivery?</h3>
   <p>Yes. We offer cash on delivery nationwide across Bangladesh, so there is nothing to pay online.</p>
@@ -835,7 +895,8 @@ module.exports = async function handler(req, res){
   const isRedBandanaOverride = String(product.slug || '').toLowerCase() === 'red-bandana';
   const isRaglanTeeOverride = String(product.slug || '').toLowerCase() === 'raglan-long-sleeve-t-shirt';
   const isY2kStarGlassesOverride = String(product.slug || '').toLowerCase() === 'retro-y2k-star-glass';
-  const desc = isY2kStarGlassesOverride
+  const productContentOverride = PRODUCT_CONTENT_OVERRIDES[String(product.slug || '').toLowerCase()] || null;
+  const desc = productContentOverride ? productContentOverride.description : isY2kStarGlassesOverride
     ? 'Shop Y2K star glasses in Bangladesh at FASHIONISTA. Check the current BDT price, product photos and availability, with cash on delivery nationwide.'
     : isRaglanTeeOverride
       ? 'Shop a raglan long sleeve T-shirt in Bangladesh at FASHIONISTA. Check the current BDT price, product photos, available sizes and stock status, with cash on delivery nationwide.'
@@ -866,7 +927,7 @@ module.exports = async function handler(req, res){
     ? originalImages.map((src, i) => `${SITE}/product-image/${encodeURIComponent(product.id)}.jpg${i ? `?n=${i}` : ''}`)
     : [`${SITE}/og-image.png`];
   const image = productImages[0];
-  const titleTag = isY2kStarGlassesOverride
+  const titleTag = productContentOverride ? productContentOverride.title : isY2kStarGlassesOverride
     ? 'Y2K Star Glasses Price in Bangladesh | FASHIONISTA'
     : isRaglanTeeOverride
       ? 'Raglan Long Sleeve T-Shirt Price in Bangladesh | FASHIONISTA'
