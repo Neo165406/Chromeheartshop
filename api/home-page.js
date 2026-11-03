@@ -144,7 +144,7 @@ const ACCESSORIES_PILL = '<a class="cat" href="shop.html?category=Accessories">A
 function withLandingPills(html){
   return html.replace(
     ACCESSORIES_PILL,
-    () => ACCESSORIES_PILL + '\n  <a class="cat" href="/bracelets">Bracelets</a>\n  <a class="cat" href="/rings">Rings</a>\n  <a class="cat" href="/bandanas">Bandanas</a>'
+    () => ACCESSORIES_PILL + '\n  <a class="cat" href="/bracelets">Bracelets</a>\n  <a class="cat" href="/bandanas">Bandanas</a>'
   );
 }
 
@@ -166,8 +166,8 @@ const LINK_REWRITES = [
   ['href="shop.html?category=New"', 'href="/shop?category=New%20In"'],
   ['class="viewall" href="shop.html"', 'class="viewall" href="/shop"'],
   ['href="shop.html?filter=1"', 'href="/shop?filter=1"'],
-  // Intro links under the homepage heading: give Rings its own link and add Clothing.
-  ['<a href="/accessories">Rings &amp; Accessories</a>', '<a href="/rings">Rings</a>\n    <a href="/accessories">Accessories</a>'],
+  // Intro links under the homepage heading: keep Accessories and add Clothing; no Rings link because there are no ring products.
+  ['<a href="/accessories">Rings &amp; Accessories</a>', '<a href="/accessories">Accessories</a>'],
   ['<a href="/bandanas">Bandanas</a>', '<a href="/bandanas">Bandanas</a>\n    <a href="/clothing">Clothing</a>']
 ];
 
