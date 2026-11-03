@@ -185,7 +185,7 @@ function withSeoTweaks(html){
 function applyHomeInventorySeo(html, products){
   const prices = (Array.isArray(products) ? products : []).map(p => Number(p.price)).filter(p => Number.isFinite(p) && p > 0);
   const from = prices.length ? ` from ৳${Math.min(...prices)}` : '';
-  const raw = `Shop Y2K accessories and streetwear${from} at FASHIONISTA in Bangladesh. Explore glasses, bracelets and bandanas with cash on delivery in Dhaka and nationwide.`;
+  const raw = `Shop Y2K accessories and streetwear${from} at FASHIONISTA. Explore glasses, bracelets and bandanas in Bangladesh. Cash on delivery in Dhaka and nationwide.`;
   const description = raw.length <= 160 ? raw : raw.slice(0,157).replace(/\s+\S*$/, '') + '...';
   html = html.replace(/<title>[^<]*<\/title>/, '<title>Fashionista BD Y2K Accessories and Streetwear FASHIONISTA</title>');
   html = html.replace(/(<meta name="description"\s+content=")[^"]*(")/, `$1${description}$2`);

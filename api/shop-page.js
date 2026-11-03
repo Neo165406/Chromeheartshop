@@ -609,11 +609,11 @@ function prepareMainPage(html, category){
 }
 
 function applyInventoryCategoryDescription(html, category, inventory){
-  const rows = (Array.isArray(inventory) ? inventory : []).filter(p => p.category === category);
+  const rows = (Array.isArray(inventory) ? inventory : []).filter(p => p.category === category && (category !== 'Accessories' || ['chain','chains'].includes(String(p.subcategory || '').trim().toLowerCase())));
   const prices = rows.map(p => Number(p.price)).filter(n => Number.isFinite(n) && n > 0);
   if(!prices.length) return html;
   const from = ' from ৳' + Math.min(...prices);
-  const copy = category === 'Glasses' ? 'Sunglasses for men in Bangladesh at FASHIONISTA' + from + '. Compare rimless and retro styles. Cash on delivery in Dhaka and nationwide.' : category === 'Accessories' ? 'Accessories shop BD at FASHIONISTA' + from + '. Explore chain necklaces, bracelets and Y2K accessories. Cash on delivery nationwide.' : category === 'Clothing' ? 'Streetwear clothing BD at FASHIONISTA' + from + '. Explore Y2K T-shirts and casual styles. Cash on delivery in Dhaka and nationwide.' : 'New Y2K accessories at FASHIONISTA' + from + '. Browse current products in Bangladesh with cash on delivery nationwide.';
+  const copy = category === 'Glasses' ? 'Sunglasses for men in Bangladesh at FASHIONISTA' + from + '. Compare rimless and retro styles. Cash on delivery in Dhaka and nationwide. Check stock first.' : category === 'Accessories' ? 'Accessories shop BD at FASHIONISTA' + from + '. Explore chain necklaces, bracelets and Y2K accessories. Cash on delivery nationwide. Compare photos and designs.' : category === 'Clothing' ? 'Streetwear clothing BD at FASHIONISTA' + from + '. Explore Y2K T-shirts and casual styles. Cash on delivery in Dhaka and nationwide. Check sizes first.' : 'New Y2K accessories at FASHIONISTA' + from + '. Browse current products in Bangladesh with cash on delivery nationwide. Explore the latest additions.';
   const desc = copy.length <= 160 ? copy : copy.slice(0,157).replace(/\s+\S*$/, '') + '...';
   return applySeoHead(html, { title: CATEGORY_SEO[category].title, desc: desc }, SITE + categoryPath(category));
 }
@@ -643,7 +643,7 @@ function applyScopePriceDescription(html, cfg, items){
   const prices = items.map(p => Number(p.price)).filter(n => Number.isFinite(n) && n > 0);
   if(!prices.length) return html;
   const from = ' from ৳' + Math.min(...prices);
-  const copy = cfg.path === '/bracelets' ? 'Silver bracelet price in Bangladesh' + from + ' at FASHIONISTA. Explore mens bracelet styles. Cash on delivery in Dhaka and nationwide.' : cfg.path === '/bandanas' ? 'Bandana price in Bangladesh' + from + ' at FASHIONISTA. Explore Y2K bandana styles. Cash on delivery in Dhaka and nationwide.' : 'Chain necklace for men BD' + from + ' at FASHIONISTA. Browse Chrome Heart chains and Y2K necklaces. Cash on delivery nationwide.';
+  const copy = cfg.path === '/bracelets' ? 'Silver bracelet price in Bangladesh' + from + ' at FASHIONISTA. Explore mens bracelet styles. Cash on delivery in Dhaka and nationwide. Compare photos first.' : cfg.path === '/bandanas' ? 'Bandana price in Bangladesh' + from + ' at FASHIONISTA. Explore Y2K bandana styles. Cash on delivery in Dhaka and nationwide. Compare prints first.' : 'Chain necklace for men BD' + from + ' at FASHIONISTA. Browse Chrome Heart chains and Y2K necklaces. Cash on delivery nationwide. Check product photos.';
   const desc = copy.length <= 160 ? copy : copy.slice(0,157).replace(/\\s+\\S*$/, '') + '...';
   return applySeoHead(html, { title: cfg.title, desc: desc }, SITE + cfg.path);
 }
