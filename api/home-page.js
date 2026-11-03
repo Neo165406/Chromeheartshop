@@ -209,7 +209,7 @@ function cardMarkup(p, i, eagerCount){
     ? (i === 0 ? ' fetchpriority="high"' : '')
     : ' loading="lazy" decoding="async"';
   const media = p.imageUrl
-    ? `<img src="${esc(p.imageUrl)}" alt="${esc(p.name)} - FASHIONISTA accessories"${imgAttrs} style="width:100%;height:100%;object-fit:contain;${outOfStock?'opacity:0.4;':''}">`
+    ? `<img src="${esc(p.imageUrl)}" alt="${esc(p.name)} - ${esc(p.category || "accessories")} | FASHIONISTA"${imgAttrs} style="width:100%;height:100%;object-fit:contain;${outOfStock?'opacity:0.4;':''}">`
     : iconFor(p.iconType);
   const dir = i % 2 === 0 ? 'from-left' : 'from-right';
   const delay = (i % 4) * 0.08;

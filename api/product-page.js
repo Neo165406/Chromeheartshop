@@ -501,7 +501,7 @@ function buildDescription(product, label){
   const cleaned = cleanDescription(product.description);
   if(!cleaned){
     const cat = product.category ? `${product.category} from FASHIONISTA` : 'from FASHIONISTA';
-    const fallback = `${label} — BDT ${product.price}. ${cat}, price in Bangladesh, cash on delivery nationwide.`;
+    const fallback = `${label} price in BD — BDT ${product.price}. ${cat}, cash on delivery in Dhaka and nationwide.`;
     return fallback.length <= 160 ? fallback : cutAtBoundary(fallback, 160);
   }
   // Lead with the product name unless the description already opens with it
