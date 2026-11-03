@@ -475,10 +475,13 @@ function variantSuffix(product, peers){
 
 function buildTitle(label){
   const standardSuffix = ' Price in BD | FASHIONISTA';
+  const bdSuffix = ' Price in BD | FASHIONISTA Bangladesh';
   const extendedSuffix = ' Price in BD | FASHIONISTA Bangladesh Online';
+  const labelLength = String(label || 'Product').trim().length;
   let suffix = standardSuffix;
-  if(String(label || 'Product').trim().length + standardSuffix.length < 50 && String(label || 'Product').trim().length + extendedSuffix.length <= 60){
-    suffix = extendedSuffix;
+  if(labelLength + standardSuffix.length < 50){
+    if(labelLength + bdSuffix.length >= 50 && labelLength + bdSuffix.length <= 60) suffix = bdSuffix;
+    else if(labelLength + extendedSuffix.length <= 60) suffix = extendedSuffix;
   }
   const full = `${label}${suffix}`;
   if(full.length >= 50 && full.length <= 60) return full;
