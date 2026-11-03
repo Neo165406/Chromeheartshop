@@ -145,8 +145,8 @@ const CATEGORY_SEO = {
     desc: "Explore new and featured sunglasses, accessories and streetwear at FASHIONISTA. See BDT prices and stock status, with cash on delivery across Bangladesh."
   },
   "Glasses": {
-    title: "Y2K Glasses & Sunglasses in Bangladesh | FASHIONISTA",
-    desc: "Shop Y2K glasses and sunglasses in Bangladesh at FASHIONISTA. Explore retro, rimless, aviator and round styles with BDT prices and cash on delivery nationwide."
+    title: "Rimless Glasses Price in Bangladesh | Y2K Sunglasses | FASHIONISTA",
+    desc: "Compare rimless glasses and Y2K sunglasses at FASHIONISTA in Bangladesh. Browse retro, aviator and round styles, check current BDT prices and availability, and order with cash on delivery nationwide."
   },
   "Accessories": {
     title: "Y2K Accessories in Bangladesh | Fashionista",
@@ -160,13 +160,13 @@ const CATEGORY_SEO = {
 
 const CATEGORY_HEADINGS = {
   "New In": "New Arrivals in Bangladesh",
-  "Glasses": "Y2K Glasses & Sunglasses in Bangladesh",
+  "Glasses": "Rimless Glasses & Y2K Sunglasses in Bangladesh",
   "Accessories": "Y2K Accessories in Bangladesh",
   "Clothing": "T-Shirts & Streetwear Clothing in Bangladesh"
 };
 const CATEGORY_SUBHEADINGS = {
   "New In": "Recently added glasses, accessories and streetwear",
-  "Glasses": "Rimless, aviator and round eyewear at FASHIONISTA",
+  "Glasses": "Compare rimless, aviator and retro frames with current BDT prices",
   "Accessories": "Explore bracelets, bandanas and chain necklaces for Y2K and streetwear looks",
   "Clothing": "T-shirts and streetwear styles, with BDT prices"
 };
@@ -697,10 +697,10 @@ const CATEGORY_CONTENT = {
     ]
   },
   "Glasses": {
-    h2: "Glasses and sunglasses in Bangladesh",
+    h2: "Rimless glasses and Y2K sunglasses in Bangladesh",
     paras: [
-      "Shop glasses and sunglasses in Bangladesh at FASHIONISTA, including rimless, aviator and round styles for gothic, Y2K and streetwear outfits. Product cards show current BDT prices; open a listing to check photos, details and availability before ordering.",
-      "Compare rimless glasses for a minimal look, aviator frames for a classic shape and round glasses for a retro accent. Check each product page for photos, details and current availability. Browse our <a href=\"/accessories\">accessories</a> to complete the look."
+      "Looking for rimless glasses in Bangladesh? Browse rimless frames and Y2K sunglasses at FASHIONISTA, alongside aviator and round styles for retro and streetwear outfits. Compare the current BDT price shown on each product card, then open a listing for photos, product details and availability before ordering.",
+      "Compare rimless frames for a minimal look, aviator shapes for a classic profile and round glasses for a retro accent. Prices and stock can vary by design, so use each product page for the latest BDT price, photos and availability. Complete the look with our <a href=\"/accessories\">accessories</a>."
     ]
   },
   "Accessories": {
