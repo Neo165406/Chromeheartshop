@@ -140,8 +140,8 @@ function itemXml(p){
   title = title.slice(0, 150);
 
   let desc = copy ? copy.description : clean(p.description)
-    .replace(/[★☆✦✧✨•●▪◆◇➤➜✔✓⭐️]|[\\u{1F300}-\\u{1FAFF}]/gu, ' ')
-    .replace(/\\s+/g, ' ').trim();
+    .replace(/[★☆✦✧✨•●▪◆◇➤➜✔✓⭐️]|[\u{1F300}-\u{1FAFF}]/gu, ' ')
+    .replace(/\s+/g, ' ').trim();
   if(desc.length < 10) desc = `${title} from ${BRAND}, Dhaka. Cash on delivery across Bangladesh.`;
   desc = desc.slice(0, 5000);
 
