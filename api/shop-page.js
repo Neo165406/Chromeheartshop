@@ -287,7 +287,7 @@ const SCOPE_PAGES = {
         'Folded into a band and tied at the back, it works as a headband. Knotted loosely at the front, it becomes a neck scarf. You can also tie it at your waist, hook it onto a belt loop or jeans, or knot it around a wrist or bag strap for a small pop of colour.'
       ]},
       { h: 'Choosing a bandana', p: [
-        'Compare the current BDT price, photos and description on each bandana product page. Darker graphic designs suit gothic and streetwear outfits, while lighter colours create contrast against an all-black look.'
+        'Compare the current BDT price, photos and description on each bandana product page. Browse the <a href=\"/product/red-bandana\">red bandana</a>, <a href=\"/product/green-bandana\">green bandana</a> and <a href=\"/product/pink-bandana\">pink bandana</a> to compare the available colours. Darker graphic designs suit gothic and streetwear outfits, while lighter colours create contrast against an all-black look.'
       ]},
       { h: 'Ordering bandanas in Bangladesh', p: [
         'Place your order and pay the courier in cash when the parcel reaches you. Delivery charges are different inside and outside Dhaka, and the <a href="/shipping">shipping info page</a> has the current charges and timelines. We confirm each order with you on WhatsApp after checkout. Our <a href="/return-policy">return and exchange policy</a> covers damaged or incorrect items.'
@@ -718,7 +718,7 @@ const CATEGORY_CONTENT = {
     h2: "Chrome Heart glasses, rimless frames and Y2K sunglasses in Bangladesh",
     paras: [
       "Looking for Chrome Heart glasses in Bangladesh? Browse Chrome Heart-style frames, rimless glasses and Y2K sunglasses at FASHIONISTA. Compare product photos, current BDT prices and stock status before opening a listing for full details.",
-      "Compare rimless frames for a minimal look, aviator shapes for a classic profile and round glasses for a retro accent. Prices and stock can vary by design, so use each product page for the latest BDT price, photos and availability. Complete the look with our <a href=\"/accessories\">accessories</a>."
+      "Compare the <a href=\"/product/chrome-heart-rimless-gold\">Chrome Heart rimless gold glasses</a>, <a href=\"/product/chrome-heart-black-silver\">black and silver glasses</a> and <a href=\"/product/retro-y2k-star-glass\">retro Y2K star glasses</a>. Open each listing for its current BDT price, product photos and availability. Complete the look with our <a href=\"/accessories\">accessories</a>."
     ]
   },
   "Accessories": {
