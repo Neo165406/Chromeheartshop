@@ -141,15 +141,15 @@ function cardMarkup(p, i, eager){
 
 const CATEGORY_SEO = {
   "New In": { title: "Fashionista BD New Arrivals | Y2K Accessories", desc: "Discover new Y2K accessories and streetwear at FASHIONISTA in Bangladesh. Browse current products and prices, with cash on delivery nationwide.", h1: "New Y2K Accessories and Streetwear", intro: "Discover recently added glasses, accessories and streetwear at FASHIONISTA. Compare current product photos, BDT prices and stock status before choosing a style.", faq: ["What is new at FASHIONISTA?", "How do I check product prices?", "Can I pay cash on delivery?"] },
-  "Glasses": { title: "Sunglasses for Men BD | Rimless Glasses | FASHIONISTA", desc: "Sunglasses for men in Bangladesh at FASHIONISTA. Compare rimless and retro styles, check BDT prices, and order with cash on delivery in Dhaka and nationwide.", h1: "Sunglasses for Men in Bangladesh", intro: "Explore sunglasses for men and women, including rimless, aviator and retro frames. Check current prices, product photos and availability before ordering.", faq: ["What is the sunglasses price in Bangladesh?", "Do you have rimless glasses?", "Can I pay cash on delivery?"] },
-  "Accessories": { title: "Chain Necklace for Men BD | Chrome Heart | FASHIONISTA", desc: "Chain necklace for men BD at FASHIONISTA. Explore Chrome Heart chains, bracelets and Y2K accessories with BDT prices and cash on delivery nationwide.", h1: "Chain Necklaces and Y2K Accessories", intro: "Browse chain necklaces for men, bracelets and bandanas for Y2K and streetwear outfits. Compare product photos, prices and current stock before ordering.", faq: ["What is the chain necklace price in Bangladesh?", "Can I find Chrome Heart chains?", "Can I pay cash on delivery?"] },
+  "Glasses": { title: "Chrome Heart Glasses in BD | Rimless & Y2K | FASHIONISTA", desc: "Shop Chrome Heart-style glasses in Bangladesh at FASHIONISTA. Compare rimless and Y2K frames, check current BDT prices and stock, and order with cash on delivery nationwide.", h1: "Chrome Heart Glasses & Y2K Sunglasses in Bangladesh", intro: "Explore Chrome Heart-style glasses, rimless frames and Y2K sunglasses at FASHIONISTA. Compare product photos, current BDT prices and availability before ordering.", faq: ["What is the Chrome Heart glasses price in Bangladesh?", "Do you have rimless glasses?", "Can I pay cash on delivery?"] },
+  "Accessories": { title: "Men’s Y2K Accessories in Bangladesh | FASHIONISTA", desc: "Shop men’s Y2K accessories in Bangladesh at FASHIONISTA: bracelets, chain necklaces and bandanas. See BDT prices and cash on delivery nationwide.", h1: "Men’s Chain Necklaces and Y2K Accessories", intro: "Browse chain necklaces, bracelets and bandanas for men’s Y2K and streetwear outfits. Compare product photos, current BDT prices and stock before ordering.", faq: ["What is the chain necklace price in Bangladesh?", "Can I find Chrome Heart-style chains?", "Can I pay cash on delivery?"] },
   "Clothing": { title: "Streetwear Clothing BD | Y2K T-Shirts | FASHIONISTA", desc: "Streetwear clothing BD at FASHIONISTA. Explore Y2K T-shirts and casual styles, check sizes and prices, with cash on delivery in Dhaka and nationwide.", h1: "Streetwear Clothing in Bangladesh", intro: "Shop streetwear clothing and Y2K T-shirts at FASHIONISTA. Review available sizes, product photos and current prices to choose the right listing.", faq: ["Where can I buy streetwear clothing in Bangladesh?", "Do you have Y2K T-shirts?", "Can I pay cash on delivery?"] }
 };
 
 const CATEGORY_HEADINGS = {
   "New In": "New Arrivals in Bangladesh",
-  "Glasses": "Sunglasses for Men in Bangladesh",
-  "Accessories": "Chain Necklaces and Y2K Accessories",
+  "Glasses": "Chrome Heart Glasses & Y2K Sunglasses in Bangladesh",
+  "Accessories": "Men’s Chain Necklaces and Y2K Accessories",
   "Clothing": "Streetwear Clothing in Bangladesh"
 };
 const CATEGORY_SUBHEADINGS = {
@@ -272,10 +272,10 @@ const SCOPE_PAGES = {
     title: 'Bandana Price in Bangladesh | Y2K Styles | FASHIONISTA',
     desc: 'Bandana price in Bangladesh at FASHIONISTA. Explore Y2K bandana styles, compare current BDT prices and order with cash on delivery in Dhaka and nationwide.',
     h1: 'Bandana Price in Bangladesh',
-    sub: 'Compare printed, streetwear and gothic bandanas with current BDT prices',
+    sub: 'Compare red, green and pink bandanas with current BDT prices',
     intro: [
-      'Browse bandanas available at FASHIONISTA in Bangladesh. Compare each style by its photos, design, stock status and current BDT price before ordering.',
-      'Choose a printed, streetwear or gothic-inspired bandana to style as a headband, neck scarf or accessory. Order from anywhere in Bangladesh and pay cash on delivery.'
+      'Browse red, green and pink bandanas at FASHIONISTA in Bangladesh. Compare product photos, current BDT prices and stock status before ordering.',
+      'Check the current bandana price in BD on each product listing. Style a bandana as a headband, neck scarf or bag accessory, then order with cash on delivery across Bangladesh.'
     ],
     highlights: [
       { heading: 'Printed bandanas', text: 'These listings mention a print, paisley or pattern in their name or description:', test: s => /print|paisley|pattern/i.test(s) },
@@ -715,16 +715,16 @@ const CATEGORY_CONTENT = {
     ]
   },
   "Glasses": {
-    h2: "Rimless glasses and Y2K sunglasses in Bangladesh",
+    h2: "Chrome Heart glasses, rimless frames and Y2K sunglasses in Bangladesh",
     paras: [
-      "Looking for rimless glasses in Bangladesh? Browse rimless frames and Y2K sunglasses at FASHIONISTA, alongside aviator and round styles for retro and streetwear outfits. Compare the current BDT price shown on each product card, then open a listing for photos, product details and availability before ordering.",
+      "Looking for Chrome Heart glasses in Bangladesh? Browse Chrome Heart-style frames, rimless glasses and Y2K sunglasses at FASHIONISTA. Compare product photos, current BDT prices and stock status before opening a listing for full details.",
       "Compare rimless frames for a minimal look, aviator shapes for a classic profile and round glasses for a retro accent. Prices and stock can vary by design, so use each product page for the latest BDT price, photos and availability. Complete the look with our <a href=\"/accessories\">accessories</a>."
     ]
   },
   "Accessories": {
-    h2: "Bracelets and streetwear accessories in Bangladesh",
+    h2: "Men’s bracelets, chain necklaces and streetwear accessories in Bangladesh",
     paras: [
-      "Explore bracelets, chain necklaces and bandanas for gothic, Y2K and streetwear outfits at FASHIONISTA. Each product listing shows photos, the current BDT price and stock status, so you can compare styles before ordering.",
+      "Explore men’s bracelets, chain necklaces and bandanas for gothic, Y2K and streetwear outfits at FASHIONISTA. Each product listing shows photos, the current BDT price and stock status, so you can compare styles before ordering.",
       "Browse our dedicated <a href=\"/bracelets\">bracelet collection</a>, <a href=\"/chrome-heart-chains\">chains</a> and <a href=\"/bandanas\">bandanas</a>, or explore <a href=\"/glasses\">sunglasses</a> and <a href=\"/clothing\">streetwear clothing</a>. Open any listing for product photos, current price and availability."
     ]
   },
