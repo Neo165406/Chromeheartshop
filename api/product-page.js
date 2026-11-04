@@ -565,12 +565,14 @@ function categoryBlurb(product){
   if(String(product.slug || '').toLowerCase() === 'red-bandana') return 'A red bandana adds a bold colour accent to streetwear outfits. Style it as a headband, neck scarf, wrist accent or accessory on a bag, and check the product photos for the exact design.';
   if(String(product.slug || '').toLowerCase() === 'chrome-heart-black-gold') return 'Black-and-gold statement glasses for Y2K, retro and streetwear outfits. Check the product photos and current BDT price before ordering.';
   if(String(product.slug || '').toLowerCase() === 'chrome-heart-rimless-gold') return 'Gold-tone rimless glasses for Y2K and streetwear looks. Review the product photos to confirm the exact frame appearance, then check the current BDT price and availability.';
-  if(/bandana/.test(hay)) return `${name} is a bandana option for adding a print or colour accent to a streetwear look. Review the photos to check the exact pattern, then explore ways to style it as a headband, neck scarf or bag accessory.`;
+  if(/bandana/.test(hay)) return `${name} is a bandana option for men and anyone looking to add a print or colour accent to a streetwear look. Review the photos to check the exact pattern, then explore ways to style it as a headband, neck scarf or bag accessory.`;
   if(product && product.id === 'hRTjTVeGAcjWuwFAMwcs') return 'These silver rimless glasses bring a minimalist eyewear look to Y2K outfits and everyday streetwear. Review the product photos and current BDT price before ordering.';
-  if(/glass|eyewear/.test(hay)) return `${name} is part of FASHIONISTA's glasses collection for Y2K, retro and streetwear-inspired outfits. Compare the product photos to check the frame's visible shape and colour, and review the listed price and availability before ordering.`;
+  if(/glass|eyewear/.test(hay)) return `${name} is part of FASHIONISTA's men's glasses and sunglasses collection for Y2K, retro and streetwear-inspired outfits. Compare the product photos to check the frame's visible shape and colour, and review the listed price and availability before ordering.`;
   if(/cloth|t-?shirt|\btee\b|shirt|hoodie|jersey/.test(hay)) return `${name} is part of FASHIONISTA's streetwear clothing range. Check the size options and product photos on this page before ordering; use the listed product details rather than assuming fabric or fit.`;
-  if(/bracelet|bangle/.test(hay)) return `${name} is a bracelet option for a standalone or layered accessory look. Check the product photos for its exact design and compare the listed price before pairing it with a watch or other accessories.`;
-  if(/\brings?\b|chain|necklace|pendant|grill/.test(hay)) return `${name} is part of FASHIONISTA's jewellery and accessories range for gothic and streetwear outfits. Review the product photos and listed details to check the exact design before styling it with other pieces.`;
+  if(/bracelet|bangle/.test(hay)) return `${name} is a men's bracelet option for a standalone or layered streetwear look. Check the product photos for its exact design and compare the listed price before pairing it with a watch or other accessories.`;
+  if(/\brings?\b/.test(hay)) return `${name} is part of FASHIONISTA's men's fashion ring range for gothic and streetwear outfits. Review the product photos and listed details to check the exact design and any sizing information before ordering.`;
+  if(/chain|necklace|pendant/.test(hay)) return `${name} is part of FASHIONISTA's men's chain necklace and pendant range for gothic and streetwear outfits. Review the product photos and listed details to check the exact design before styling it with other pieces.`;
+  if(/grill/.test(hay)) return `${name} is part of FASHIONISTA's accessories range for alternative streetwear outfits. Review the product photos and listed details to check the exact design before ordering.`;
   return `${name} is available from FASHIONISTA. Review the product photos, listed details and current BDT price to check that this style is right for you.`;
 }
 
@@ -630,6 +632,99 @@ const PRODUCT_CONTENT_OVERRIDES = {
     h2: 'Chrome Heart Glasses Price in Bangladesh',
     body: 'This black-and-gold eyewear style pairs a dark frame look with gold-tone detailing. Review the product gallery for the exact frame appearance and check the current BDT price and availability before ordering.',
     faq: 'What is the price of Chrome Heart glasses in Bangladesh?'
+  }
+};
+
+
+// Product-specific search snippets for all 22 live catalogue products.
+const PRODUCT_META_OVERRIDES = {
+  "retro-double-sided-skull-cross": {
+    "title": "Retro Skull Cross Accessory Price in BD | FASHIONISTA",
+    "description": "Shop the Retro Double-Sided Skull Cross at FASHIONISTA. View both sides, current BDT {price} price and stock. Cash on delivery across Bangladesh."
+  },
+  "red-bandana": {
+    "title": "Red Bandana Price in Bangladesh | Y2K Style | FASHIONISTA",
+    "description": "Shop the red bandana at FASHIONISTA in Bangladesh. Check product photos, current BDT {price} price and stock, and order with cash on delivery nationwide."
+  },
+  "chrome-heart-bracelet": {
+    "title": "Chrome Heart Bracelet Price in Bangladesh | FASHIONISTA",
+    "description": "Shop this Chrome Heart-style bracelet at FASHIONISTA. Check product photos, current BDT {price} price and stock, with cash on delivery across Bangladesh."
+  },
+  "chrome-heart-rimless-gold": {
+    "title": "Chrome Heart Rimless Glasses Price in BD | FASHIONISTA",
+    "description": "Shop Chrome Heart-style gold rimless glasses at FASHIONISTA. Check frame photos, current BDT {price} price and stock, with cash on delivery nationwide."
+  },
+  "chrome-heart-black-silver": {
+    "title": "Black and Silver Glasses Price in Bangladesh | FASHIONISTA",
+    "description": "Shop black and silver glasses at FASHIONISTA in Bangladesh. View frame photos, current BDT {price} price and stock, with cash on delivery nationwide."
+  },
+  "chrome-hearts-raised-cross-dog-tag": {
+    "title": "Chrome Hearts Raised Cross Dog Tag Price in BD | FASHIONISTA",
+    "description": "Shop the Chrome Hearts Raised Cross Dog Tag at FASHIONISTA. Check photos, current BDT {price} price and stock, with cash on delivery in Bangladesh."
+  },
+  "green-bandana": {
+    "title": "Green Bandana Price in Bangladesh | Y2K Style | FASHIONISTA",
+    "description": "Shop the green bandana at FASHIONISTA in Bangladesh. Check product photos, current BDT {price} price and stock, with cash on delivery nationwide."
+  },
+  "chrome-heart-black-gold": {
+    "title": "Chrome Heart Glasses Price in Bangladesh | FASHIONISTA",
+    "description": "Shop Chrome Heart-style black and gold glasses at FASHIONISTA. Check photos, current BDT {price} price and stock, with cash on delivery nationwide."
+  },
+  "chrome-heart-chain": {
+    "title": "Chrome Heart Chain Necklace Price in BD | FASHIONISTA",
+    "description": "Shop the Chrome Heart chain at FASHIONISTA in Bangladesh. Check product photos, current BDT {price} price and stock, with cash on delivery nationwide."
+  },
+  "chrome-fire-heart-chain": {
+    "title": "Chrome Fire Heart Chain Price in Bangladesh | FASHIONISTA",
+    "description": "Shop the Chrome Fire Heart Chain at FASHIONISTA in Bangladesh. Check photos, current BDT {price} price and stock, with cash on delivery nationwide."
+  },
+  "vintage-dark-cross-hollow-out-necklace": {
+    "title": "Vintage Dark Cross Necklace Price in BD | FASHIONISTA",
+    "description": "Shop the Vintage Dark Cross Hollow-Out Necklace at FASHIONISTA. Check photos, current BDT {price} price and stock, with cash on delivery nationwide."
+  },
+  "chrome-double-heart-chain": {
+    "title": "Chrome Double Heart Chain Price in Bangladesh | FASHIONISTA",
+    "description": "Shop the Chrome Double Heart Chain at FASHIONISTA. Check product photos, current BDT {price} price and stock, with cash on delivery nationwide."
+  },
+  "spider-pendant": {
+    "title": "Spider Pendant Price in Bangladesh Online | FASHIONISTA",
+    "description": "Shop the Spider Pendant at FASHIONISTA in Bangladesh. Check photos, current BDT {price} price and stock, with cash on delivery nationwide."
+  },
+  "chrome-heart-bracelet-2": {
+    "title": "Chrome Heart Bracelet Style 2 Price in BD | FASHIONISTA",
+    "description": "Compare this second Chrome Heart-style bracelet at FASHIONISTA. Check photos, current BDT {price} price and stock, with cash on delivery across Bangladesh."
+  },
+  "chrome-heart-rimless-silver": {
+    "title": "Chrome Heart Silver Rimless Glasses in BD | FASHIONISTA",
+    "description": "Shop Chrome Heart-style silver rimless glasses at FASHIONISTA. Check frame photos, current BDT {price} price and stock, with cash on delivery nationwide."
+  },
+  "pink-bandana": {
+    "title": "Pink Bandana Price in Bangladesh | Y2K Style | FASHIONISTA",
+    "description": "Shop the pink bandana at FASHIONISTA in Bangladesh. Check product photos, current BDT {price} price and stock, with cash on delivery nationwide."
+  },
+  "y2k-star-necklace": {
+    "title": "Y2K Star Necklace Price in Bangladesh | FASHIONISTA",
+    "description": "Shop the Y2K Star Necklace at FASHIONISTA in Bangladesh. Check photos, current BDT {price} price and stock, with cash on delivery nationwide."
+  },
+  "retro-y2k-star-glass": {
+    "title": "Y2K Star Glasses Price in Bangladesh | FASHIONISTA",
+    "description": "Shop Y2K star glasses at FASHIONISTA in Bangladesh. Check frame photos, current BDT {price} price and stock, with cash on delivery nationwide."
+  },
+  "sun-moon-couple-set": {
+    "title": "Sun Moon Couple Set Price in Bangladesh | FASHIONISTA",
+    "description": "Shop the Sun Moon Couple Set at FASHIONISTA in Bangladesh. Check product photos, current BDT {price} price and stock, with cash on delivery nationwide."
+  },
+  "chrome-heart-bracelet-3": {
+    "title": "Chrome Heart Bracelet Style 3 Price in BD | FASHIONISTA",
+    "description": "Compare this third Chrome Heart-style bracelet at FASHIONISTA. Check photos, current BDT {price} price and stock, with cash on delivery across Bangladesh."
+  },
+  "raglan-long-sleeve-t-shirt": {
+    "title": "Raglan Long Sleeve T-Shirt Price in Bangladesh | FASHIONISTA",
+    "description": "Shop the Raglan Long Sleeve T-Shirt at FASHIONISTA in Bangladesh. Check sizes, photos, current BDT {price} price and stock, with cash on delivery nationwide."
+  },
+  "gothic-fleur-de-lis-cross-pendant": {
+    "title": "Gothic Fleur-de-Lis Cross Pendant Price in BD | FASHIONISTA",
+    "description": "Shop the Gothic Fleur-de-Lis Cross Pendant at FASHIONISTA. Check photos, current BDT {price} price and stock, with cash on delivery across Bangladesh."
   }
 };
 
@@ -914,7 +1009,11 @@ module.exports = async function handler(req, res){
   const isRaglanTeeOverride = String(product.slug || '').toLowerCase() === 'raglan-long-sleeve-t-shirt';
   const isY2kStarGlassesOverride = String(product.slug || '').toLowerCase() === 'retro-y2k-star-glass';
   const productContentOverride = PRODUCT_CONTENT_OVERRIDES[String(product.slug || '').toLowerCase()] || null;
-  const desc = buildDescription(product, label);
+  const metaOverride = PRODUCT_META_OVERRIDES[String(product.slug || '').toLowerCase()] || productContentOverride || null;
+  const rawMetaDescription = metaOverride && metaOverride.description
+    ? String(metaOverride.description).replace(/\{price\}/g, `BDT ${product.price}`).replace(/\s+/g, ' ').trim()
+    : buildDescription(product, label);
+  const desc = rawMetaDescription.length <= 160 ? rawMetaDescription : cutAtBoundary(rawMetaDescription, 160);
   // Use first-party image URLs in metadata/schema so Google can crawl the photos
   // without depending on the external image host. Keep order identical to
   // api/product-image.js: imageUrl first, then the remaining images array.
@@ -933,7 +1032,7 @@ module.exports = async function handler(req, res){
     ? originalImages.map((src, i) => `${SITE}/product-image/${encodeURIComponent(product.id)}.jpg${i ? `?n=${i}` : ''}`)
     : [`${SITE}/og-image.png`];
   const image = productImages[0];
-  const titleTag = esc(buildTitle(label));
+  const titleTag = esc(metaOverride && metaOverride.title ? metaOverride.title : buildTitle(label));
   const keywordsContent = esc(buildKeywords(product).join(', '));
 
   html = html
