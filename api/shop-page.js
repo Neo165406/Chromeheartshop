@@ -281,7 +281,7 @@ const SCOPE_PAGES = {
     path: '/bandanas',
     label: 'Bandanas',
     aliases: ['bandana', 'bandanas'],
-    title: 'Bandana Price in Bangladesh for Men for Men | FASHIONISTA',
+    title: 'Men's Bandana Price in Bangladesh | FASHIONISTA',
     desc: 'Shop men's bandanas in Bangladesh at FASHIONISTA. Browse printed and streetwear designs, check BDT prices and order with cash on delivery nationwide.',
     h1: 'Bandana Price in Bangladesh',
     sub: 'Compare men's printed, streetwear and gothic bandanas with current BDT prices',
