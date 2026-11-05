@@ -1011,7 +1011,7 @@ module.exports = async function handler(req, res){
   const productContentOverride = PRODUCT_CONTENT_OVERRIDES[String(product.slug || '').toLowerCase()] || null;
   const metaOverride = PRODUCT_META_OVERRIDES[String(product.slug || '').toLowerCase()] || productContentOverride || null;
   const rawMetaDescription = metaOverride && metaOverride.description
-    ? String(metaOverride.description).replace(/\{price\}/g, `BDT ${product.price}`).replace(/\s+/g, ' ').trim()
+    ? String(metaOverride.description).replace(/\{price\}/g, () => String(product.price)).replace(/\s+/g, ' ').trim()
     : buildDescription(product, label);
   const desc = rawMetaDescription.length <= 160 ? rawMetaDescription : cutAtBoundary(rawMetaDescription, 160);
   // Use first-party image URLs in metadata/schema so Google can crawl the photos
@@ -1035,11 +1035,14 @@ module.exports = async function handler(req, res){
   const titleTag = esc(metaOverride && metaOverride.title ? metaOverride.title : buildTitle(label));
   const keywordsContent = esc(buildKeywords(product).join(', '));
 
+  // The meta/og/twitter description tags are matched by pattern (not by exact
+  // text) so a wording change in templates/product.html can never leave the
+  // generic template description in the served page.
   html = html
     .replace('<title>FASHIONISTA</title>', `<title>${titleTag}</title>`)
     .replace(
-      '<meta name="description" content="Shop neon silver accessories and eyewear at FASHIONISTA. Cash on delivery across Bangladesh.">',
-      `<meta name="description" content="${esc(desc)}">\n<meta name="keywords" content="${keywordsContent}">`
+      /<meta name="description" content="[^"]*">/,
+      () => `<meta name="description" content="${esc(desc)}">\n<meta name="keywords" content="${keywordsContent}">`
     )
     .replace(
       '<link rel="canonical" id="canonicalLink" href="https://fashion1sta.com/product.html">',
@@ -1050,8 +1053,8 @@ module.exports = async function handler(req, res){
       `<meta id="ogTitle" property="og:title" content="${titleTag}">`
     )
     .replace(
-      '<meta id="ogDescription" property="og:description" content="Shop neon silver accessories and eyewear at FASHIONISTA.">',
-      `<meta id="ogDescription" property="og:description" content="${esc(desc)}">`
+      /<meta id="ogDescription" property="og:description" content="[^"]*">/,
+      () => `<meta id="ogDescription" property="og:description" content="${esc(desc)}">`
     )
     .replace(
       '<meta id="ogUrl" property="og:url" content="https://fashion1sta.com/product.html">',
@@ -1070,8 +1073,8 @@ module.exports = async function handler(req, res){
       `<meta id="twitterTitle" name="twitter:title" content="${titleTag}">`
     )
     .replace(
-      '<meta id="twitterDescription" name="twitter:description" content="Shop neon silver accessories and eyewear at FASHIONISTA.">',
-      `<meta id="twitterDescription" name="twitter:description" content="${esc(desc)}">`
+      /<meta id="twitterDescription" name="twitter:description" content="[^"]*">/,
+      () => `<meta id="twitterDescription" name="twitter:description" content="${esc(desc)}">`
     )
     .replace(
       '<meta id="twitterImage" name="twitter:image" content="https://fashion1sta.com/og-image.png">',
