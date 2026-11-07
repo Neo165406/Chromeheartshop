@@ -155,7 +155,7 @@ function withLandingPills(html){
 // links, and removal of the placeholder TikTok icon (it linked to "#").
 // Each piece is an exact-text replace: if the template text ever changes,
 // that piece does nothing — it can't break the page.
-const HOME_TITLE = 'Fashionista BD Y2K Accessories and Streetwear FASHIONISTA';
+const HOME_TITLE = 'Fashionista';
 const OLD_TITLE_TAG = '<title>Fashionista</title>';
 const OLD_HOME_DESC = 'Shop glasses, bracelets and printed bandanas online in Bangladesh at Fashionista. Explore Y2K sunglasses, gothic accessories and streetwear styles with prices in BDT.';
 const HOME_DESC = 'Shop Y2K accessories and streetwear at FASHIONISTA in Bangladesh. Explore glasses, bracelets and bandanas with current BDT prices and cash on delivery in Dhaka and nationwide.';
@@ -187,7 +187,7 @@ function applyHomeInventorySeo(html, products){
   const from = prices.length ? ` from ৳${Math.min(...prices)}` : '';
   const raw = `Shop Y2K accessories and streetwear${from} at FASHIONISTA. Explore glasses, bracelets and bandanas in Bangladesh. Cash on delivery in Dhaka and nationwide.`;
   const description = raw.length <= 160 ? raw : raw.slice(0,157).replace(/\s+\S*$/, '') + '...';
-  html = html.replace(/<title>[^<]*<\/title>/, '<title>Fashionista BD Y2K Accessories and Streetwear FASHIONISTA</title>');
+  html = html.replace(/<title>[^<]*<\/title>/, '<title>Fashionista</title>');
   html = html.replace(/(<meta name="description"\s+content=")[^"]*(")/, `$1${description}$2`);
   html = html.replace(/(<meta property="og:description"\s+content=")[^"]*(")/, `$1${description}$2`);
   html = html.replace(/(<meta name="twitter:description"\s+content=")[^"]*(")/, `$1${description}$2`);
