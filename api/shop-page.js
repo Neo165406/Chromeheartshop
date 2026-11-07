@@ -289,8 +289,11 @@ const SCOPE_PAGES = {
       { h: 'Ways to wear a bandana', p: [
         'Folded into a band and tied at the back, it works as a headband. Knotted loosely at the front, it becomes a neck scarf. You can also tie it at your waist, hook it onto a belt loop or jeans, or knot it around a wrist or bag strap for a small pop of colour.'
       ]},
-      { h: 'Choosing a bandana', p: [
-        'Compare the current BDT price, photos and description on each bandana product page. Browse the <a href=\"/product/red-bandana\">red bandana</a>, <a href=\"/product/green-bandana\">green bandana</a> and <a href=\"/product/pink-bandana\">pink bandana</a> to compare the available colours. Darker graphic designs suit gothic and streetwear outfits, while lighter colours create contrast against an all-black look.'
+      { h: 'Bandana price in Bangladesh', p: [
+        'Looking for a bandana price in Bangladesh? FASHIONISTA lists red, green and pink bandana styles, with the current price in BDT shown on each product page. Compare the <a href=\"/product/red-bandana\">red bandana price</a>, <a href=\"/product/green-bandana\">green bandana price</a> and <a href=\"/product/pink-bandana\">pink bandana price</a> before choosing your colour. Prices and stock can change, so use the live product listings for the latest details.'
+      ]},
+      { h: 'Choosing and styling a bandana', p: [
+        'Compare the product photos and descriptions to check each colour and pattern. Fold a bandana as a headband, wear it as a neck scarf, or tie it to a bag strap for a streetwear accent. Darker graphic designs suit gothic outfits, while brighter colours add contrast to an all-black look.'
       ]},
       { h: 'Ordering bandanas in Bangladesh', p: [
         'Place your order and pay the courier in cash when the parcel reaches you. Delivery charges are different inside and outside Dhaka, and the <a href="/shipping">shipping info page</a> has the current charges and timelines. We confirm each order with you on WhatsApp after checkout. Our <a href="/return-policy">return and exchange policy</a> covers damaged or incorrect items.'
