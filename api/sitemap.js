@@ -76,7 +76,18 @@ async function fetchAllProducts(){
         const slug = slugField && typeof slugField.stringValue === 'string' ? slugField.stringValue : '';
         const categoryField = doc.fields && doc.fields.category;
         const category = categoryField && typeof categoryField.stringValue === 'string' ? categoryField.stringValue.trim() : '';
-        products.push({ id, slug, updateTime: doc.updateTime, outOfStock: stock === 0, subcategory, category });
+        const nameField = doc.fields && doc.fields.name;
+        const imageTitle = nameField && typeof nameField.stringValue === 'string' ? nameField.stringValue.trim() : '';
+        const imageUrls = [];
+        const mainImageField = doc.fields && doc.fields.imageUrl;
+        if(mainImageField && typeof mainImageField.stringValue === 'string' && /^https?:\\/\\//i.test(mainImageField.stringValue)) imageUrls.push(mainImageField.stringValue);
+        const imagesField = doc.fields && doc.fields.images;
+        const additionalImages = imagesField && imagesField.arrayValue && Array.isArray(imagesField.arrayValue.values) ? imagesField.arrayValue.values : [];
+        additionalImages.forEach(image => {
+          const value = image && typeof image.stringValue === 'string' ? image.stringValue : '';
+          if(/^https?:\\/\\//i.test(value) && !imageUrls.includes(value)) imageUrls.push(value);
+        });
+        products.push({ id, slug, updateTime: doc.updateTime, outOfStock: stock === 0, subcategory, category, imageCount: imageUrls.length, imageTitle });
       });
       pageToken = j.nextPageToken || '';
     } while(pageToken);
@@ -134,7 +145,11 @@ module.exports = async function handler(req, res){
     loc: `${SITE}${productPath(p)}`,
     lastmod: p.updateTime ? p.updateTime.slice(0, 10) : undefined,
     changefreq: 'weekly',
-    priority: p.outOfStock ? '0.4' : '0.6'
+    priority: p.outOfStock ? '0.4' : '0.6',
+    images: Array.from({ length: Math.min(p.imageCount || 0, 1000) }, (_, i) => ({
+      loc: `${SITE}/product-image/${encodeURIComponent(p.id)}.jpg${i ? `?n=${i}` : ''}`,
+      title: p.imageTitle
+    }))
   }));
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${[...staticUrls, ...landingUrls, ...productUrls].join('\n')}\n</urlset>`;
