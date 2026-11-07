@@ -80,12 +80,12 @@ async function fetchAllProducts(){
         const imageTitle = nameField && typeof nameField.stringValue === 'string' ? nameField.stringValue.trim() : '';
         const imageUrls = [];
         const mainImageField = doc.fields && doc.fields.imageUrl;
-        if(mainImageField && typeof mainImageField.stringValue === 'string' && /^https?:\\/\\//i.test(mainImageField.stringValue)) imageUrls.push(mainImageField.stringValue);
+        if(mainImageField && typeof mainImageField.stringValue === 'string' && /^https?:\/\//i.test(mainImageField.stringValue)) imageUrls.push(mainImageField.stringValue);
         const imagesField = doc.fields && doc.fields.images;
         const additionalImages = imagesField && imagesField.arrayValue && Array.isArray(imagesField.arrayValue.values) ? imagesField.arrayValue.values : [];
         additionalImages.forEach(image => {
           const value = image && typeof image.stringValue === 'string' ? image.stringValue : '';
-          if(/^https?:\\/\\//i.test(value) && !imageUrls.includes(value)) imageUrls.push(value);
+          if(/^https?:\/\//i.test(value) && !imageUrls.includes(value)) imageUrls.push(value);
         });
         products.push({ id, slug, updateTime: doc.updateTime, outOfStock: stock === 0, subcategory, category, imageCount: imageUrls.length, imageTitle });
       });
@@ -104,9 +104,10 @@ function xmlEscape(s){
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-function urlTag({ loc, lastmod, changefreq, priority }){
+function urlTag({ loc, lastmod, changefreq, priority, images = [] }){
   const lastmodTag = lastmod ? `\n    <lastmod>${lastmod}</lastmod>` : '';
-  return `  <url>\n    <loc>${xmlEscape(loc)}</loc>${lastmodTag}\n    <changefreq>${changefreq}</changefreq>\n    <priority>${priority}</priority>\n  </url>`;
+  const imageTags = images.map(image => `\n    <image:image><image:loc>${xmlEscape(image.loc)}</image:loc>${image.title ? `<image:title>${xmlEscape(image.title)}</image:title>` : ''}</image:image>`).join('');
+  return `  <url>\n    <loc>${xmlEscape(loc)}</loc>${lastmodTag}${imageTags}\n    <changefreq>${changefreq}</changefreq>\n    <priority>${priority}</priority>\n  </url>`;
 }
 
 module.exports = async function handler(req, res){
@@ -152,7 +153,7 @@ module.exports = async function handler(req, res){
     }))
   }));
 
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${[...staticUrls, ...landingUrls, ...productUrls].join('\n')}\n</urlset>`;
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n${[...staticUrls, ...landingUrls, ...productUrls].join('\n')}\n</urlset>`;
 
   res.setHeader('Content-Type', 'application/xml; charset=utf-8');
   res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate=86400');
