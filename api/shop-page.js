@@ -141,14 +141,14 @@ function cardMarkup(p, i, eager){
 
 const CATEGORY_SEO = {
   "New In": { title: "Fashionista BD New Arrivals | Y2K Accessories", desc: "Discover new Y2K accessories and streetwear at FASHIONISTA in Bangladesh. Browse current products and prices, with cash on delivery nationwide.", h1: "New Y2K Accessories and Streetwear", intro: "Discover recently added glasses, accessories and streetwear at FASHIONISTA. Compare current product photos, BDT prices and stock status before choosing a style.", faq: ["What is new at FASHIONISTA?", "How do I check product prices?", "Can I pay cash on delivery?"] },
-  "Glasses": { title: "Y2K Glasses in Bangladesh | Retro & Rimless Frames | FASHIONISTA", desc: "Shop Y2K glasses and retro sunglasses in Bangladesh at FASHIONISTA. Explore star, rimless and Chrome Heart-style frames, compare BDT prices and stock, and order with cash on delivery nationwide.", h1: "Y2K Glasses & Retro Sunglasses in Bangladesh", intro: "Discover Y2K glasses in Bangladesh, including retro star frames, rimless designs and Chrome Heart-style sunglasses. Compare real product photos, current BDT prices and availability before ordering.", faq: ["Where can I buy Y2K glasses in Bangladesh?", "What types of Y2K sunglasses are available?", "Can I pay cash on delivery?"] },
+  "Glasses": { title: "Glasses & Sunglasses in Bangladesh | Y2K & Rimless | FASHIONISTA", desc: "Shop glasses and sunglasses in Bangladesh at FASHIONISTA. Explore Y2K, retro, star-shaped, rimless and Chrome Heart-style frames, compare BDT prices and stock, and order with cash on delivery nationwide.", h1: "Shop Glasses & Sunglasses in Bangladesh", intro: "Browse glasses and sunglasses in Bangladesh, including Y2K styles, retro star frames, rimless designs and Chrome Heart-style looks. Compare product photos, current BDT prices and availability before ordering.", faq: ["Where can I buy glasses and sunglasses in Bangladesh?", "Do you have Y2K and rimless glasses?", "Can I pay cash on delivery?"] },
   "Accessories": { title: "Men’s Y2K Accessories in Bangladesh | FASHIONISTA", desc: "Shop men’s Y2K accessories in Bangladesh at FASHIONISTA: bracelets, chain necklaces and bandanas. See BDT prices and cash on delivery nationwide.", h1: "Men’s Chain Necklaces and Y2K Accessories", intro: "Browse chain necklaces, bracelets and bandanas for men’s Y2K and streetwear outfits. Compare product photos, current BDT prices and stock before ordering.", faq: ["What is the chain necklace price in Bangladesh?", "Can I find Chrome Heart-style chains?", "Can I pay cash on delivery?"] },
   "Clothing": { title: "Streetwear Clothing BD | Y2K T-Shirts | FASHIONISTA", desc: "Streetwear clothing BD at FASHIONISTA. Explore Y2K T-shirts and casual styles, check sizes and prices, with cash on delivery in Dhaka and nationwide.", h1: "Streetwear Clothing in Bangladesh", intro: "Shop streetwear clothing and Y2K T-shirts at FASHIONISTA. Review available sizes, product photos and current prices to choose the right listing.", faq: ["Where can I buy streetwear clothing in Bangladesh?", "Do you have Y2K T-shirts?", "Can I pay cash on delivery?"] }
 };
 
 const CATEGORY_HEADINGS = {
   "New In": "New Arrivals in Bangladesh",
-  "Glasses": "Y2K Glasses & Retro Sunglasses in Bangladesh",
+  "Glasses": "Glasses & Sunglasses in Bangladesh",
   "Accessories": "Men’s Chain Necklaces and Y2K Accessories",
   "Clothing": "Streetwear Clothing in Bangladesh"
 };
@@ -197,12 +197,12 @@ const SCOPE_PAGES = {
     path: '/bracelets',
     label: 'Bracelets',
     aliases: ['bracelets', 'bracelet'],
-    title: 'Silver Bracelet Price in BD | Mens Bracelets | FASHIONISTA',
-    desc: 'Silver bracelet price in BD at FASHIONISTA. Explore mens bracelet and chain styles in Bangladesh, with cash on delivery in Dhaka and nationwide.',
-    h1: 'Silver Bracelet Price in Bangladesh',
-    sub: 'Mens bracelets and streetwear styles with current BDT prices',
+    title: 'Bracelets in Bangladesh | Men’s & Streetwear Styles | FASHIONISTA',
+    desc: 'Shop bracelets in Bangladesh at FASHIONISTA. Explore men’s, silver-tone, cross and gothic-inspired bracelet styles, compare current BDT prices and stock, with cash on delivery nationwide.',
+    h1: 'Shop Bracelets in Bangladesh',
+    sub: 'Men’s bracelets, silver-tone designs and streetwear styles with current BDT prices',
     intro: [
-      'FASHIONISTA is a Bangladesh-based accessories brand inspired by retro, Y2K and street fashion. This page collects the bracelets currently listed in our shop, with the price in BDT and a clear out-of-stock label on anything that has sold through.',
+      'Looking for bracelets in Bangladesh? Browse the bracelet collection at FASHIONISTA, with men’s, silver-tone, cross and gothic-inspired styles. Compare product photos, current BDT prices and stock status before choosing a design.',
       'Pay cash on delivery anywhere in Bangladesh, with nothing to pay online.'
     ],
     highlights: [
@@ -715,9 +715,9 @@ const CATEGORY_CONTENT = {
     ]
   },
   "Glasses": {
-    h2: "Y2K glasses and retro sunglasses in Bangladesh",
+    h2: "Glasses and sunglasses in Bangladesh",
     paras: [
-      "Looking for Y2K glasses in Bangladesh? Explore retro sunglasses and Y2K-inspired frames at FASHIONISTA, including star-shaped, rimless and Chrome Heart-style designs. Compare product photos, current BDT prices and stock status before opening a listing for full details.",
+      "Looking for glasses or sunglasses in Bangladesh? Explore everyday eyewear at FASHIONISTA, including Y2K-inspired, retro, star-shaped, rimless and Chrome Heart-style frames. Compare product photos, current BDT prices and stock status before opening a listing for full details.",
       "Explore our <a href=\"/product/retro-y2k-star-glass\">retro Y2K star glasses</a> and compare them with <a href=\"/product/chrome-heart-rimless-gold\">gold rimless glasses</a> and <a href=\"/product/chrome-heart-black-silver\">black and silver sunglasses</a>. Each product page shows its current BDT price, photos and availability. Browse our <a href=\"/accessories\">Y2K accessories</a> to complete the look."
     ]
   },
