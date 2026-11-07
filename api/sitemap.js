@@ -27,8 +27,7 @@ const STATIC_PAGES = [
   { loc: `${SITE}/shipping`, changefreq: 'monthly', priority: '0.4' },
   { loc: `${SITE}/return-policy`, changefreq: 'monthly', priority: '0.4' },
   { loc: `${SITE}/terms`, changefreq: 'yearly', priority: '0.3' },
-  { loc: `${SITE}/privacy`, changefreq: 'yearly', priority: '0.3' },
-  { loc: `${SITE}/track-order`, changefreq: 'monthly', priority: '0.3' }
+  { loc: `${SITE}/privacy`, changefreq: 'yearly', priority: '0.3' }
 ];
 
 // Sub-category landing pages (see SCOPE_PAGES in api/shop-page.js — keep the
