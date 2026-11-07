@@ -633,7 +633,7 @@ function applyScopePriceDescription(html, cfg, items){
   const prices = items.map(p => Number(p.price)).filter(n => Number.isFinite(n) && n > 0);
   if(!prices.length) return html;
   const from = ' from ৳' + Math.min(...prices);
-  const copy = cfg.path === '/bracelets' ? 'Silver bracelet price in Bangladesh' + from + ' at FASHIONISTA. Explore mens bracelet styles. Cash on delivery in Dhaka and nationwide. Compare photos first.' : cfg.path === '/bandanas' ? 'Shop bandanas in Bangladesh' + from + ' at FASHIONISTA. Compare red, green and pink styles, current stock and photos. Cash on delivery nationwide.' : 'Chain necklace for men BD' + from + ' at FASHIONISTA. Browse Chrome Heart chains and Y2K necklaces. Cash on delivery nationwide. Check product photos.';
+  const copy = cfg.path === '/bracelets' ? 'Bracelet price in Bangladesh' + from + ' at FASHIONISTA. Explore men’s bracelet styles, photos and stock. Cash on delivery nationwide.' : cfg.path === '/bandanas' ? 'Bandana price in Bangladesh' + from + ' at FASHIONISTA. Compare red, green and pink styles, photos and stock. Cash on delivery nationwide.' : 'Chain necklace for men BD' + from + ' at FASHIONISTA. Browse Chrome Heart chains and Y2K necklaces. Cash on delivery nationwide. Check product photos.';
   const desc = copy.length <= 160 ? copy : copy.slice(0,157).replace(/\s+\S*$/, '') + '...';
   return applySeoHead(html, { title: cfg.title, desc: desc }, SITE + cfg.path);
 }
