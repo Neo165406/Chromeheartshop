@@ -269,13 +269,13 @@ const SCOPE_PAGES = {
     path: '/bandanas',
     label: 'Bandanas',
     aliases: ['bandana', 'bandanas'],
-    title: 'Bandana Price in Bangladesh | Y2K Styles | FASHIONISTA',
-    desc: 'Bandana price in Bangladesh at FASHIONISTA. Explore Y2K bandana styles, compare current BDT prices and order with cash on delivery in Dhaka and nationwide.',
-    h1: 'Bandana Price in Bangladesh',
+    title: 'Bandanas in Bangladesh | Red, Green & Pink Styles | FASHIONISTA',
+    desc: 'Shop red, green and pink bandanas in Bangladesh at FASHIONISTA. Compare current BDT prices, prints and stock, with cash on delivery nationwide.',
+    h1: 'Shop Bandanas in Bangladesh',
     sub: 'Compare red, green and pink bandanas with current BDT prices',
     intro: [
       'Browse red, green and pink bandanas at FASHIONISTA in Bangladesh. Compare product photos, current BDT prices and stock status before ordering.',
-      'Check the current bandana price in BD on each product listing. Style a bandana as a headband, neck scarf or bag accessory, then order with cash on delivery across Bangladesh.'
+      'Compare the current BDT price, photos and stock status on each listing. Style a bandana as a headband, neck scarf or bag accessory, then order with cash on delivery across Bangladesh.'
     ],
     highlights: [
       { heading: 'Printed bandanas', text: 'These listings mention a print, paisley or pattern in their name or description:', test: s => /print|paisley|pattern/i.test(s) },
@@ -420,7 +420,7 @@ function introMarkup(cfg, count){
 function scopeFaqMarkup(cfg, items){
   const prices = items.map(p => Number(p.price)).filter(n => Number.isFinite(n) && n > 0);
   const range = prices.length ? 'Current listed prices range from BDT ' + Math.min(...prices) + ' to BDT ' + Math.max(...prices) + '.' : 'Open a product listing to see its current price and availability.';
-  const q = cfg.path === '/bracelets' ? 'What is the bracelet price in Bangladesh?' : cfg.path === '/bandanas' ? 'What is the bandana price in Bangladesh?' : 'What is the chain necklace price in Bangladesh?';
+  const q = cfg.path === '/bracelets' ? 'What is the bracelet price in Bangladesh?' : cfg.path === '/bandanas' ? 'Which bandana colours are available?' : 'What is the chain necklace price in Bangladesh?';
   const faqs = [[q, range + ' Check each listing for exact product details.'], ['Can I pay cash on delivery?', 'Yes. FASHIONISTA offers cash on delivery across Bangladesh, including Dhaka.'], ['How can I check product details?', 'Open a product page to view photos, current price and stock status.']];
   const html = faqs.map(([q,a]) => '<h3>' + q + '</h3><p>' + a + '</p>').join('\n');
   const schema = { '@context':'https://schema.org', '@type':'FAQPage', mainEntity:faqs.map(([q,a]) => ({ '@type':'Question', name:q, acceptedAnswer:{ '@type':'Answer', text:a } })) };
@@ -627,7 +627,7 @@ function applyScopePriceDescription(html, cfg, items){
   const prices = items.map(p => Number(p.price)).filter(n => Number.isFinite(n) && n > 0);
   if(!prices.length) return html;
   const from = ' from ৳' + Math.min(...prices);
-  const copy = cfg.path === '/bracelets' ? 'Silver bracelet price in Bangladesh' + from + ' at FASHIONISTA. Explore mens bracelet styles. Cash on delivery in Dhaka and nationwide. Compare photos first.' : cfg.path === '/bandanas' ? 'Bandana price in Bangladesh' + from + ' at FASHIONISTA. Explore Y2K bandana styles. Cash on delivery in Dhaka and nationwide. Compare prints first.' : 'Chain necklace for men BD' + from + ' at FASHIONISTA. Browse Chrome Heart chains and Y2K necklaces. Cash on delivery nationwide. Check product photos.';
+  const copy = cfg.path === '/bracelets' ? 'Silver bracelet price in Bangladesh' + from + ' at FASHIONISTA. Explore mens bracelet styles. Cash on delivery in Dhaka and nationwide. Compare photos first.' : cfg.path === '/bandanas' ? 'Shop bandanas in Bangladesh' + from + ' at FASHIONISTA. Compare red, green and pink styles, current stock and photos. Cash on delivery nationwide.' : 'Chain necklace for men BD' + from + ' at FASHIONISTA. Browse Chrome Heart chains and Y2K necklaces. Cash on delivery nationwide. Check product photos.';
   const desc = copy.length <= 160 ? copy : copy.slice(0,157).replace(/\s+\S*$/, '') + '...';
   return applySeoHead(html, { title: cfg.title, desc: desc }, SITE + cfg.path);
 }
