@@ -214,6 +214,9 @@ const SCOPE_PAGES = {
       { h: 'How to choose a bracelet', p: [
         'Open any listing to see its photos, price and description. Size and finish differ from piece to piece, so check those details on the product page before you order, and message us on WhatsApp through the <a href="/contact">contact page</a> if you are unsure about fit.'
       ]},
+      { h: 'Chrome Heart-style bracelets', p: [
+        'Explore the <a href="/product/chrome-heart-bracelet">Chrome Heart-style bracelet</a> and <a href="/product/chrome-heart-bracelet-2">another bracelet design</a> in our catalogue. Compare the product photos, exact motifs, current BDT prices and stock status; the listings describe fashion-inspired styles and do not claim official brand affiliation.'
+      ]},
       { h: 'Styling a bracelet', p: [
         'Darker, gothic-leaning designs look sharpest against plain basics such as a black or white tee, a hoodie or a denim jacket. Wear one on its own for a clean look, or stack it with a watch or a second bracelet. Chain necklaces from the wider <a href="/accessories">accessories range</a> are an easy match.'
       ]},
@@ -718,7 +721,8 @@ const CATEGORY_CONTENT = {
     h2: "Glasses and sunglasses in Bangladesh",
     paras: [
       "Looking for glasses or sunglasses in Bangladesh? Explore everyday eyewear at FASHIONISTA, including Y2K-inspired, retro, star-shaped, rimless and Chrome Heart-style frames. Compare product photos, current BDT prices and stock status before opening a listing for full details.",
-      "Explore our <a href=\"/product/retro-y2k-star-glass\">retro Y2K star glasses</a> and compare them with <a href=\"/product/chrome-heart-rimless-gold\">gold rimless glasses</a> and <a href=\"/product/chrome-heart-black-silver\">black and silver sunglasses</a>. Each product page shows its current BDT price, photos and availability. Browse our <a href=\"/accessories\">Y2K accessories</a> to complete the look."
+      "Explore our <a href=\"/product/retro-y2k-star-glass\">retro Y2K star glasses</a> and compare them with <a href=\"/product/chrome-heart-rimless-gold\">Chrome Heart-style gold rimless glasses</a> and <a href=\"/product/chrome-heart-black-silver\">black and silver Chrome Heart-style glasses</a>. Each product page shows its current BDT price, photos and availability. Browse our <a href=\"/accessories\">Y2K accessories</a> to complete the look.",
+      "For Chrome Heart-style glasses in Bangladesh, compare the rimless gold and black-and-silver frame designs in the product galleries. These are fashion styles listed by FASHIONISTA; check each listing for its exact design, current price and stock before ordering."
     ]
   },
   "Accessories": {
