@@ -141,14 +141,14 @@ function cardMarkup(p, i, eager){
 
 const CATEGORY_SEO = {
   "New In": { title: "Fashionista BD New Arrivals | Y2K Accessories", desc: "Discover new Y2K accessories and streetwear at FASHIONISTA in Bangladesh. Browse current products and prices, with cash on delivery nationwide.", h1: "New Y2K Accessories and Streetwear", intro: "Discover recently added glasses, accessories and streetwear at FASHIONISTA. Compare current product photos, BDT prices and stock status before choosing a style.", faq: ["What is new at FASHIONISTA?", "How do I check product prices?", "Can I pay cash on delivery?"] },
-  "Glasses": { title: "Chrome Heart Glasses in BD | Rimless & Y2K | FASHIONISTA", desc: "Shop Chrome Heart-style glasses in Bangladesh at FASHIONISTA. Compare rimless and Y2K frames, check current BDT prices and stock, and order with cash on delivery nationwide.", h1: "Chrome Heart Glasses & Y2K Sunglasses in Bangladesh", intro: "Explore Chrome Heart-style glasses, rimless frames and Y2K sunglasses at FASHIONISTA. Compare product photos, current BDT prices and availability before ordering.", faq: ["What is the Chrome Heart glasses price in Bangladesh?", "Do you have rimless glasses?", "Can I pay cash on delivery?"] },
+  "Glasses": { title: "Y2K Glasses in Bangladesh | Retro & Rimless Frames | FASHIONISTA", desc: "Shop Y2K glasses and retro sunglasses in Bangladesh at FASHIONISTA. Explore star, rimless and Chrome Heart-style frames, compare BDT prices and stock, and order with cash on delivery nationwide.", h1: "Y2K Glasses & Retro Sunglasses in Bangladesh", intro: "Discover Y2K glasses in Bangladesh, including retro star frames, rimless designs and Chrome Heart-style sunglasses. Compare real product photos, current BDT prices and availability before ordering.", faq: ["Where can I buy Y2K glasses in Bangladesh?", "What types of Y2K sunglasses are available?", "Can I pay cash on delivery?"] },
   "Accessories": { title: "Men’s Y2K Accessories in Bangladesh | FASHIONISTA", desc: "Shop men’s Y2K accessories in Bangladesh at FASHIONISTA: bracelets, chain necklaces and bandanas. See BDT prices and cash on delivery nationwide.", h1: "Men’s Chain Necklaces and Y2K Accessories", intro: "Browse chain necklaces, bracelets and bandanas for men’s Y2K and streetwear outfits. Compare product photos, current BDT prices and stock before ordering.", faq: ["What is the chain necklace price in Bangladesh?", "Can I find Chrome Heart-style chains?", "Can I pay cash on delivery?"] },
   "Clothing": { title: "Streetwear Clothing BD | Y2K T-Shirts | FASHIONISTA", desc: "Streetwear clothing BD at FASHIONISTA. Explore Y2K T-shirts and casual styles, check sizes and prices, with cash on delivery in Dhaka and nationwide.", h1: "Streetwear Clothing in Bangladesh", intro: "Shop streetwear clothing and Y2K T-shirts at FASHIONISTA. Review available sizes, product photos and current prices to choose the right listing.", faq: ["Where can I buy streetwear clothing in Bangladesh?", "Do you have Y2K T-shirts?", "Can I pay cash on delivery?"] }
 };
 
 const CATEGORY_HEADINGS = {
   "New In": "New Arrivals in Bangladesh",
-  "Glasses": "Chrome Heart Glasses & Y2K Sunglasses in Bangladesh",
+  "Glasses": "Y2K Glasses & Retro Sunglasses in Bangladesh",
   "Accessories": "Men’s Chain Necklaces and Y2K Accessories",
   "Clothing": "Streetwear Clothing in Bangladesh"
 };
@@ -715,10 +715,10 @@ const CATEGORY_CONTENT = {
     ]
   },
   "Glasses": {
-    h2: "Chrome Heart glasses, rimless frames and Y2K sunglasses in Bangladesh",
+    h2: "Y2K glasses and retro sunglasses in Bangladesh",
     paras: [
-      "Looking for Chrome Heart glasses in Bangladesh? Browse Chrome Heart-style frames, rimless glasses and Y2K sunglasses at FASHIONISTA. Compare product photos, current BDT prices and stock status before opening a listing for full details.",
-      "Compare the <a href=\"/product/chrome-heart-rimless-gold\">Chrome Heart rimless gold glasses</a>, <a href=\"/product/chrome-heart-black-silver\">black and silver glasses</a> and <a href=\"/product/retro-y2k-star-glass\">retro Y2K star glasses</a>. Open each listing for its current BDT price, product photos and availability. Complete the look with our <a href=\"/accessories\">accessories</a>."
+      "Looking for Y2K glasses in Bangladesh? Explore retro sunglasses and Y2K-inspired frames at FASHIONISTA, including star-shaped, rimless and Chrome Heart-style designs. Compare product photos, current BDT prices and stock status before opening a listing for full details.",
+      "Explore our <a href=\"/product/retro-y2k-star-glass\">retro Y2K star glasses</a> and compare them with <a href=\"/product/chrome-heart-rimless-gold\">gold rimless glasses</a> and <a href=\"/product/chrome-heart-black-silver\">black and silver sunglasses</a>. Each product page shows its current BDT price, photos and availability. Browse our <a href=\"/accessories\">Y2K accessories</a> to complete the look."
     ]
   },
   "Accessories": {
