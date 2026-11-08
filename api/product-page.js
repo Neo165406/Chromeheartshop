@@ -808,10 +808,10 @@ function renderSnapshot(product, similar){
   // the image sitemap and /product-image/:id. The primary imageUrl always comes
   // first, followed by unique additional images.
   const images = [];
-  if(typeof product.imageUrl === 'string' && /^https?:\\/\\//i.test(product.imageUrl)) images.push(product.imageUrl);
+  if(typeof product.imageUrl === 'string' && /^https?:\/\//i.test(product.imageUrl)) images.push(product.imageUrl);
   if(Array.isArray(product.images)) {
     product.images.forEach(src => {
-      if(typeof src === 'string' && /^https?:\\/\\//i.test(src) && !images.includes(src)) images.push(src);
+      if(typeof src === 'string' && /^https?:\/\//i.test(src) && !images.includes(src)) images.push(src);
     });
   }
   const imageSrc = i => `${SITE}/product-image/${encodeURIComponent(product.id)}.jpg${i ? `?n=${i}` : ''}`;
