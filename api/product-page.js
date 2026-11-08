@@ -804,12 +804,22 @@ function renderSnapshot(product, similar){
   const sizes = getSizes(product);
   const discount = product.was ? Math.round((1 - product.price/product.was) * 100) : 0;
   const soldText = product.sold ? `${product.sold >= 1000 ? (product.sold/1000).toFixed(1).replace('.0','')+'k' : product.sold} sold` : '';
-  const images = (product.images && product.images.length) ? product.images : (product.imageUrl ? [product.imageUrl] : []);
+  // Keep the visible gallery in the same image order used by Product schema,
+  // the image sitemap and /product-image/:id. The primary imageUrl always comes
+  // first, followed by unique additional images.
+  const images = [];
+  if(typeof product.imageUrl === 'string' && /^https?:\/\//i.test(product.imageUrl)) images.push(product.imageUrl);
+  if(Array.isArray(product.images)) {
+    product.images.forEach(src => {
+      if(typeof src === 'string' && /^https?:\/\//i.test(src) && !images.includes(src)) images.push(src);
+    });
+  }
+  const imageSrc = i => `${SITE}/product-image/${encodeURIComponent(product.id)}.jpg${i ? `?n=${i}` : ''}`;
   const media = images.length
-    ? `<img id="mainProductImg" src="${esc(images[0])}" alt="${esc(product.name)} - ${esc(String(product.category || "accessories").toLowerCase())} | FASHIONISTA" fetchpriority="high" style="${outOfStock?'opacity:0.4;':''}">`
+    ? `<img id="mainProductImg" src="${esc(imageSrc(0))}" alt="${esc(product.name)} - ${esc(String(product.category || "accessories").toLowerCase())} | FASHIONISTA" fetchpriority="high" style="${outOfStock?'opacity:0.4;':''}">`
     : '';
   const thumbs = images.length > 1
-    ? `<div class="p-thumbs" id="pThumbs">${images.map((img,i)=>`<img src="${esc(img)}" alt="${esc(product.name)} - ${esc(String(product.category || "accessories").toLowerCase())} photo ${i+1} | FASHIONISTA" class="${i===0?'active':''}" data-i="${i}" loading="lazy" decoding="async">`).join('')}</div>`
+    ? `<div class="p-thumbs" id="pThumbs">${images.map((img,i)=>`<img src="${esc(imageSrc(i))}" alt="${esc(product.name)} - ${esc(String(product.category || "accessories").toLowerCase())} photo ${i+1} | FASHIONISTA" class="${i===0?'active':''}" data-i="${i}" loading="lazy" decoding="async">`).join('')}</div>`
     : '';
 
   const actions = outOfStock
