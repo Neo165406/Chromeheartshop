@@ -1028,10 +1028,10 @@ module.exports = async function handler(req, res){
       }
     });
   }
-  const productImages = originalImages.length
-    ? originalImages.map((src, i) => `${SITE}/product-image/${encodeURIComponent(product.id)}.jpg${i ? `?n=${i}` : ''}`)
-    : [`${SITE}/og-image.png`];
-  const image = productImages[0];
+  const productImages = originalImages.map((src, i) => `${SITE}/product-image/${encodeURIComponent(product.id)}.jpg${i ? `?n=${i}` : ''}`);
+  // Keep the generic social-share fallback separate from Product structured data.
+  // A generic store image is not a truthful image of an individual product.
+  const image = productImages[0] || `${SITE}/og-image.png`;
   const titleTag = esc(metaOverride && metaOverride.title ? metaOverride.title : buildTitle(label));
   const keywordsContent = esc(buildKeywords(product).join(', '));
 
