@@ -570,7 +570,7 @@ async function loadSimilarProducts(category, excludeId){
 
 function miniCard(p,i){
   const media = p.imageUrl
-    ? `<img src="${p.imageUrl}" alt="${p.name}" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:contain;">`
+    ? `<img src="${p.id ? `/product-image/${encodeURIComponent(p.id)}.jpg` : p.imageUrl}" alt="${p.name} - ${p.category || 'accessories'} | FASHIONISTA" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:contain;">`
     : iconFor(p.iconType);
   return `
     <div class="card">
