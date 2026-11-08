@@ -625,13 +625,17 @@ function renderProduct(product, similar, reviews){
   if(Array.isArray(product.images)) product.images.forEach(src => {
     if(typeof src === 'string' && /^https?:\/\//i.test(src) && !images.includes(src)) images.push(src);
   });
-  galleryImages = images;
+  // Keep the hydrated gallery on the same first-party image URLs as the
+  // server-rendered page, Product schema and image sitemap. Otherwise client
+  // hydration would switch the gallery back to external hosts after load.
+  const imageSrc = i => `/product-image/${encodeURIComponent(product.id)}.jpg${i ? `?n=${i}` : ''}`;
+  galleryImages = images.map((_, i) => imageSrc(i));
   galleryIndex = 0;
   // The main image is the page's LCP candidate — never lazy, and flagged
   // fetchpriority=high so the browser fetches it before lower-priority
   // requests like the thumbnail strip or similar-product images below.
   const media = images.length
-    ? `<img id="mainProductImg" src="${images[0]}" alt="${product.name} - ${product.category || "accessories"} | FASHIONISTA" fetchpriority="high" style="${outOfStock?'opacity:0.4;':''}">`
+    ? `<img id="mainProductImg" src="${imageSrc(0)}" alt="${product.name} - ${product.category || "accessories"} | FASHIONISTA" fetchpriority="high" style="${outOfStock?'opacity:0.4;':''}">`
     : iconFor(product.iconType);
 
   root.innerHTML = `
@@ -641,7 +645,7 @@ function renderProduct(product, similar, reviews){
       ${outOfStock ? `<span class="discount-badge" style="background:var(--text-dim);">Out of Stock</span>` : ''}
       ${media}
     </div>
-    ${images.length>1 ? `<div class="p-thumbs" id="pThumbs">${images.map((img,i)=>`<img src="${img}" alt="${product.name} - ${product.category || "accessories"} photo ${i+1} | FASHIONISTA" class="${i===0?'active':''}" data-i="${i}" loading="lazy" decoding="async">`).join('')}</div>` : ''}
+    ${images.length>1 ? `<div class="p-thumbs" id="pThumbs">${images.map((img,i)=>`<img src="${imageSrc(i)}" alt="${product.name} - ${product.category || "accessories"} photo ${i+1} | FASHIONISTA" class="${i===0?'active':''}" data-i="${i}" loading="lazy" decoding="async">`).join('')}</div>` : ''}
     <div class="p-info">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
         <h1 class="display">${product.name} Price in BD</h1>
@@ -757,7 +761,7 @@ function renderProduct(product, similar, reviews){
       thumbsEl.querySelectorAll('img').forEach(t=>{
         t.addEventListener('click', ()=>{
           const i = Number(t.dataset.i);
-          document.getElementById('mainProductImg').src = images[i];
+          document.getElementById('mainProductImg').src = imageSrc(i);
           thumbsEl.querySelectorAll('img').forEach(x=>x.classList.remove('active'));
           t.classList.add('active');
           galleryIndex = i;
