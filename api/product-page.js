@@ -846,7 +846,12 @@ function renderSnapshot(product, similar){
       </div>`;
 
   const similarCards = similar.map(p=>{
-    const m = p.imageUrl ? `<img src="${esc(p.imageUrl)}" alt="${esc(p.name)} - FASHIONISTA accessories" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:contain;">` : '';
+    const similarImage = p.imageUrl
+      ? (p.id ? `${SITE}/product-image/${encodeURIComponent(p.id)}.jpg` : p.imageUrl)
+      : '';
+    const m = similarImage
+      ? `<img src="${esc(similarImage)}" alt="${esc(p.name)} - ${esc(String(p.category || 'accessories').toLowerCase())} | FASHIONISTA" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:contain;">`
+      : '';
     return `<div class="card"><a href="${esc(productPath(p))}" class="card-link"><div class="frame">${m}</div><h3>${esc(p.name)}</h3></a><div class="price"><span class="now">BDT ${p.price}</span>${p.was?`<span class="was">BDT ${p.was}</span>`:''}</div></div>`;
   }).join('');
 
