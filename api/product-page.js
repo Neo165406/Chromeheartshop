@@ -592,11 +592,11 @@ const PRODUCT_CONTENT_OVERRIDES = {
     faq: 'What is the current Spider Pendant price in Bangladesh?'
   },
   'chrome-heart-bracelet': {
-    title: 'Chrome Heart Bracelet Price in Bangladesh | FASHIONISTA',
-    description: 'Browse this Chrome Heart-style bracelet at FASHIONISTA. Check its product photos, current BDT price and stock status, with cash on delivery available across Bangladesh.',
-    h2: 'Chrome Heart-Style Bracelet',
-    body: 'This bracelet is listed in FASHIONISTA’s gothic and streetwear accessories range. Inspect the product photos for its exact motif and finish, and check the current BDT price and stock before ordering.',
-    faq: 'What is the price of this Chrome Heart-style bracelet in Bangladesh?'
+    title: 'Men’s Chrome Heart Bracelet Price in Bangladesh | FASHIONISTA',
+    description: 'Shop this Chrome Heart-style men’s bracelet at FASHIONISTA in Bangladesh. Check its design photos, current BDT price and stock, with cash on delivery nationwide.',
+    h2: 'Men’s Chrome Heart-Style Bracelet',
+    body: 'Explore this men’s bracelet in FASHIONISTA’s gothic and streetwear accessories range. Review the product photos for its exact motif and finish, then compare the current bracelet price in Bangladesh and stock status before ordering.',
+    faq: 'What is the current men’s Chrome Heart-style bracelet price in Bangladesh?'
   },
   'chrome-heart-bracelet-2': {
     title: 'Chrome Heart Bracelet Design & Price | FASHIONISTA',
@@ -606,11 +606,11 @@ const PRODUCT_CONTENT_OVERRIDES = {
     faq: 'What is the price of this bracelet in Bangladesh?'
   },
   'chrome-heart-black-silver': {
-    title: 'Black and Silver Glasses Price in Bangladesh | FASHIONISTA',
-    description: 'Shop black-and-silver glasses at FASHIONISTA in Bangladesh. Check the frame photos, current BDT price and availability, with cash on delivery nationwide.',
-    h2: 'Black and Silver Glasses',
-    body: 'This black-and-silver eyewear style brings a contrasting colour combination to retro and streetwear outfits. Use the product gallery to inspect the frame shape and details, then check the current BDT price and availability.',
-    faq: 'What is the price of black-and-silver glasses in Bangladesh?'
+    title: 'Chrome Heart Black-Silver Glasses Price in BD | FASHIONISTA',
+    description: 'Explore these Chrome Heart-style black-and-silver glasses at FASHIONISTA. Check the frame photos, current BDT price and availability, with cash on delivery across Bangladesh.',
+    h2: 'Chrome Heart-Style Black-Silver Glasses',
+    body: 'These black-and-silver glasses offer a contrasting look for retro and streetwear outfits. Review the gallery to inspect the frame shape and details, then check the current BDT price and availability before ordering.',
+    faq: 'What is the price of Chrome Heart-style black-and-silver glasses in Bangladesh?'
   },
   'green-bandana': {
     title: 'Green Bandana Price in Bangladesh | FASHIONISTA',
@@ -647,16 +647,16 @@ const PRODUCT_META_OVERRIDES = {
     "description": "Shop the red bandana at FASHIONISTA in Bangladesh. Check product photos, current BDT {price} and stock, and order with cash on delivery nationwide."
   },
   "chrome-heart-bracelet": {
-    "title": "Chrome Heart Bracelet Price in Bangladesh | FASHIONISTA",
-    "description": "Shop this Chrome Heart-style bracelet at FASHIONISTA. Check product photos, current BDT {price} and stock, with cash on delivery across Bangladesh."
+    "title": "Men’s Chrome Heart Bracelet Price in Bangladesh | FASHIONISTA",
+    "description": "Shop this Chrome Heart-style men’s bracelet at FASHIONISTA in Bangladesh. Check product photos, current BDT {price} and stock, with cash on delivery nationwide."
   },
   "chrome-heart-rimless-gold": {
-    "title": "Chrome Heart Rimless Glasses Price in BD | FASHIONISTA",
-    "description": "Shop Chrome Heart-style gold rimless glasses at FASHIONISTA. Check frame photos, current BDT {price} and stock, with cash on delivery nationwide."
+    "title": "Chrome Heart Rimless Glasses Price in Bangladesh | FASHIONISTA",
+    "description": "Shop Chrome Heart-style gold rimless glasses in Bangladesh at FASHIONISTA. Check frame photos, current BDT {price} and stock, with cash on delivery nationwide."
   },
   "chrome-heart-black-silver": {
-    "title": "Black and Silver Glasses Price in Bangladesh | FASHIONISTA",
-    "description": "Shop black and silver glasses at FASHIONISTA in Bangladesh. View frame photos, current BDT {price} and stock, with cash on delivery nationwide."
+    "title": "Chrome Heart Black-Silver Glasses Price in BD | FASHIONISTA",
+    "description": "Shop Chrome Heart-style black-and-silver glasses in Bangladesh at FASHIONISTA. View frame photos, current BDT {price} and stock, with cash on delivery nationwide."
   },
   "chrome-hearts-raised-cross-dog-tag": {
     "title": "Chrome Hearts Raised Cross Dog Tag Price in BD | FASHIONISTA",
@@ -695,8 +695,8 @@ const PRODUCT_META_OVERRIDES = {
     "description": "Compare this second Chrome Heart-style bracelet at FASHIONISTA. Check photos, current BDT {price} and stock, with cash on delivery across Bangladesh."
   },
   "chrome-heart-rimless-silver": {
-    "title": "Chrome Heart Silver Rimless Glasses in BD | FASHIONISTA",
-    "description": "Shop Chrome Heart-style silver rimless glasses at FASHIONISTA. Check frame photos, current BDT {price} and stock, with cash on delivery nationwide."
+    "title": "Chrome Heart Silver Rimless Glasses Price in BD | FASHIONISTA",
+    "description": "Shop Chrome Heart-style silver rimless glasses in Bangladesh at FASHIONISTA. Check frame photos, current BDT {price} and stock, with cash on delivery nationwide."
   },
   "pink-bandana": {
     "title": "Pink Bandana Price in Bangladesh | Y2K Style | FASHIONISTA",
