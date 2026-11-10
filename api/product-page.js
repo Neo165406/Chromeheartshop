@@ -315,8 +315,10 @@ const BLOCKED_KEYWORD_RE = /chrome\s*-?\s*hearts?/i;
 const CATEGORY_KEYWORDS = [
   { match: /glass|eyewear/, words: [
     'glasses for men', "men's glasses bangladesh", "men's glasses bd",
+    'glasses in bangladesh', 'glasses price in bangladesh', 'sunglasses in bangladesh',
     'sunglasses for men', "men's sunglasses bd", 'fashion glasses bangladesh',
     'eyewear for men', 'sunglasses price in bangladesh', 'sunglasses bangladesh',
+    'y2k glasses bangladesh', 'retro glasses bangladesh', 'rimless glasses bangladesh',
     'gothic sunglasses bangladesh', 'rimless glasses bd', 'aviator sunglasses bd',
     'round sunglasses bd', 'gothic accessories bd'
   ]},
@@ -367,6 +369,14 @@ const NAME_KEYWORDS = [
   { match: /raglan|long sleeve/, words: ['raglan t-shirt bd', 'long sleeve t-shirt bangladesh'] }
 ];
 
+const GLASSES_NAME_KEYWORDS = [
+  { match: /rimless/, words: ['rimless glasses price in bangladesh', 'rimless sunglasses bd'] },
+  { match: /y2k|retro|star/, words: ['y2k glasses price in bangladesh', 'y2k glasses bd', 'retro glasses bd', 'star sunglasses bd'] },
+  { match: /gold/, words: ['gold glasses price in bangladesh', 'gold rimless glasses bd'] },
+  { match: /silver/, words: ['silver glasses price in bangladesh', 'silver rimless glasses bd'] },
+  { match: /black/, words: ['black sunglasses bangladesh'] }
+];
+
 function buildKeywords(product){
   const name = String(product.name || '').trim();
   const lowerName = name.toLowerCase();
@@ -377,6 +387,7 @@ function buildKeywords(product){
   }
   CATEGORY_KEYWORDS.forEach(c => { if(c.match.test(hay)) list.push(...c.words); });
   NAME_KEYWORDS.forEach(c => { if(c.match.test(hay)) list.push(...c.words); });
+  if(/glass|eyewear/.test(hay)) GLASSES_NAME_KEYWORDS.forEach(c => { if(c.match.test(hay)) list.push(...c.words); });
   list.push(...BRAND_KEYWORDS);
   // de-duplicate (case-insensitive), keep order, drop blocked third-party
   // brand terms, cap at 30
@@ -559,12 +570,39 @@ function applyProductDescriptionOverride(product){
 
 // Product-aware on-page copy. Keep claims limited to visible product data;
 // never infer frame, fabric, metal, fit or other specifications from a name.
+const PRODUCT_H1_OVERRIDES = {
+  'chrome-heart-black-silver': 'Black and Silver Glasses Price in Bangladesh',
+  'chrome-heart-black-gold': 'Black and Gold Glasses Price in Bangladesh',
+  'chrome-heart-rimless-gold': 'Gold Rimless Glasses Price in Bangladesh',
+  'chrome-heart-rimless-silver': 'Silver Rimless Glasses Price in Bangladesh',
+  'retro-y2k-star-glass': 'Y2K Star Glasses Price in Bangladesh'
+};
+const PRODUCT_IMAGE_LABELS = {
+  'chrome-heart-black-silver': 'Black and silver glasses',
+  'chrome-heart-black-gold': 'Black and gold glasses',
+  'chrome-heart-rimless-gold': 'Gold rimless glasses',
+  'chrome-heart-rimless-silver': 'Silver rimless glasses',
+  'retro-y2k-star-glass': 'Y2K star glasses'
+};
+function productHeading(product){
+  const slug = String(product && product.slug || '').toLowerCase();
+  return PRODUCT_H1_OVERRIDES[slug] || `${titleCaseName(product && product.name)} Price in BD`;
+}
+function productImageAlt(product, index){
+  const slug = String(product && product.slug || '').toLowerCase();
+  const label = PRODUCT_IMAGE_LABELS[slug] || `${product && product.name || 'Product'} - ${String(product && product.category || 'accessories').toLowerCase()}`;
+  return `${label} product photo ${Number(index || 0) + 1} | FASHIONISTA`;
+}
+
 function categoryBlurb(product){
   const hay = `${product.category || ''} ${product.name || ''}`.toLowerCase();
   const name = esc(titleCaseName(product.name) || 'This style');
   if(String(product.slug || '').toLowerCase() === 'red-bandana') return 'A red bandana adds a bold colour accent to streetwear outfits. Style it as a headband, neck scarf, wrist accent or accessory on a bag, and check the product photos for the exact design.';
   if(String(product.slug || '').toLowerCase() === 'chrome-heart-black-gold') return 'Black-and-gold statement glasses for Y2K, retro and streetwear outfits. Check the product photos and current BDT price before ordering.';
-  if(String(product.slug || '').toLowerCase() === 'chrome-heart-rimless-gold') return 'Gold-tone rimless glasses for Y2K and streetwear looks. Review the product photos to confirm the exact frame appearance, then check the current BDT price and availability.';
+  if(String(product.slug || '').toLowerCase() === 'chrome-heart-rimless-gold') return 'Gold rimless glasses in Bangladesh for a clean, minimal eyewear look. Compare the frame photos, current BDT price and stock before ordering.';
+  if(String(product.slug || '').toLowerCase() === 'chrome-heart-rimless-silver') return 'Silver rimless glasses in Bangladesh for a minimal Y2K and everyday streetwear look. Review the frame photos and current BDT price before ordering.';
+  if(String(product.slug || '').toLowerCase() === 'chrome-heart-black-silver') return 'Black-and-silver glasses for retro and streetwear outfits. Compare the frame photos, current BDT price and availability before ordering.';
+  if(String(product.slug || '').toLowerCase() === 'retro-y2k-star-glass') return 'Y2K star glasses with a playful retro sunglasses look. Check the star-shaped frame photos, current BDT price and stock before ordering.';
   if(/bandana/.test(hay)) return `${name} is a bandana option for men and anyone looking to add a print or colour accent to a streetwear look. Review the photos to check the exact pattern, then explore ways to style it as a headband, neck scarf or bag accessory.`;
   if(product && product.id === 'hRTjTVeGAcjWuwFAMwcs') return 'These silver rimless glasses bring a minimalist eyewear look to Y2K outfits and everyday streetwear. Review the product photos and current BDT price before ordering.';
   if(/glass|eyewear/.test(hay)) return `${name} is part of FASHIONISTA's men's glasses and sunglasses collection for Y2K, retro and streetwear-inspired outfits. Compare the product photos to check the frame's visible shape and colour, and review the listed price and availability before ordering.`;
@@ -607,9 +645,10 @@ const PRODUCT_CONTENT_OVERRIDES = {
   },
   'chrome-heart-black-silver': {
     title: 'Black and Silver Glasses Price in Bangladesh | FASHIONISTA',
-    description: 'Shop black-and-silver glasses at FASHIONISTA in Bangladesh. Check the frame photos, current BDT price and availability, with cash on delivery nationwide.',
-    h2: 'Black and Silver Glasses',
-    body: 'These black-and-silver glasses bring a contrasting look to retro and streetwear outfits. Review the gallery to inspect the frame shape and details, then check the current BDT price and availability before ordering.',
+    h1: 'Black and Silver Glasses Price in Bangladesh',
+    description: 'Shop black-and-silver glasses in Bangladesh at FASHIONISTA. Compare the frame photos, current BDT price and stock, with cash on delivery nationwide.',
+    h2: 'Black and Silver Glasses in Bangladesh',
+    body: 'These black-and-silver glasses add a contrasting retro eyewear look to Y2K and streetwear outfits. Review the product gallery for the visible frame shape and colour, then check the current BDT price and availability before ordering.',
     faq: 'What is the price of black-and-silver glasses in Bangladesh?'
   },
   'green-bandana': {
@@ -628,32 +667,36 @@ const PRODUCT_CONTENT_OVERRIDES = {
   },
   'chrome-heart-black-gold': {
     title: 'Black and Gold Glasses Price in Bangladesh | FASHIONISTA',
-    description: 'Shop black-and-gold glasses at FASHIONISTA in Bangladesh. Check the frame photos, current BDT price and availability, with cash on delivery nationwide.',
-    h2: 'Black and Gold Glasses Price in Bangladesh',
-    body: 'This black-and-gold eyewear style adds a bold colour contrast to retro and streetwear outfits. Review the product gallery for the exact frame shape and details, then check the current BDT price and availability before ordering.',
+    h1: 'Black and Gold Glasses Price in Bangladesh',
+    description: 'Shop black-and-gold glasses in Bangladesh at FASHIONISTA. Compare the frame photos, current BDT price and stock, with cash on delivery nationwide.',
+    h2: 'Black and Gold Glasses in Bangladesh',
+    body: 'These black-and-gold glasses offer a bold retro eyewear look for Y2K and streetwear outfits. Review the gallery for the visible frame shape and colour, then check the current BDT price and availability before ordering.',
     faq: 'Where can I buy black-and-gold glasses in Bangladesh?'
   },
 
   'chrome-heart-rimless-gold': {
     title: 'Gold Rimless Glasses Price in Bangladesh | FASHIONISTA',
-    description: 'Shop gold-tone rimless glasses at FASHIONISTA in Bangladesh. Inspect the frame photos, check the current BDT price and stock, and order with cash on delivery nationwide.',
-    h2: 'Gold Rimless Glasses',
-    body: 'These gold-tone rimless glasses offer a minimal frame look for everyday and smart-casual outfits. Review the product gallery for the exact shape and finish, then check the current price and availability before ordering.',
+    h1: 'Gold Rimless Glasses Price in Bangladesh',
+    description: 'Shop gold rimless glasses in Bangladesh at FASHIONISTA. Compare the frame photos, current BDT price and stock, with cash on delivery nationwide.',
+    h2: 'Gold Rimless Glasses in Bangladesh',
+    body: 'These gold rimless glasses offer a minimal frame look for Y2K, everyday and smart-casual outfits. Review the product gallery for the visible frame shape and finish, then check the current BDT price and availability before ordering.',
     faq: 'What is the price of gold rimless glasses in Bangladesh?'
   },
   'chrome-heart-rimless-silver': {
     title: 'Silver Rimless Glasses Price in Bangladesh | FASHIONISTA',
-    description: 'Explore silver-tone rimless glasses at FASHIONISTA in Bangladesh. Check the frame photos, current BDT price and availability, with cash on delivery nationwide.',
-    h2: 'Silver Rimless Glasses',
-    body: 'These silver-tone rimless glasses provide a clean, minimal look. Use the product gallery to inspect the frame shape and details, then check the current BDT price and stock before ordering.',
+    h1: 'Silver Rimless Glasses Price in Bangladesh',
+    description: 'Shop silver rimless glasses in Bangladesh at FASHIONISTA. View the frame photos, current BDT price and stock, with cash on delivery nationwide.',
+    h2: 'Silver Rimless Glasses in Bangladesh',
+    body: 'These silver rimless glasses provide a clean, minimal eyewear look for Y2K and everyday outfits. Use the product gallery to inspect the visible frame shape and details, then check the current BDT price and availability before ordering.',
     faq: 'Where can I buy silver rimless glasses in Bangladesh?'
   },
   'retro-y2k-star-glass': {
-    title: 'Y2K Star Sunglasses Price in Bangladesh | FASHIONISTA',
-    description: 'Shop Y2K star sunglasses at FASHIONISTA in Bangladesh. View the frame photos, check the current BDT price and stock, and order with cash on delivery nationwide.',
-    h2: 'Y2K Star Sunglasses',
-    body: 'These star-shaped sunglasses bring a playful Y2K-inspired look to retro and streetwear outfits. Check the product gallery for the exact frame shape and finish, then review the current BDT price and availability before ordering.',
-    faq: 'What is the price of Y2K star sunglasses in Bangladesh?'
+    title: 'Y2K Star Glasses Price in Bangladesh | FASHIONISTA',
+    h1: 'Y2K Star Glasses Price in Bangladesh',
+    description: 'Shop Y2K star glasses and retro sunglasses in Bangladesh at FASHIONISTA. Check frame photos, current BDT {price} and stock, with cash on delivery nationwide.',
+    h2: 'Y2K Star Glasses and Retro Sunglasses',
+    body: 'These star-shaped Y2K glasses bring a playful retro sunglasses look to streetwear outfits. Check the product gallery for the visible frame shape and colour, then review the current BDT price and availability before ordering.',
+    faq: 'What is the price of Y2K star glasses in Bangladesh?'
   },
 };
 
@@ -674,11 +717,11 @@ const PRODUCT_META_OVERRIDES = {
   },
   "chrome-heart-rimless-gold": {
     "title": "Gold Rimless Glasses Price in Bangladesh | FASHIONISTA",
-    "description": "Shop gold-tone rimless glasses in Bangladesh at FASHIONISTA. Check frame photos, current BDT {price} and stock, with cash on delivery nationwide."
+    "description": "Shop gold rimless glasses in Bangladesh at FASHIONISTA. Compare frame photos, current BDT {price} and stock, with cash on delivery nationwide."
   },
   "chrome-heart-black-silver": {
     "title": "Black and Silver Glasses Price in Bangladesh | FASHIONISTA",
-    "description": "Shop black-and-silver glasses in Bangladesh at FASHIONISTA. View frame photos, current BDT {price} and stock, with cash on delivery nationwide."
+    "description": "Shop black-and-silver glasses in Bangladesh at FASHIONISTA. Compare frame photos, current BDT {price} and stock, with cash on delivery nationwide."
   },
   "chrome-hearts-raised-cross-dog-tag": {
     "title": "Chrome Hearts Raised Cross Dog Tag Price in BD | FASHIONISTA",
@@ -690,7 +733,7 @@ const PRODUCT_META_OVERRIDES = {
   },
   "chrome-heart-black-gold": {
     "title": "Black and Gold Glasses Price in Bangladesh | FASHIONISTA",
-    "description": "Shop black-and-gold glasses at FASHIONISTA. Check frame photos, current BDT {price} and stock, with cash on delivery nationwide."
+    "description": "Shop black-and-gold glasses in Bangladesh at FASHIONISTA. Compare frame photos, current BDT {price} and stock, with cash on delivery nationwide."
   },
   "chrome-heart-chain": {
     "title": "Chrome Heart Chain Necklace Price in BD | FASHIONISTA",
@@ -718,7 +761,7 @@ const PRODUCT_META_OVERRIDES = {
   },
   "chrome-heart-rimless-silver": {
     "title": "Silver Rimless Glasses Price in Bangladesh | FASHIONISTA",
-    "description": "Shop silver-tone rimless glasses in Bangladesh at FASHIONISTA. Check frame photos, current BDT {price} and stock, with cash on delivery nationwide."
+    "description": "Shop silver rimless glasses in Bangladesh at FASHIONISTA. Compare frame photos, current BDT {price} and stock, with cash on delivery nationwide."
   },
   "pink-bandana": {
     "title": "Pink Bandana Price in Bangladesh | Y2K Style | FASHIONISTA",
@@ -729,8 +772,8 @@ const PRODUCT_META_OVERRIDES = {
     "description": "Shop the Y2K Star Necklace at FASHIONISTA in Bangladesh. Check photos, current BDT {price} and stock, with cash on delivery nationwide."
   },
   "retro-y2k-star-glass": {
-    "title": "Y2K Star Sunglasses Price in Bangladesh | FASHIONISTA",
-    "description": "Shop Y2K star sunglasses in Bangladesh at FASHIONISTA. Check frame photos, current BDT {price} and stock, with cash on delivery nationwide."
+    "title": "Y2K Star Glasses Price in Bangladesh | FASHIONISTA",
+    "description": "Shop Y2K star glasses and retro sunglasses in Bangladesh at FASHIONISTA. Check frame photos, current BDT {price} and stock, with cash on delivery nationwide."
   },
   "sun-moon-couple-set": {
     "title": "Sun Moon Couple Set Price in Bangladesh | FASHIONISTA",
@@ -764,6 +807,17 @@ function renderInfoSection(product){
   const was = Number(product.was);
   const discount = hasPrice && was > price ? Math.round((1 - price / was) * 100) : 0;
   const subPage = subcategoryPage(product);
+  const isGlassesProduct = /glass|eyewear/i.test(`${product.category || ''} ${product.name || ''}`);
+  const glassesRelated = [
+    ['retro-y2k-star-glass', 'Y2K star glasses'],
+    ['chrome-heart-rimless-gold', 'gold rimless glasses'],
+    ['chrome-heart-rimless-silver', 'silver rimless glasses'],
+    ['chrome-heart-black-gold', 'black and gold glasses'],
+    ['chrome-heart-black-silver', 'black and silver glasses']
+  ].filter(([slug]) => slug !== String(product.slug || '').toLowerCase());
+  const glassesRelatedMarkup = isGlassesProduct
+    ? `<p>Explore more styles: ${glassesRelated.map(([slug, label]) => `<a href="/product/${slug}">${label}</a>`).join(' · ')}. Browse the full <a href="/glasses">glasses and sunglasses collection</a> to compare current styles.</p>`
+    : '';
   const isBlackGoldGlasses = String(product.slug || '').toLowerCase() === 'chrome-heart-black-gold';
   const isChromeHeartRimlessGold = String(product.slug || '').toLowerCase() === 'chrome-heart-rimless-gold';
   const isRaglanLongSleeveTShirt = String(product.slug || '').toLowerCase() === 'raglan-long-sleeve-t-shirt';
@@ -790,6 +844,7 @@ function renderInfoSection(product){
   ${isRaglanLongSleeveTShirt ? `<p>Looking for a raglan long sleeve T-shirt in Bangladesh? The current listed price at FASHIONISTA is BDT ${hasPrice ? price : 'shown above'}. Check the available size options and product photos before placing your order. Browse more styles in our <a href="${esc(productCategoryUrl)}">clothing collection</a> or review <a href="/shipping">delivery charges and timelines</a>.</p>` : ''}
   ${isRedBandana ? `<p>Looking for a red bandana in Bangladesh? Check the current BDT price, availability and product photos above before ordering. A red bandana can add a strong colour accent to a streetwear outfit; try it as a headband, neck scarf or wrist accessory. Browse the <a href="/bandanas">bandana collection</a>, explore <a href="/accessories">Fashionista accessories</a>, and review <a href="/shipping">delivery charges and timelines</a>.</p>` : ''}
   ${isY2kStarGlasses ? `<p>Looking for Y2K star glasses in Bangladesh? This pair is listed at BDT ${hasPrice ? price : 'the price shown above'} at FASHIONISTA. Use the product gallery to inspect the frame shape and details, and check current stock before ordering. Browse more <a href="/glasses">Y2K glasses and sunglasses</a> or review <a href="/shipping">delivery charges and timelines</a>.</p>` : ''}
+  ${glassesRelatedMarkup}
   ${subPage ? `<p>Browse all <a href="${subPage.path}">${esc(subPage.label.toLowerCase())}</a> at FASHIONISTA.</p>` : ''}
   <h3>${productContentOverride ? productContentOverride.faq : isChromeHeartRimlessGold ? 'What is the price of Chrome Heart rimless glasses in Bangladesh?' : isBlackGoldGlasses ? 'What is the price of Chrome Heart glasses in Bangladesh?' : isRaglanLongSleeveTShirt ? 'What is the price of a raglan long sleeve T-shirt in Bangladesh?' : isRedBandana ? 'Where can I buy a red bandana in Bangladesh?' : isY2kStarGlasses ? 'Where can I buy Y2K star glasses in Bangladesh?' : `What is the price of ${name} in Bangladesh?`}</h3>
   <p>${hasPrice ? `${isChromeHeartRimlessGold ? 'Chrome Heart-style rimless glasses' : isBlackGoldGlasses ? 'Chrome Heart-style glasses' : isRaglanLongSleeveTShirt ? 'Raglan long sleeve T-shirt' : isRedBandana ? 'The red bandana' : isY2kStarGlasses ? 'Y2K star glasses' : name} costs BDT ${price} at FASHIONISTA. ` : ''}${isRedBandana ? 'Order online from FASHIONISTA and pay cash on delivery across Bangladesh. Check the product photos and stock status before placing your order. ' : isY2kStarGlasses ? 'Check the gallery and availability before placing your order. ' : ''}Delivery charges depend on where you live; see our <a href="/shipping">shipping info</a> for charges, timelines and how order confirmation works.</p>
@@ -838,10 +893,10 @@ function renderSnapshot(product, similar){
   }
   const imageSrc = i => `${SITE}/product-image/${encodeURIComponent(product.id)}.jpg${i ? `?n=${i}` : ''}`;
   const media = images.length
-    ? `<img id="mainProductImg" src="${esc(imageSrc(0))}" alt="${esc(product.name)} - ${esc(String(product.category || "accessories").toLowerCase())} | FASHIONISTA" fetchpriority="high" style="${outOfStock?'opacity:0.4;':''}">`
+    ? `<img id="mainProductImg" src="${esc(imageSrc(0))}" alt="${esc(productImageAlt(product, 0))}" fetchpriority="high" style="${outOfStock?'opacity:0.4;':''}">`
     : '';
   const thumbs = images.length > 1
-    ? `<div class="p-thumbs" id="pThumbs">${images.map((img,i)=>`<img src="${esc(imageSrc(i))}" alt="${esc(product.name)} - ${esc(String(product.category || "accessories").toLowerCase())} photo ${i+1} | FASHIONISTA" class="${i===0?'active':''}" data-i="${i}" loading="lazy" decoding="async">`).join('')}</div>`
+    ? `<div class="p-thumbs" id="pThumbs">${images.map((img,i)=>`<img src="${esc(imageSrc(i))}" alt="${esc(productImageAlt(product, i))}" class="${i===0?'active':''}" data-i="${i}" loading="lazy" decoding="async">`).join('')}</div>`
     : '';
 
   const actions = outOfStock
@@ -887,7 +942,7 @@ function renderSnapshot(product, similar){
     ${thumbs}
     <div class="p-info">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
-        <h1 class="display">${esc(titleCaseName(product.name))} Price in BD</h1>
+        <h1 class="display">${esc(productHeading(product))}</h1>
         <button id="favBtn" aria-label="Save" style="flex-shrink:0;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:none;color:var(--silver);display:flex;align-items:center;justify-content:center;cursor:pointer;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="width:17px;height:17px;"><path d="M12 20s-8-5-8-11a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 6-8 11-8 11z"/></svg>
         </button>
