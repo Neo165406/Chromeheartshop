@@ -197,10 +197,10 @@ const SCOPE_PAGES = {
     path: '/bracelets',
     label: 'Bracelets',
     aliases: ['bracelets', 'bracelet'],
-    title: 'Men’s Bracelets in Bangladesh | Gothic & Streetwear Styles | FASHIONISTA',
-    desc: 'Shop men’s bracelets in Bangladesh at FASHIONISTA. Browse gothic and streetwear bracelet designs, compare current BDT prices and stock, and order with cash on delivery nationwide.',
-    h1: 'Men’s Bracelets in Bangladesh',
-    sub: 'Browse men’s streetwear bracelets and compare current BDT prices',
+    title: 'Men’s Y2K Bracelets in Bangladesh | Streetwear & Gothic Styles | FASHIONISTA',
+    desc: 'Shop men’s Y2K bracelets in Bangladesh at FASHIONISTA. Explore gothic and streetwear bracelet styles, compare BDT prices and stock, with cash on delivery nationwide.',
+    h1: 'Men’s Y2K Bracelets in Bangladesh',
+    sub: 'Explore Y2K and streetwear bracelets for men with current BDT prices',
     intro: [
       'Looking for men’s bracelets in Bangladesh? Explore the bracelet collection at FASHIONISTA. Compare each design’s photos, current BDT price and stock status before choosing a style for everyday or streetwear outfits.',
       'Pay cash on delivery anywhere in Bangladesh, with nothing to pay online.'
@@ -236,10 +236,10 @@ const SCOPE_PAGES = {
     path: '/rings',
     label: 'Rings',
     aliases: ['rings', 'ring'],
-    title: 'Silver & Gothic Rings in Bangladesh | FASHIONISTA',
-    desc: 'Explore silver-tone and gothic-inspired fashion rings at FASHIONISTA. Prices in BDT, with cash on delivery across Bangladesh.',
-    h1: 'Fashion Rings in Bangladesh',
-    sub: 'Silver-tone, gothic and streetwear rings, priced in BDT',
+    title: 'Men’s Y2K Rings in Bangladesh | Silver-Tone & Gothic Styles | FASHIONISTA',
+    desc: 'Explore men’s Y2K rings and gothic-inspired fashion rings at FASHIONISTA. Check current BDT prices and cash on delivery across Bangladesh.',
+    h1: 'Men’s Y2K Rings in Bangladesh',
+    sub: 'Explore silver-tone, gothic and streetwear ring styles for men',
     intro: [
       'Discover the rings currently listed at FASHIONISTA, a Bangladesh-based fashion and accessories store. Each listing includes product photos, a current BDT price and stock status so you can check the details before ordering.',
       'Order from anywhere in Bangladesh and pay cash on delivery.'
@@ -311,12 +311,12 @@ const SCOPE_PAGES = {
     path: '/chrome-heart-chains',
     label: 'Chrome Heart Chains',
     aliases: ['chain', 'chains'],
-    title: 'Chain Necklace for Men BD | Chrome Heart | FASHIONISTA',
-    desc: 'Chain necklace for men BD at FASHIONISTA. Browse Chrome Heart chains and Y2K necklace styles with current BDT prices and cash on delivery nationwide.',
-    h1: 'Chain Necklace for Men BD and Chrome Heart Chains',
-    sub: 'Chrome Heart chains and Y2K necklaces with current BDT prices',
+    title: 'Y2K Chain Necklace for Men in Bangladesh | FASHIONISTA',
+    desc: 'Shop Y2K chain necklaces for men in Bangladesh at FASHIONISTA. Compare available styles and BDT prices, with cash on delivery nationwide.',
+    h1: 'Y2K Chain Necklaces for Men in Bangladesh',
+    sub: 'Explore men’s Y2K chain necklaces and compare current BDT prices',
     intro: [
-      'Browse the chains and chain necklaces currently listed at FASHIONISTA, a Bangladesh-based fashion and accessories store. Each listing shows its photos, the price in BDT and a clear out-of-stock label on anything that has sold through.',
+      'Looking for a Y2K chain necklace for men? Browse the chain necklaces currently listed at FASHIONISTA in Bangladesh. Compare each available design, product photos, current BDT price and stock status before ordering.'
       'Order from anywhere in Bangladesh and pay cash on delivery.'
     ],
     highlights: [
