@@ -316,7 +316,7 @@ const SCOPE_PAGES = {
     h1: 'Y2K Chain Necklaces for Men in Bangladesh',
     sub: 'Explore men’s Y2K chain necklaces and compare current BDT prices',
     intro: [
-      'Looking for a Y2K chain necklace for men? Browse the chain necklaces currently listed at FASHIONISTA in Bangladesh. Compare each available design, product photos, current BDT price and stock status before ordering.'
+      'Looking for a Y2K chain necklace for men? Browse the chain necklaces currently listed at FASHIONISTA in Bangladesh. Compare each available design, product photos, current BDT price and stock status before ordering.',
       'Order from anywhere in Bangladesh and pay cash on delivery.'
     ],
     highlights: [
