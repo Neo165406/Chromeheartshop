@@ -306,10 +306,9 @@ const BRAND_KEYWORDS = [
   'cash on delivery bangladesh'
 ];
 
-// Third-party brand names we must never target in keywords (trademark risk).
-// Any generated keyword matching this is dropped, including ones that come
-// from a product name typed in the admin panel.
-const BLOCKED_KEYWORD_RE = /chrome\s*-?\s*hearts?/i;
+// Chrome Heart search phrases are used only on matching catalog products.
+// Keep them product-specific; never attach ring terms when no ring is sold.
+const CHROME_HEART_RE = /chrome\s*-?\s*hearts?/i;
 
 // Matched against "<category> <product name>" (lowercase).
 const CATEGORY_KEYWORDS = [
@@ -388,13 +387,26 @@ function buildKeywords(product){
   CATEGORY_KEYWORDS.forEach(c => { if(c.match.test(hay)) list.push(...c.words); });
   NAME_KEYWORDS.forEach(c => { if(c.match.test(hay)) list.push(...c.words); });
   if(/glass|eyewear/.test(hay)) GLASSES_NAME_KEYWORDS.forEach(c => { if(c.match.test(hay)) list.push(...c.words); });
+
+  // Target Chrome Heart searches only when the actual product name identifies
+  // it as a Chrome Heart item; add the rimless phrase only for rimless glasses.
+  const isChromeHeartProduct = CHROME_HEART_RE.test(name) || CHROME_HEART_RE.test(String(product.slug || ''));
+  if(isChromeHeartProduct){
+    if(/glass|eyewear/.test(hay)){
+      list.push('chrome heart glasses', 'chrome hearts glasses', 'chrome heart sunglasses');
+      if(/rimless/.test(hay)) list.push('chrome hearts rimless glasses', 'chrome heart rimless glasses');
+    }else if(/chain|necklace|pendant/.test(hay)){
+      list.push('chrome heart chain', 'chrome heart necklace');
+    }else if(/bracelet|bangle/.test(hay)){
+      list.push('chrome heart bracelet');
+    }
+  }
   list.push(...BRAND_KEYWORDS);
   // de-duplicate (case-insensitive), keep order, drop blocked third-party
   // brand terms, cap at 30
   const seen = new Set();
   const out = [];
   for(const k of list){
-    if(BLOCKED_KEYWORD_RE.test(k)) continue;
     const key = k.toLowerCase();
     if(!seen.has(key)){ seen.add(key); out.push(k); }
   }
