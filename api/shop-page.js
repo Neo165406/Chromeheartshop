@@ -110,7 +110,7 @@ function cardMarkup(p, i, eager){
   // Serve product-card images from the store's own domain so crawlers don't depend on third-party image-host access.
   const cardImage = p.imageUrl ? `/product-image/${encodeURIComponent(p.id)}.jpg` : '';
   const media = cardImage
-    ? `<img src="${esc(cardImage)}" alt="${esc(p.name)} - FASHIONISTA accessories"${imgAttrs} style="width:100%;height:100%;object-fit:contain;${outOfStock?'opacity:0.4;':''}">`
+    ? `<img src="${esc(cardImage)}" alt="${esc(p.name)} ${esc(p.category || 'product')} product photo | FASHIONISTA"${imgAttrs} style="width:100%;height:100%;object-fit:contain;${outOfStock?'opacity:0.4;':''}">`
     : iconFor(p.iconType);
   const dir = i % 2 === 0 ? 'from-left' : 'from-right';
   const delay = (i % 4) * 0.08;
