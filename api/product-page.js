@@ -589,10 +589,10 @@ const PRODUCT_H1_OVERRIDES = {
   'retro-y2k-star-glass': 'Y2K Star Glasses Price in Bangladesh'
 };
 const PRODUCT_IMAGE_LABELS = {
-  'chrome-heart-black-silver': 'Black and silver glasses',
-  'chrome-heart-black-gold': 'Black and gold glasses',
-  'chrome-heart-rimless-gold': 'Gold rimless glasses',
-  'chrome-heart-rimless-silver': 'Silver rimless glasses',
+  'chrome-heart-black-silver': 'Chrome Heart-style black and silver glasses',
+  'chrome-heart-black-gold': 'Chrome Heart-style black and gold glasses',
+  'chrome-heart-rimless-gold': 'Chrome Heart-style gold rimless glasses',
+  'chrome-heart-rimless-silver': 'Chrome Heart-style silver rimless glasses',
   'retro-y2k-star-glass': 'Y2K star glasses'
 };
 function productHeading(product){
