@@ -582,10 +582,10 @@ function applyProductDescriptionOverride(product){
 // Product-aware on-page copy. Keep claims limited to visible product data;
 // never infer frame, fabric, metal, fit or other specifications from a name.
 const PRODUCT_H1_OVERRIDES = {
-  'chrome-heart-black-silver': 'Chrome Heart-Style Black and Silver Glasses Price in Bangladesh',
-  'chrome-heart-black-gold': 'Chrome Heart-Style Black and Gold Glasses Price in Bangladesh',
-  'chrome-heart-rimless-gold': 'Chrome Heart-Style Gold Rimless Glasses Price in Bangladesh',
-  'chrome-heart-rimless-silver': 'Chrome Heart-Style Silver Rimless Glasses Price in Bangladesh',
+  'chrome-heart-black-silver': 'Chrome Heart-Style Black and Silver Glasses',
+  'chrome-heart-black-gold': 'Chrome Heart-Style Black and Gold Glasses',
+  'chrome-heart-rimless-gold': 'Chrome Heart-Style Gold Rimless Glasses',
+  'chrome-heart-rimless-silver': 'Chrome Heart-Style Silver Rimless Glasses',
   'retro-y2k-star-glass': 'Y2K Star Glasses Price in Bangladesh'
 };
 const PRODUCT_IMAGE_LABELS = {
@@ -609,10 +609,10 @@ function categoryBlurb(product){
   const hay = `${product.category || ''} ${product.name || ''}`.toLowerCase();
   const name = esc(titleCaseName(product.name) || 'This style');
   if(String(product.slug || '').toLowerCase() === 'red-bandana') return 'A red bandana adds a bold colour accent to streetwear outfits. Style it as a headband, neck scarf, wrist accent or accessory on a bag, and check the product photos for the exact design.';
-  if(String(product.slug || '').toLowerCase() === 'chrome-heart-black-gold') return 'Black-and-gold statement glasses for Y2K, retro and streetwear outfits. Check the product photos and current BDT price before ordering.';
-  if(String(product.slug || '').toLowerCase() === 'chrome-heart-rimless-gold') return 'Gold rimless glasses in Bangladesh for a clean, minimal eyewear look. Compare the frame photos, current BDT price and stock before ordering.';
-  if(String(product.slug || '').toLowerCase() === 'chrome-heart-rimless-silver') return 'Silver rimless glasses in Bangladesh for a minimal Y2K and everyday streetwear look. Review the frame photos and current BDT price before ordering.';
-  if(String(product.slug || '').toLowerCase() === 'chrome-heart-black-silver') return 'Black-and-silver glasses for retro and streetwear outfits. Compare the frame photos, current BDT price and availability before ordering.';
+  if(String(product.slug || '').toLowerCase() === 'chrome-heart-black-gold') return 'Chrome Heart-style black-and-gold glasses for Y2K, retro and streetwear outfits. Compare the visible frame design in the product photos, then check the current BDT price and stock before ordering. Explore the other black-and-silver and rimless glasses in our glasses collection.';
+  if(String(product.slug || '').toLowerCase() === 'chrome-heart-rimless-gold') return 'Chrome Heart-style gold rimless glasses in Bangladesh for a clean, minimal Y2K and streetwear look. Compare the visible frame shape and finish in the photos, then check the current BDT price and stock before ordering. Browse our other rimless and statement glasses in the glasses collection.';
+  if(String(product.slug || '').toLowerCase() === 'chrome-heart-rimless-silver') return 'Chrome Heart-style silver rimless glasses in Bangladesh for a minimal Y2K and everyday streetwear look. Review the visible frame shape and finish in the product photos, then check the current BDT price and stock before ordering. Compare this pair with our gold rimless and other statement glasses.';
+  if(String(product.slug || '').toLowerCase() === 'chrome-heart-black-silver') return 'Chrome Heart-style black-and-silver glasses for retro, Y2K and streetwear outfits. Compare the visible frame design in the product photos, then check the current BDT price and availability before ordering. Explore our black-and-gold and rimless glasses to compare styles.';
   if(String(product.slug || '').toLowerCase() === 'retro-y2k-star-glass') return 'Y2K star glasses with a playful retro sunglasses look. Check the star-shaped frame photos, current BDT price and stock before ordering.';
   if(/bandana/.test(hay)) return `${name} is a bandana option for men and anyone looking to add a print or colour accent to a streetwear look. Review the photos to check the exact pattern, then explore ways to style it as a headband, neck scarf or bag accessory.`;
   if(product && product.id === 'hRTjTVeGAcjWuwFAMwcs') return 'These silver rimless glasses bring a minimalist eyewear look to Y2K outfits and everyday streetwear. Review the product photos and current BDT price before ordering.';
