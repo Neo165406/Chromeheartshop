@@ -384,10 +384,6 @@ function buildKeywords(product){
   if(name){
     list.push(lowerName, `${lowerName} price in bangladesh`, `${lowerName} bd`);
   }
-  CATEGORY_KEYWORDS.forEach(c => { if(c.match.test(hay)) list.push(...c.words); });
-  NAME_KEYWORDS.forEach(c => { if(c.match.test(hay)) list.push(...c.words); });
-  if(/glass|eyewear/.test(hay)) GLASSES_NAME_KEYWORDS.forEach(c => { if(c.match.test(hay)) list.push(...c.words); });
-
   // Target Chrome Heart searches only when the actual product name identifies
   // it as a Chrome Heart item; add the rimless phrase only for rimless glasses.
   const isChromeHeartProduct = CHROME_HEART_RE.test(name) || CHROME_HEART_RE.test(String(product.slug || ''));
@@ -401,9 +397,12 @@ function buildKeywords(product){
       list.push('chrome heart bracelet');
     }
   }
+  CATEGORY_KEYWORDS.forEach(c => { if(c.match.test(hay)) list.push(...c.words); });
+  NAME_KEYWORDS.forEach(c => { if(c.match.test(hay)) list.push(...c.words); });
+  if(/glass|eyewear/.test(hay)) GLASSES_NAME_KEYWORDS.forEach(c => { if(c.match.test(hay)) list.push(...c.words); });
+
   list.push(...BRAND_KEYWORDS);
-  // de-duplicate (case-insensitive), keep order, drop blocked third-party
-  // brand terms, cap at 30
+  // De-duplicate (case-insensitive), keep product-specific terms first, cap at 30
   const seen = new Set();
   const out = [];
   for(const k of list){
