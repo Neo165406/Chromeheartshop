@@ -6,13 +6,13 @@
 // The static template lives at templates/shop.html (not at the public
 // path) so this function is what actually serves the shop URLs. Reached via
 // the rewrites in vercel.json: /shop, /clothing, /accessories and /glasses (the
-// last three pass ?category=), plus /bracelets, /rings, /bandanas and
+// last three pass ?category=), plus /bracelets, /rings, /bandanas, /t-shirts and
 // /chrome-heart-chains (?scope=). Reads Firestore's
 // public REST API directly (same public web key already used client-side —
 // firestore.rules already allows public read on /products, same access level
 // the storefront pages themselves have).
 //
-// Sub-category landing pages (/bracelets, /rings, /bandanas, /chrome-heart-chains)
+// Sub-category landing pages (/bracelets, /rings, /bandanas, /t-shirts, /chrome-heart-chains)
 // reuse the shop template and add their own title, description, H1, intro,
 // supporting copy, internal links and JSON-LD (see SCOPE_PAGES below).
 
@@ -178,11 +178,14 @@ function seoForCategory(name){
 }
 
 // =====================================================================
-// Sub-category landing pages: /bracelets, /rings, /bandanas and /chrome-heart-chains
+// Sub-category landing pages: /bracelets, /rings, /bandanas, /t-shirts and /chrome-heart-chains
 // =====================================================================
 // A product belongs to a landing page when its Firestore `subcategory` field
 // matches one of `aliases` (case-insensitive, trimmed) — the same field the
-// shop's filter drawer uses. Nothing here is guessed from product names.
+// shop's filter drawer uses. Nothing here is guessed from product names,
+// with one exception: /t-shirts also accepts a Clothing product whose NAME
+// says T-shirt (see isTshirt), because clothing products are often saved
+// without a sub-category and the page would otherwise stay empty.
 //
 // Copy rules: no claims about materials, authenticity, sizing, reviews or
 // delivery times beyond what the site already states (see shipping.html and
@@ -192,6 +195,19 @@ function seoForCategory(name){
 // copy; the one exception is the /chrome-heart-chains page, whose title and H1
 // use the name by the store owner's choice (it makes no claim that the
 // products are official or authentic).
+//
+// Optional per-page fields (everything else falls back to the old behaviour):
+//   parent    — breadcrumb parent, default Accessories
+//   match     — function(product) used instead of the aliases test
+//   faqQ      — first FAQ question
+//   priceDesc — function(" from ৳N") -> meta description once prices are known
+const TSHIRT_ALIASES = ['t-shirt', 't-shirts', 'tshirt', 'tshirts', 't shirt', 't shirts', 'tee', 'tees'];
+function isTshirt(p){
+  if(String(p.category || '').trim() !== 'Clothing') return false;
+  if(TSHIRT_ALIASES.indexOf(String(p.subcategory || '').trim().toLowerCase()) !== -1) return true;
+  return /t-?\s?shirt|\btees?\b/i.test(String(p.name || ''));
+}
+
 const SCOPE_PAGES = {
   bracelets: {
     path: '/bracelets',
@@ -225,6 +241,7 @@ const SCOPE_PAGES = {
       ]}
     ],
     related: [
+      { href: '/rings', text: 'Rings' },
       { href: '/bandanas', text: 'Bandanas' },
       { href: '/chrome-heart-chains', text: 'Chrome Heart Chains' },
       { href: '/glasses', text: 'Glasses and sunglasses' },
@@ -240,6 +257,8 @@ const SCOPE_PAGES = {
     desc: 'Explore men’s Y2K rings and gothic-inspired fashion rings at FASHIONISTA. Check current BDT prices and cash on delivery across Bangladesh.',
     h1: 'Men’s Y2K Rings in Bangladesh',
     sub: 'Explore silver-tone, gothic and streetwear ring styles for men',
+    faqQ: 'What is the ring price in Bangladesh?',
+    priceDesc: from => 'Ring price in Bangladesh' + from + ' at FASHIONISTA. Explore men’s Y2K and gothic-inspired rings, photos and stock. Cash on delivery nationwide.',
     intro: [
       'Discover the rings currently listed at FASHIONISTA, a Bangladesh-based fashion and accessories store. Each listing includes product photos, a current BDT price and stock status so you can check the details before ordering.',
       'Order from anywhere in Bangladesh and pay cash on delivery.'
@@ -272,12 +291,12 @@ const SCOPE_PAGES = {
     path: '/bandanas',
     label: 'Bandanas',
     aliases: ['bandana', 'bandanas'],
-    title: 'Bandanas in Bangladesh | Red, Green & Pink Styles | FASHIONISTA',
-    desc: 'Shop red, green and pink bandanas in Bangladesh at FASHIONISTA. Compare current BDT prices, prints and stock, with cash on delivery nationwide.',
-    h1: 'Shop Bandanas in Bangladesh',
+    title: 'Bandana Price in Bangladesh | Red, Green & Pink | FASHIONISTA',
+    desc: 'Check bandana price in Bangladesh at FASHIONISTA. Compare red, green and pink bandanas, current BDT prices and stock, with cash on delivery nationwide.',
+    h1: 'Bandana Price in Bangladesh',
     sub: 'Compare red, green and pink bandanas with current BDT prices',
     intro: [
-      'Browse red, green and pink bandanas at FASHIONISTA in Bangladesh. Compare product photos, current BDT prices and stock status before ordering.',
+      'Browse red, green and pink bandanas at FASHIONISTA in Bangladesh. Check the bandana price in BD, then compare product photos and stock status before ordering.',
       'Compare the current BDT price, photos and stock status on each listing. Style a bandana as a headband, neck scarf or bag accessory, then order with cash on delivery across Bangladesh.'
     ],
     highlights: [
@@ -289,8 +308,8 @@ const SCOPE_PAGES = {
       { h: 'Ways to wear a bandana', p: [
         'Folded into a band and tied at the back, it works as a headband. Knotted loosely at the front, it becomes a neck scarf. You can also tie it at your waist, hook it onto a belt loop or jeans, or knot it around a wrist or bag strap for a small pop of colour.'
       ]},
-      { h: 'Bandana price in Bangladesh', p: [
-        'Looking for a bandana price in Bangladesh? FASHIONISTA lists red, green and pink bandana styles, with the current price in BDT shown on each product page. Compare the <a href=\"/product/red-bandana\">red bandana price</a>, <a href=\"/product/green-bandana\">green bandana price</a> and <a href=\"/product/pink-bandana\">pink bandana price</a> before choosing your colour. Prices and stock can change, so use the live product listings for the latest details.'
+      { h: 'Red, green and pink bandana prices in BDT', p: [
+        'Looking for a bandana price in Bangladesh? FASHIONISTA lists red, green and pink bandana styles, with the current price in BDT shown on each product page. Compare the <a href="/product/red-bandana">red bandana price</a>, <a href="/product/green-bandana">green bandana price</a> and <a href="/product/pink-bandana">pink bandana price</a> before choosing your colour. Prices and stock can change, so use the live product listings for the latest details.'
       ]},
       { h: 'Choosing and styling a bandana', p: [
         'Compare the product photos and descriptions to check each colour and pattern. Fold a bandana as a headband, wear it as a neck scarf, or tie it to a bag strap for a streetwear accent. Darker graphic designs suit gothic outfits, while brighter colours add contrast to an all-black look.'
@@ -301,6 +320,7 @@ const SCOPE_PAGES = {
     ],
     related: [
       { href: '/bracelets', text: 'Bracelets' },
+      { href: '/rings', text: 'Rings' },
       { href: '/chrome-heart-chains', text: 'Chrome Heart Chains' },
       { href: '/glasses', text: 'Glasses and sunglasses' },
       { href: '/accessories', text: 'All accessories' },
@@ -337,8 +357,51 @@ const SCOPE_PAGES = {
     ],
     related: [
       { href: '/bracelets', text: 'Bracelets' },
+      { href: '/rings', text: 'Rings' },
       { href: '/bandanas', text: 'Bandanas' },
       { href: '/glasses', text: 'Glasses and sunglasses' },
+      { href: '/accessories', text: 'All accessories' },
+      { href: '/shop', text: 'Shop everything' }
+    ]
+  },
+  tshirts: {
+    path: '/t-shirts',
+    label: 'T-shirts',
+    parent: { label: 'Clothing', path: '/clothing' },
+    aliases: TSHIRT_ALIASES,
+    match: isTshirt,
+    title: 'Men’s T-Shirt Price in Bangladesh | Streetwear | FASHIONISTA',
+    desc: 'Shop men’s streetwear and Y2K T-shirts in Bangladesh at FASHIONISTA. Compare sizes, photos and BDT prices, with cash on delivery nationwide.',
+    h1: 'Men’s T-Shirts in Bangladesh',
+    sub: 'Streetwear and Y2K T-shirts with current BDT prices',
+    faqQ: 'What is the T-shirt price in Bangladesh?',
+    priceDesc: from => 'T-shirt price in Bangladesh' + from + ' at FASHIONISTA. Explore men’s streetwear and Y2K T-shirts, sizes and photos. Cash on delivery nationwide.',
+    intro: [
+      'Looking for a T-shirt price in Bangladesh? Browse the men’s T-shirts currently listed at FASHIONISTA and compare each listing’s photos, available sizes, current BDT price and stock status before ordering.',
+      'Order from anywhere in Bangladesh and pay cash on delivery.'
+    ],
+    highlights: [
+      { heading: 'Raglan T-shirts', text: 'These listings mention a raglan cut in their name or description:', test: s => /raglan/i.test(s) },
+      { heading: 'Gothic T-shirts', text: 'These listings describe themselves as gothic:', test: s => /goth/i.test(s) }
+    ],
+    sections: [
+      { h: 'T-shirt price in Bangladesh', p: [
+        'Every T-shirt listing shows its current price in BDT, so you can compare styles before you order. Prices and stock can change, so check the live product page for the latest details. For other styles, browse the full <a href="/clothing">clothing collection</a>.'
+      ]},
+      { h: 'Choosing a size', p: [
+        'Open any listing to see its available sizes, photos and description. Fit can differ from style to style, so check the size options on the product page and message us on WhatsApp through the <a href="/contact">contact page</a> if you need help before ordering.'
+      ]},
+      { h: 'Styling a T-shirt', p: [
+        'A long sleeve or raglan T-shirt is an easy layer for casual streetwear outfits. Wear it on its own with denim, or under a jacket, and add <a href="/glasses">sunglasses</a> or other <a href="/accessories">accessories</a> to finish the look.'
+      ]},
+      { h: 'Ordering T-shirts in Bangladesh', p: [
+        'Place your order and pay the courier in cash when the parcel arrives. Delivery charges depend on whether you are inside or outside Dhaka; the <a href="/shipping">shipping info page</a> lists the current charges and timelines. If an item arrives damaged, incorrect or in the wrong size, our <a href="/return-policy">return and exchange policy</a> explains what to do.'
+      ]}
+    ],
+    related: [
+      { href: '/clothing', text: 'All clothing' },
+      { href: '/glasses', text: 'Glasses and sunglasses' },
+      { href: '/bracelets', text: 'Bracelets' },
       { href: '/accessories', text: 'All accessories' },
       { href: '/shop', text: 'Shop everything' }
     ]
@@ -351,6 +414,7 @@ function getScopeConfig(req){
 }
 
 function inScope(p, cfg){
+  if(typeof cfg.match === 'function') return cfg.match(p);
   return cfg.aliases.indexOf(String(p.subcategory || '').trim().toLowerCase()) !== -1;
 }
 
@@ -399,7 +463,9 @@ function hasInventoryForPath(href, inventory){
     '/clothing': p => p.category === 'Clothing',
     '/accessories': p => p.category === 'Accessories',
     '/bracelets': p => ['bracelet', 'bracelets'].includes(String(p.subcategory || '').trim().toLowerCase()),
+    '/rings': p => inScope(p, SCOPE_PAGES.rings),
     '/bandanas': p => ['bandana', 'bandanas'].includes(String(p.subcategory || '').trim().toLowerCase()),
+    '/t-shirts': p => inScope(p, SCOPE_PAGES.tshirts),
     '/chrome-heart-chains': p => ['chain', 'chains'].includes(String(p.subcategory || '').trim().toLowerCase()),
     '/shop': () => products.length > 0
   };
@@ -416,8 +482,9 @@ function introMarkup(cfg, count){
   const countLine = count > 0
     ? `${count} ${count === 1 ? 'style is' : 'styles are'} listed right now.`
     : 'New styles are being added soon, so check back shortly.';
+  const parent = cfg.parent || { label: 'Accessories', path: '/accessories' };
   return `<div class="cat-intro">
-    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/accessories">Accessories</a> / <span>${esc(cfg.label)}</span></nav>
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="${esc(parent.path)}">${esc(parent.label)}</a> / <span>${esc(cfg.label)}</span></nav>
     <p>${esc(cfg.intro[0])} ${esc(countLine)}</p>
     <p>${esc(cfg.intro[1])}</p>
   </div>`;
@@ -426,7 +493,7 @@ function introMarkup(cfg, count){
 function scopeFaqMarkup(cfg, items){
   const prices = items.map(p => Number(p.price)).filter(n => Number.isFinite(n) && n > 0);
   const range = prices.length ? 'Current listed prices range from BDT ' + Math.min(...prices) + ' to BDT ' + Math.max(...prices) + '.' : 'Open a product listing to see its current price and availability.';
-  const q = cfg.path === '/bracelets' ? 'What is the bracelet price in Bangladesh?' : cfg.path === '/bandanas' ? 'Which bandana colours are available?' : 'What is the chain necklace price in Bangladesh?';
+  const q = cfg.faqQ || (cfg.path === '/bracelets' ? 'What is the bracelet price in Bangladesh?' : cfg.path === '/bandanas' ? 'Which bandana colours are available?' : 'What is the chain necklace price in Bangladesh?');
   const faqs = [[q, range + ' Check each listing for exact product details.'], ['Can I pay cash on delivery?', 'Yes. FASHIONISTA offers cash on delivery across Bangladesh, including Dhaka.'], ['How can I check product details?', 'Open a product page to view photos, current price and stock status.']];
   const html = faqs.map(([q,a]) => '<h3>' + q + '</h3><p>' + a + '</p>').join('\n');
   const schema = { '@context':'https://schema.org', '@type':'FAQPage', mainEntity:faqs.map(([q,a]) => ({ '@type':'Question', name:q, acceptedAnswer:{ '@type':'Answer', text:a } })) };
@@ -444,12 +511,13 @@ function supportingCopyMarkup(cfg, items, inventory){
 
 function landingJsonLd(cfg, items){
   const url = SITE + cfg.path;
+  const parent = cfg.parent || { label: 'Accessories', path: '/accessories' };
   const crumbs = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
       { "@type": "ListItem", "position": 1, "name": "Home", "item": `${SITE}/` },
-      { "@type": "ListItem", "position": 2, "name": "Accessories", "item": `${SITE}/accessories` },
+      { "@type": "ListItem", "position": 2, "name": parent.label, "item": `${SITE}${parent.path}` },
       { "@type": "ListItem", "position": 3, "name": cfg.label, "item": url }
     ]
   };
@@ -633,7 +701,7 @@ function applyScopePriceDescription(html, cfg, items){
   const prices = items.map(p => Number(p.price)).filter(n => Number.isFinite(n) && n > 0);
   if(!prices.length) return html;
   const from = ' from ৳' + Math.min(...prices);
-  const copy = cfg.path === '/bracelets' ? 'Bracelet price in Bangladesh' + from + ' at FASHIONISTA. Explore men’s bracelet styles, photos and stock. Cash on delivery nationwide.' : cfg.path === '/bandanas' ? 'Bandana price in Bangladesh' + from + ' at FASHIONISTA. Compare red, green and pink styles, photos and stock. Cash on delivery nationwide.' : 'Chain necklace for men BD' + from + ' at FASHIONISTA. Browse Chrome Heart chains and Y2K necklaces. Cash on delivery nationwide. Check product photos.';
+  const copy = typeof cfg.priceDesc === 'function' ? cfg.priceDesc(from) : cfg.path === '/bracelets' ? 'Bracelet price in Bangladesh' + from + ' at FASHIONISTA. Explore men’s bracelet styles, photos and stock. Cash on delivery nationwide.' : cfg.path === '/bandanas' ? 'Bandana price in Bangladesh' + from + ' at FASHIONISTA. Compare red, green and pink styles, photos and stock. Cash on delivery nationwide.' : 'Chain necklace for men BD' + from + ' at FASHIONISTA. Browse Chrome Heart chains and Y2K necklaces. Cash on delivery nationwide. Check product photos.';
   const desc = copy.length <= 160 ? copy : copy.slice(0,157).replace(/\s+\S*$/, '') + '...';
   return applySeoHead(html, { title: cfg.title, desc: desc }, SITE + cfg.path);
 }
@@ -732,14 +800,15 @@ const CATEGORY_CONTENT = {
     h2: "Men’s bracelets, chain necklaces and streetwear accessories in Bangladesh",
     paras: [
       "Explore men’s bracelets, chain necklaces and bandanas for gothic, Y2K and streetwear outfits at FASHIONISTA. Each product listing shows photos, the current BDT price and stock status, so you can compare styles before ordering.",
-      "Browse our dedicated <a href=\"/bracelets\">bracelet collection</a>, <a href=\"/chrome-heart-chains\">chains</a> and <a href=\"/bandanas\">bandanas</a>, or explore <a href=\"/glasses\">sunglasses</a> and <a href=\"/clothing\">streetwear clothing</a>. Open any listing for product photos, current price and availability."
+      "Browse our dedicated <a href=\"/bracelets\">bracelet collection</a>, <a href=\"/rings\">rings</a>, <a href=\"/chrome-heart-chains\">chains</a> and <a href=\"/bandanas\">bandanas</a>, or explore <a href=\"/glasses\">sunglasses</a> and <a href=\"/clothing\">streetwear clothing</a>. Open any listing for product photos, current price and availability."
     ]
   },
   "Clothing": {
     h2: "T-shirts and streetwear clothing in Bangladesh",
     paras: [
       "Shop T-shirts and streetwear clothing in Bangladesh at FASHIONISTA. Product pages show available sizes, current BDT prices and stock status, so check each listing before placing an order.",
-      "Check the size details on the product page and contact us if you need help before ordering. Complete the outfit with <a href=\"/glasses\">sunglasses</a>, <a href=\"/bracelets\">bracelets</a> or other <a href=\"/accessories\">accessories</a>."
+      "Check the size details on the product page and contact us if you need help before ordering. Complete the outfit with <a href=\"/glasses\">sunglasses</a>, <a href=\"/bracelets\">bracelets</a> or other <a href=\"/accessories\">accessories</a>.",
+      "Want to compare prices? See the current <a href=\"/t-shirts\">T-shirt price in Bangladesh</a> on our T-shirts page."
     ]
   }
 };
@@ -774,11 +843,21 @@ function categoryContentMarkup(category, inventory){
   if(!c) return '';
   // Static category copy must not promote an empty sub-category. The product
   // inventory is the source of truth, matching the checks used by landing-page
-  // related links and the shop's browse-by-type navigation.
-  const inventoryAwareParas = c.paras.map(paragraph => paragraph.replace(
-    /<a href="(\/[^"]+)">([^<]+)<\/a>/g,
-    (anchor, href) => hasInventoryForPath(href, inventory) ? anchor : ''
-  ));
+  // related links and the shop's browse-by-type navigation. A paragraph whose
+  // only link had to be removed is dropped, so no dangling sentence is left.
+  const inventoryAwareParas = c.paras.map(paragraph => {
+    const total = (paragraph.match(/<a href="\/[^"]+">[^<]+<\/a>/g) || []).length;
+    let removed = 0;
+    const out = paragraph.replace(
+      /<a href="(\/[^"]+)">([^<]+)<\/a>/g,
+      (anchor, href) => {
+        if(hasInventoryForPath(href, inventory)) return anchor;
+        removed++;
+        return '';
+      }
+    );
+    return (total === 1 && removed === 1) ? null : out;
+  }).filter(Boolean);
   return `
 <section class="seo-info" aria-labelledby="seoInfoHead">
   <h2 id="seoInfoHead" class="display">${c.h2}</h2>
@@ -789,7 +868,7 @@ ${categoryFaqMarkup(category, inventory)}
 }
 
 // Crawlable links from the main shop, Accessories and Glasses pages to the landing pages.
-const BROWSE_ITEMS = [['/bracelets', 'Bracelets'], ['/bandanas', 'Bandanas'], ['/chrome-heart-chains', 'Chrome Heart Chains'], ['/glasses', 'Glasses']];
+const BROWSE_ITEMS = [['/bracelets', 'Bracelets'], ['/rings', 'Rings'], ['/bandanas', 'Bandanas'], ['/chrome-heart-chains', 'Chrome Heart Chains'], ['/t-shirts', 'T-shirts'], ['/glasses', 'Glasses']];
 function browseLinks(excludePath, inventory){
   const links = BROWSE_ITEMS.filter(([href]) => href !== excludePath && hasInventoryForPath(href, inventory))
     .map(([href, text]) => `<a href="${href}">${text}</a>`).join('');
@@ -902,7 +981,7 @@ module.exports = async function handler(req, res){
     );
   }
 
-  // Crawlable links to /bracelets, /bandanas, /chrome-heart-chains and
+  // Crawlable links to /bracelets, /rings, /bandanas, /t-shirts, /chrome-heart-chains and
   // /glasses from the main shop page, the Accessories page and the Glasses page.
   if(!category || category === 'Accessories' || category === 'Glasses'){
     html = html.replace('</head>', () => LANDING_CSS + '\n</head>');
