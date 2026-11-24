@@ -197,13 +197,13 @@ const SCOPE_PAGES = {
     path: '/bracelets',
     label: 'Bracelets',
     aliases: ['bracelets', 'bracelet'],
-    title: 'Men’s Y2K Bracelets in Bangladesh | Streetwear & Gothic Styles | FASHIONISTA',
-    desc: 'Shop men’s Y2K bracelets in Bangladesh at FASHIONISTA. Explore gothic and streetwear bracelet styles, compare BDT prices and stock, with cash on delivery nationwide.',
-    h1: 'Men’s Y2K Bracelets in Bangladesh',
-    sub: 'Explore Y2K and streetwear bracelets for men with current BDT prices',
+    title: 'Bracelet for Men in Bangladesh | Price in BD | FASHIONISTA',
+    desc: 'Shop bracelets for men in Bangladesh at FASHIONISTA. Compare designs, product details and current bracelet prices in BDT, with cash on delivery nationwide.',
+    h1: 'Bracelet for Men in Bangladesh',
+    sub: 'Compare men’s bracelet styles and current prices in Bangladesh',
     intro: [
-      'Looking for men’s bracelets in Bangladesh? Explore the bracelet collection at FASHIONISTA. Compare each design’s photos, current BDT price and stock status before choosing a style for everyday or streetwear outfits.',
-      'Pay cash on delivery anywhere in Bangladesh, with nothing to pay online.'
+      'Looking for a bracelet for men in Bangladesh? Browse men’s bracelets at FASHIONISTA and compare product photos, current BDT prices and stock status. Check each listing for its stated design, colour and material details before ordering.',
+      'Use the product listings to compare bracelet price in BD, including any silver, gold-tone or stainless-steel descriptions that are explicitly provided for an item. Pay cash on delivery anywhere in Bangladesh.'
     ],
     highlights: [
       { heading: 'Silver cross bracelets', text: 'These listings mention both silver and a cross design in their name or description:', test: s => /cross/i.test(s) && /silver/i.test(s) },
@@ -211,14 +211,17 @@ const SCOPE_PAGES = {
       { heading: 'Gothic bracelets', text: 'These listings describe themselves as gothic:', test: s => /goth/i.test(s) }
     ],
     sections: [
-      { h: 'How to choose a bracelet', p: [
-        'Open any listing to see its photos, price and description. Size and finish differ from piece to piece, so check those details on the product page before you order, and message us on WhatsApp through the <a href="/contact">contact page</a> if you are unsure about fit.'
+      { h: 'Men’s bracelet price in Bangladesh', p: [
+        'The bracelet price in BD depends on the individual design and the details shown on its product page. Open a listing to compare its current BDT price, photos, stock and stated finish. Search phrases such as silver bracelet for men price in Bangladesh, gold bracelet for men price in Bangladesh and stainless steel bracelet price in Bangladesh should be matched to the exact material or finish stated on each product, not assumed from its appearance.'
+      ]},
+      { h: 'How to choose a bracelet for men', p: [
+        'Compare the product photos, design, colour and any available material or fit information. Whether you search for a bracelet for men, bracelet for man or a specific silver or gold-tone style, check the individual product description before ordering. Message us through the <a href="/contact">contact page</a> if you need clarification.'
       ]},
       { h: 'Chrome Heart-style bracelets', p: [
         'Explore the <a href="/product/chrome-heart-bracelet">Chrome Heart-style bracelet</a> and <a href="/product/chrome-heart-bracelet-2">another bracelet design</a> in our catalogue. Compare the product photos, exact motifs, current BDT prices and stock status; the listings describe fashion-inspired styles and do not claim official brand affiliation.'
       ]},
-      { h: 'Styling a bracelet', p: [
-        'Darker, gothic-leaning designs look sharpest against plain basics such as a black or white tee, a hoodie or a denim jacket. Wear one on its own for a clean look, or stack it with a watch or a second bracelet. Chain necklaces from the wider <a href="/accessories">accessories range</a> are an easy match.'
+      { h: 'Styling a men’s bracelet', p: [
+        'Wear a bracelet on its own for a clean everyday look, or pair it with a watch or another bracelet for a layered streetwear outfit. Choose a design that works with your usual clothing and check its product details before ordering. Chain necklaces from the wider <a href="/accessories">accessories range</a> are an easy match.'
       ]},
       { h: 'Ordering bracelets in Bangladesh', p: [
         'We deliver across Bangladesh and every order is cash on delivery, so you pay the courier when the parcel arrives. Delivery charges depend on whether you are inside or outside Dhaka; the <a href="/shipping">shipping info page</a> lists the current charges and timelines. After checkout we confirm your order on WhatsApp. If an item arrives damaged or incorrect, our <a href="/return-policy">return and exchange policy</a> explains what to do.'
