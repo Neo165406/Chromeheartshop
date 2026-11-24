@@ -313,7 +313,10 @@ const CHROME_HEART_RE = /chrome\s*-?\s*hearts?/i;
 // Matched against "<category> <product name>" (lowercase).
 const CATEGORY_KEYWORDS = [
   { match: /glass|eyewear/, words: [
-    'glasses for men', "men's glasses bangladesh", "men's glasses bd",
+    'glasses for men', 'glasses for men price in bd', 'glasses for men in bd',
+    'glasses bd', 'glasses price in bd', 'glasses frames', 'glasses frames for men',
+    'glasses for women', 'glasses for girls', 'glasses for oval face', 'glasses for round face',
+    "men's glasses bangladesh", "men's glasses bd",
     'glasses in bangladesh', 'glasses price in bangladesh', 'sunglasses in bangladesh',
     'sunglasses for men', "men's sunglasses bd", 'fashion glasses bangladesh',
     'eyewear for men', 'sunglasses price in bangladesh', 'sunglasses bangladesh',
@@ -323,8 +326,11 @@ const CATEGORY_KEYWORDS = [
   ]},
   { match: /cloth|t-?shirt|\btee\b|shirt|hoodie|jersey/, words: [
     'clothing', 'fashionista clothing', "men's clothing bd", "men's t-shirt bangladesh",
-    'gothic t-shirt bd', 'gothic clothing bangladesh', 'online clothing store bangladesh',
-    't-shirt price in bangladesh'
+    't-shirt bd', 't-shirt price in bangladesh', 'raglan long sleeve t shirt',
+    'raglan long sleeve t shirt price in bangladesh', 'raglan t shirt price in bangladesh',
+    'raglan t shirt bd', 'raglan sleeve t shirt', 'raglan shirt', 'raglan tee',
+    'full sleeve t shirt', 'long sleeve t shirt price in bangladesh',
+    'gothic t-shirt bd', 'gothic clothing bangladesh', 'online clothing store bangladesh'
   ]},
   { match: /chain|necklace|pendant/, words: [
     'necklace for men', "men's necklace bangladesh", "men's necklace bd",
@@ -346,7 +352,9 @@ const CATEGORY_KEYWORDS = [
     'printed bandana bangladesh', 'streetwear bandana bd', 'gothic bandana bangladesh'
   ]},
   { match: /\bring\b|\brings\b/, words: [
-    'rings for men', "men's rings bangladesh", "men's rings bd",
+    'rings for men', 'rings for men bd', 'rings price in bangladesh', 'rings bd',
+    'rings for women', 'rings for men silver', 'rings design', 'rings for boys',
+    "men's rings bangladesh", "men's rings bd",
     'men ring price in bangladesh', 'fashion rings for men'
   ]},
   { match: /watch/, words: [

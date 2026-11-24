@@ -141,9 +141,9 @@ function cardMarkup(p, i, eager){
 
 const CATEGORY_SEO = {
   "New In": { title: "Fashionista BD New Arrivals | Y2K Accessories", desc: "Discover new Y2K accessories and streetwear at FASHIONISTA in Bangladesh. Browse current products and prices, with cash on delivery nationwide.", h1: "New Y2K Accessories and Streetwear", intro: "Discover recently added glasses, accessories and streetwear at FASHIONISTA. Compare current product photos, BDT prices and stock status before choosing a style.", faq: ["What is new at FASHIONISTA?", "How do I check product prices?", "Can I pay cash on delivery?"] },
-  "Glasses": { title: "Glasses & Sunglasses in Bangladesh | Y2K & Rimless", desc: "Shop glasses and sunglasses in Bangladesh at FASHIONISTA. Explore Y2K, retro and rimless frames, compare product photos, current BDT prices and availability, with cash on delivery nationwide.", h1: "Glasses and Sunglasses in Bangladesh", intro: "Browse Y2K star frames, retro sunglasses, rimless designs and Chrome Heart-style glasses in Bangladesh. Compare each product’s photos, frame details, current BDT price and stock before ordering. Styles are fashion-inspired and are not presented as official brand products.", faq: ["Where can I buy Y2K and retro glasses in Bangladesh?", "Are Chrome Heart-style and rimless glasses available?", "Can I pay cash on delivery?"] },
+  "Glasses": { title: "Glasses Price in BD | Glasses for Men & Women | FASHIONISTA", desc: "Shop glasses in Bangladesh at FASHIONISTA. Compare glasses for men, frames and sunglasses, current BDT prices and stock, with cash on delivery nationwide.", h1: "Glasses and Sunglasses in Bangladesh", intro: "Browse glasses for men and women, glasses frames for men, Y2K star frames, retro sunglasses and rimless designs in Bangladesh. Compare glasses price in BD, product photos, frame details and current stock before ordering. If you are comparing glasses for oval or round face shapes, use each listing’s frame photos and stated details rather than assuming a fit. Styles are fashion-inspired and are not presented as official brand products.", faq: ["Where can I buy glasses for men in Bangladesh?", "How can I compare glasses prices and frames in BD?", "Can I pay cash on delivery?"] },
   "Accessories": { title: "Men’s Y2K Accessories in Bangladesh | FASHIONISTA", desc: "Shop men’s Y2K accessories in Bangladesh at FASHIONISTA: bracelets, chain necklaces and bandanas. See BDT prices and cash on delivery nationwide.", h1: "Men’s Chain Necklaces and Y2K Accessories", intro: "Browse chain necklaces, bracelets and bandanas for men’s Y2K and streetwear outfits. Compare product photos, current BDT prices and stock before ordering.", faq: ["What is the chain necklace price in Bangladesh?", "Can I find Chrome Heart-style chains?", "Can I pay cash on delivery?"] },
-  "Clothing": { title: "Streetwear Clothing BD | Y2K T-Shirts | FASHIONISTA", desc: "Streetwear clothing BD at FASHIONISTA. Explore Y2K T-shirts and casual styles, check sizes and prices, with cash on delivery in Dhaka and nationwide.", h1: "Streetwear Clothing in Bangladesh", intro: "Shop streetwear clothing and Y2K T-shirts at FASHIONISTA. Review available sizes, product photos and current prices to choose the right listing.", faq: ["Where can I buy streetwear clothing in Bangladesh?", "Do you have Y2K T-shirts?", "Can I pay cash on delivery?"] }
+  "Clothing": { title: "T-Shirts & Streetwear Clothing BD | FASHIONISTA", desc: "Shop T-shirts and streetwear clothing in Bangladesh at FASHIONISTA. Explore raglan and long-sleeve styles, check sizes and current prices, with cash on delivery nationwide.", h1: "T-Shirts and Streetwear Clothing in Bangladesh", intro: "Shop T-shirts, raglan long sleeve T-shirts and casual streetwear at FASHIONISTA. Compare product photos, available sizes and current prices in Bangladesh. Check each listing for sleeve style and fit before ordering.", faq: ["Where can I buy T-shirts in Bangladesh?", "What is the raglan T-shirt price in Bangladesh?", "Can I pay cash on delivery?"] }
 };
 
 const CATEGORY_HEADINGS = {
@@ -239,13 +239,13 @@ const SCOPE_PAGES = {
     path: '/rings',
     label: 'Rings',
     aliases: ['rings', 'ring'],
-    title: 'Men’s Y2K Rings in Bangladesh | Silver-Tone & Gothic Styles | FASHIONISTA',
-    desc: 'Explore men’s Y2K rings and gothic-inspired fashion rings at FASHIONISTA. Check current BDT prices and cash on delivery across Bangladesh.',
-    h1: 'Men’s Y2K Rings in Bangladesh',
-    sub: 'Explore silver-tone, gothic and streetwear ring styles for men',
+    title: 'Rings for Men in Bangladesh | Ring Price & Designs | FASHIONISTA',
+    desc: 'Explore ring designs and current ring prices in Bangladesh at FASHIONISTA. Check available styles, product details and stock before ordering.',
+    h1: 'Rings for Men in Bangladesh',
+    sub: 'Explore available ring styles, designs and current prices in Bangladesh',
     intro: [
-      'Discover the rings currently listed at FASHIONISTA, a Bangladesh-based fashion and accessories store. Each listing includes product photos, a current BDT price and stock status so you can check the details before ordering.',
-      'Order from anywhere in Bangladesh and pay cash on delivery.'
+      'Looking for rings for men in Bangladesh? Browse the ring styles currently listed at FASHIONISTA and compare product photos, design details, current BDT prices and stock before ordering. Availability may change, so use the live listings for current options.',
+      'Searches such as rings price in Bangladesh, rings BD, silver rings for men and rings for women or boys describe different shopping intents; check each product listing for its actual design, finish and intended fit rather than assuming a material or audience.'
     ],
     highlights: [
       { heading: 'Silver rings', text: 'These listings mention silver in their name or description:', test: s => /silver/i.test(s) },
