@@ -400,7 +400,20 @@ function buildKeywords(product){
       list.push('chrome heart glasses', 'chrome hearts glasses', 'chrome heart sunglasses');
       if(/rimless/.test(hay)) list.push('chrome hearts rimless glasses', 'chrome heart rimless glasses');
     }else if(/chain|necklace|pendant/.test(hay)){
-      list.push('chrome heart chain', 'chrome heart necklace');
+      list.push(
+        'chrome heart necklace',
+        'chrome heart necklace men',
+        'chrome heart necklace price',
+        'chrome heart necklace price in bd',
+        'chrome heart necklace chain',
+        'chrome heart necklace pendant',
+        'chrome heart chain',
+        'chrome heart chain necklace'
+      );
+      if(/cross/.test(hay)) list.push('chrome heart necklace cross');
+      if(/gold/.test(hay)) list.push('chrome heart necklace gold');
+      if(/silver/.test(hay)) list.push('chrome heart necklace silver');
+      if(/women|lady|girl/.test(hay)) list.push('chrome heart necklace women');
     }else if(/bracelet|bangle/.test(hay)){
       list.push('chrome heart bracelet');
     }
