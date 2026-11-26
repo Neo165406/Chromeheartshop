@@ -275,13 +275,13 @@ const SCOPE_PAGES = {
     path: '/bandanas',
     label: 'Bandanas',
     aliases: ['bandana', 'bandanas'],
-    title: 'Bandanas in Bangladesh | Red, Green & Pink Styles | FASHIONISTA',
+    title: 'Bandana Price in Bangladesh | Red, Green & Pink | FASHIONISTA',
     desc: 'Shop red, green and pink bandanas in Bangladesh at FASHIONISTA. Compare current BDT prices, prints and stock, with cash on delivery nationwide.',
     h1: 'Shop Bandanas in Bangladesh',
     sub: 'Compare red, green and pink bandanas with current BDT prices',
     intro: [
       'Browse red, green and pink bandanas at FASHIONISTA in Bangladesh. Compare product photos, current BDT prices and stock status before ordering. If you are looking for a bandana for men in BD, compare the available colours and prints in the live listings.',
-      'Check the bandana price in Bangladesh on each product page, where the current BDT price and stock status are shown. Style a bandana as a headband, neck scarf or bag accessory, then order with cash on delivery across Bangladesh.'
+      'Compare bandana prices in Bangladesh using the live BDT prices and stock shown on each product page. Check the red bandana price, green bandana price and pink bandana price before choosing a colour. Style your bandana as a headband, neck scarf or bag accessory, then order with cash on delivery across Bangladesh.'
     ],
     highlights: [
       { heading: 'Printed bandanas', text: 'These listings mention a print, paisley or pattern in their name or description:', test: s => /print|paisley|pattern/i.test(s) },
@@ -296,7 +296,7 @@ const SCOPE_PAGES = {
         'Folded into a band and tied at the back, it works as a headband. Knotted loosely at the front, it becomes a neck scarf. You can also tie it at your waist, hook it onto a belt loop or jeans, or knot it around a wrist or bag strap for a small pop of colour.'
       ]},
       { h: 'Bandana price in Bangladesh', p: [
-        'Looking for a bandana price in Bangladesh? FASHIONISTA lists red, green and pink bandana styles, with the current price in BDT shown on each product page. Compare the <a href=\"/product/red-bandana\">red bandana price</a>, <a href=\"/product/green-bandana\">green bandana price</a> and <a href=\"/product/pink-bandana\">pink bandana price</a> before choosing your colour. Prices and stock can change, so use the live product listings for the latest details.'
+        'Looking for a red bandana price in Bangladesh or a bandana price in BD? FASHIONISTA lists red, green and pink styles with the current BDT price and stock shown on each product page. Check the <a href=\\"/product/red-bandana\\">red bandana price in BD</a>, compare the <a href=\\"/product/green-bandana\\">green bandana price</a> and <a href=\\"/product/pink-bandana\\">pink bandana price</a>, and choose the colour that suits your outfit. Prices and availability can change, so use the live product listings for the latest details.'
       ]},
       { h: 'Choosing and styling a bandana', p: [
         'Compare the product photos and descriptions to check each colour and pattern. Fold a bandana as a headband, wear it as a neck scarf, or tie it to a bag strap for a streetwear accent. Darker graphic designs suit gothic outfits, while brighter colours add contrast to an all-black look.'
