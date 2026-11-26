@@ -143,20 +143,20 @@ const CATEGORY_SEO = {
   "New In": { title: "Fashionista BD New Arrivals | Y2K Accessories", desc: "Discover new Y2K accessories and streetwear at FASHIONISTA in Bangladesh. Browse current products and prices, with cash on delivery nationwide.", h1: "New Y2K Accessories and Streetwear", intro: "Discover recently added glasses, accessories and streetwear at FASHIONISTA. Compare current product photos, BDT prices and stock status before choosing a style.", faq: ["What is new at FASHIONISTA?", "How do I check product prices?", "Can I pay cash on delivery?"] },
   "Glasses": { title: "Glasses Price in BD | Glasses for Men & Women | FASHIONISTA", desc: "Shop glasses in Bangladesh at FASHIONISTA. Compare glasses for men, frames and sunglasses, current BDT prices and stock, with cash on delivery nationwide.", h1: "Glasses and Sunglasses in Bangladesh", intro: "Browse glasses for men and women, glasses frames for men, Y2K star frames, retro sunglasses and rimless designs in Bangladesh. Compare glasses price in BD, product photos, frame details and current stock before ordering. If you are comparing glasses for oval or round face shapes, use each listing’s frame photos and stated details rather than assuming a fit. Styles are fashion-inspired and are not presented as official brand products.", faq: ["Where can I buy glasses for men in Bangladesh?", "How can I compare glasses prices and frames in BD?", "Can I pay cash on delivery?"] },
   "Accessories": { title: "Men’s Y2K Accessories in Bangladesh | FASHIONISTA", desc: "Shop men’s Y2K accessories in Bangladesh at FASHIONISTA: bracelets, chain necklaces and bandanas. See BDT prices and cash on delivery nationwide.", h1: "Men’s Chain Necklaces and Y2K Accessories", intro: "Browse chain necklaces, bracelets and bandanas for men’s Y2K and streetwear outfits. Compare product photos, current BDT prices and stock before ordering.", faq: ["What is the chain necklace price in Bangladesh?", "Can I find Chrome Heart-style chains?", "Can I pay cash on delivery?"] },
-  "Clothing": { title: "T-Shirts & Streetwear Clothing BD | FASHIONISTA", desc: "Shop T-shirts and streetwear clothing in Bangladesh at FASHIONISTA. Explore raglan and long-sleeve styles, check sizes and current prices, with cash on delivery nationwide.", h1: "T-Shirts and Streetwear Clothing in Bangladesh", intro: "Shop T-shirts, raglan long sleeve T-shirts and casual streetwear at FASHIONISTA. Compare product photos, available sizes and current prices in Bangladesh. Check each listing for sleeve style and fit before ordering.", faq: ["Where can I buy T-shirts in Bangladesh?", "What is the raglan T-shirt price in Bangladesh?", "Can I pay cash on delivery?"] }
+  "Clothing": { title: "Streetwear T-Shirts & Raglan Shirts in Bangladesh | FASHIONISTA", desc: "Shop T-shirts, raglan long sleeve shirts and streetwear clothing in Bangladesh at FASHIONISTA. Compare photos, available sizes and current BDT prices, with cash on delivery nationwide.", h1: "T-Shirts, Raglan Shirts and Streetwear in Bangladesh", intro: "Shop T-shirts, raglan long sleeve T-shirts and casual streetwear at FASHIONISTA. Looking for a raglan T-shirt price in Bangladesh? Compare the current BDT price, product photos and available sizes on each listing. Check the stated sleeve style and size information before ordering.", faq: ["Where can I buy streetwear T-shirts in Bangladesh?", "What is the raglan long sleeve T-shirt price in Bangladesh?", "How can I check available T-shirt sizes?"] }
 };
 
 const CATEGORY_HEADINGS = {
   "New In": "New Arrivals in Bangladesh",
   "Glasses": "Glasses and Sunglasses in Bangladesh",
   "Accessories": "Men’s Chain Necklaces and Y2K Accessories",
-  "Clothing": "Streetwear Clothing in Bangladesh"
+  "Clothing": "T-Shirts, Raglan Shirts and Streetwear in Bangladesh"
 };
 const CATEGORY_SUBHEADINGS = {
   "New In": "Recently added glasses, accessories and streetwear",
   "Glasses": "Shop Y2K, retro and rimless glasses with current BDT prices in Bangladesh",
   "Accessories": "Explore bracelets, bandanas and chain necklaces for Y2K and streetwear looks",
-  "Clothing": "T-shirts and streetwear styles, with BDT prices"
+  "Clothing": "Compare T-shirts and raglan long sleeve styles with current BDT prices"
 };
 
 // Clean public path for each category. Categories not listed here (New In)
