@@ -607,14 +607,14 @@ const PRODUCT_H1_OVERRIDES = {
   'chrome-heart-black-gold': 'Chrome Heart-Style Black and Gold Glasses',
   'chrome-heart-rimless-gold': 'Chrome Heart-Style Gold Rimless Glasses',
   'chrome-heart-rimless-silver': 'Chrome Heart-Style Silver Rimless Glasses',
-  'retro-y2k-star-glass': 'Y2K Star Glasses Price in Bangladesh'
+  'retro-y2k-star-glass': 'Y2K Glasses Price in Bangladesh'
 };
 const PRODUCT_IMAGE_LABELS = {
   'chrome-heart-black-silver': 'Chrome Heart-style black and silver glasses',
   'chrome-heart-black-gold': 'Chrome Heart-style black and gold glasses',
   'chrome-heart-rimless-gold': 'Chrome Heart-style gold rimless glasses',
   'chrome-heart-rimless-silver': 'Chrome Heart-style silver rimless glasses',
-  'retro-y2k-star-glass': 'Y2K star glasses'
+  'retro-y2k-star-glass': 'Y2K glasses with retro star-shaped frames'
 };
 function productHeading(product){
   const slug = String(product && product.slug || '').toLowerCase();
@@ -723,12 +723,12 @@ const PRODUCT_CONTENT_OVERRIDES = {
     faq: 'Where can I buy Chrome Heart-style silver rimless glasses in Bangladesh?'
   },
   'retro-y2k-star-glass': {
-    title: 'Y2K Star Glasses Price in Bangladesh | FASHIONISTA',
-    h1: 'Y2K Star Glasses Price in Bangladesh',
-    description: 'Shop Y2K star glasses and retro sunglasses in Bangladesh at FASHIONISTA. Check frame photos, current BDT {price} and stock, with cash on delivery nationwide.',
-    h2: 'Y2K Star Glasses and Retro Sunglasses',
-    body: 'These star-shaped Y2K glasses bring a playful retro sunglasses look to streetwear outfits. Check the product gallery for the visible frame shape and colour, then review the current BDT price and availability before ordering.',
-    faq: 'What is the price of Y2K star glasses in Bangladesh?'
+    title: 'Y2K Glasses Price in Bangladesh | Retro Star Sunglasses | FASHIONISTA',
+    h1: 'Y2K Glasses Price in Bangladesh',
+    description: 'Shop Y2K glasses and retro star sunglasses in Bangladesh at FASHIONISTA. View frame photos, current BDT price and stock, with cash on delivery nationwide.',
+    h2: 'Y2K Glasses and Retro Star Sunglasses',
+    body: 'Looking for Y2K glasses in Bangladesh? This star-frame pair adds a retro accent to streetwear outfits. Review the product gallery for the visible frame shape and colour, then check the current BDT price and stock before ordering.',
+    faq: 'What is the price of Y2K glasses in Bangladesh?'
   },
   'raglan-long-sleeve-t-shirt': {
     title: 'Raglan Long Sleeve T-Shirt Price in Bangladesh | FASHIONISTA',
@@ -811,8 +811,8 @@ const PRODUCT_META_OVERRIDES = {
     "description": "Shop the Y2K Star Necklace at FASHIONISTA in Bangladesh. Check photos, current BDT {price} and stock, with cash on delivery nationwide."
   },
   "retro-y2k-star-glass": {
-    "title": "Y2K Star Glasses Price in Bangladesh | FASHIONISTA",
-    "description": "Shop Y2K star glasses and retro sunglasses in Bangladesh at FASHIONISTA. Check frame photos, current BDT {price} and stock, with cash on delivery nationwide."
+    "title": "Y2K Glasses Price in Bangladesh | Retro Star Sunglasses | FASHIONISTA",
+    "description": "Shop Y2K glasses and retro star sunglasses in Bangladesh at FASHIONISTA. View frame photos, current BDT {price} and stock, with cash on delivery nationwide."
   },
   "sun-moon-couple-set": {
     "title": "Sun Moon Couple Set Price in Bangladesh | FASHIONISTA",
