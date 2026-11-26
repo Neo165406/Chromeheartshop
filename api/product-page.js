@@ -603,6 +603,7 @@ function applyProductDescriptionOverride(product){
 // Product-aware on-page copy. Keep claims limited to visible product data;
 // never infer frame, fabric, metal, fit or other specifications from a name.
 const PRODUCT_H1_OVERRIDES = {
+  'red-bandana': 'Red Bandana Price in Bangladesh',
   'chrome-heart-black-silver': 'Chrome Heart-Style Black and Silver Glasses',
   'chrome-heart-black-gold': 'Chrome Heart-Style Black and Gold Glasses',
   'chrome-heart-rimless-gold': 'Chrome Heart-Style Gold Rimless Glasses',
@@ -647,6 +648,12 @@ function categoryBlurb(product){
 }
 
 const PRODUCT_CONTENT_OVERRIDES = {
+  'red-bandana': {
+    title: 'Red Bandana Price in Bangladesh | FASHIONISTA',
+    h2: 'Red Bandana Price in Bangladesh',
+    body: 'Looking for a red bandana in Bangladesh? Compare the current BDT price and availability shown above, then review the product photos for the exact colour and print. This red bandana is suited to streetwear styling as a headband, neck scarf, wrist accent or bag accessory. Browse the <a href="/bandanas">bandana collection</a> to compare other colours and check the <a href="/shipping">delivery charges</a> before ordering.',
+    faq: 'What is the red bandana price in Bangladesh?'
+  },
   'retro-double-sided-skull-cross': {
     title: 'Retro Double-Sided Skull Cross | FASHIONISTA',
     description: 'Explore the Retro Double-Sided Skull Cross at FASHIONISTA. View the front-and-back design in the product photos, check the current BDT price and availability, and order with cash on delivery across Bangladesh.',
