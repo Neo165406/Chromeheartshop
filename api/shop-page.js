@@ -280,8 +280,8 @@ const SCOPE_PAGES = {
     h1: 'Shop Bandanas in Bangladesh',
     sub: 'Compare red, green and pink bandanas with current BDT prices',
     intro: [
-      'Browse red, green and pink bandanas at FASHIONISTA in Bangladesh. Compare product photos, current BDT prices and stock status before ordering.',
-      'Compare the current BDT price, photos and stock status on each listing. Style a bandana as a headband, neck scarf or bag accessory, then order with cash on delivery across Bangladesh.'
+      'Browse red, green and pink bandanas at FASHIONISTA in Bangladesh. Compare product photos, current BDT prices and stock status before ordering. If you are looking for a bandana for men in BD, compare the available colours and prints in the live listings.',
+      'Check the bandana price in Bangladesh on each product page, where the current BDT price and stock status are shown. Style a bandana as a headband, neck scarf or bag accessory, then order with cash on delivery across Bangladesh.'
     ],
     highlights: [
       { heading: 'Printed bandanas', text: 'These listings mention a print, paisley or pattern in their name or description:', test: s => /print|paisley|pattern/i.test(s) },
@@ -289,6 +289,9 @@ const SCOPE_PAGES = {
       { heading: 'Streetwear bandanas', text: 'These listings mention streetwear in their name or description:', test: s => /street/i.test(s) }
     ],
     sections: [
+      { h: 'Bandana for men in BD', p: [
+        'A bandana can be styled as a headband, neck scarf, wrist accent or bag accessory. Men shopping for a bandana in Bangladesh can compare the red, green and pink options shown in this collection. Check each product photo for the exact colour and print rather than assuming every style has the same pattern.'
+      ]},
       { h: 'Ways to wear a bandana', p: [
         'Folded into a band and tied at the back, it works as a headband. Knotted loosely at the front, it becomes a neck scarf. You can also tie it at your waist, hook it onto a belt loop or jeans, or knot it around a wrist or bag strap for a small pop of colour.'
       ]},
