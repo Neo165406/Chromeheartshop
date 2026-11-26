@@ -212,7 +212,7 @@ const SCOPE_PAGES = {
     ],
     sections: [
       { h: 'Men’s bracelet price in Bangladesh', p: [
-        'The bracelet price in BD depends on the individual design and the details shown on its product page. Open a listing to compare its current BDT price, photos, stock and stated finish. Search phrases such as silver bracelet for men price in Bangladesh, gold bracelet for men price in Bangladesh and stainless steel bracelet price in Bangladesh should be matched to the exact material or finish stated on each product, not assumed from its appearance.'
+        'The bracelet price in BD depends on the individual design and the details shown on its product page. If you are comparing the bracelet for men price in BD or asking how much a bracelet costs in Bangladesh, open each listing to check its current BDT price, photos, stock and stated finish. Silver bracelet for men price in Bangladesh, gold bracelet for men price in Bangladesh and stainless steel bracelet price in Bangladesh are useful searches only when the corresponding finish or material is explicitly stated on that item; do not assume it from appearance.'
       ]},
       { h: 'How to choose a bracelet for men', p: [
         'Compare the product photos, design, colour and any available material or fit information. Whether you search for a bracelet for men, bracelet for man or a specific silver or gold-tone style, check the individual product description before ordering. Message us through the <a href="/contact">contact page</a> if you need clarification.'
