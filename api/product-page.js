@@ -722,13 +722,6 @@ const PRODUCT_CONTENT_OVERRIDES = {
     faq: 'What is the gold rimless glasses price for men in Bangladesh?'
   },
   'chrome-heart-rimless-silver': {
-    title: 'Silver Rimless Glasses for Men Price in Bangladesh | FASHIONISTA',
-    description: 'Explore silver rimless glasses for men at FASHIONISTA Bangladesh. Check frame photos, current BDT price and stock, with cash on delivery nationwide. Fashion-inspired design; not an official brand product.',
-    h2: 'Silver Rimless Glasses for Men in Bangladesh',
-    body: 'These silver rimless glasses offer a minimal frame look for everyday and streetwear outfits. Review the gallery for the visible frame shape and finish, then check the current BDT price and availability before ordering. This listing is fashion-inspired and is not an official brand product.',
-    faq: 'What is the silver rimless glasses price for men in Bangladesh?'
-  },
-  'chrome-heart-rimless-silver': {
     title: 'Chrome Heart-Style Silver Rimless Glasses Price in BD | FASHIONISTA',
     h1: 'Chrome Heart-Style Silver Rimless Glasses',
     description: 'Shop Chrome Heart-style silver rimless glasses in Bangladesh at FASHIONISTA. View frame photos, current BDT price and stock, with cash on delivery nationwide. Fashion-inspired design; not an official brand product.',
@@ -765,12 +758,12 @@ const PRODUCT_META_OVERRIDES = {
     "description": "Shop the red bandana at FASHIONISTA in Bangladesh. Check product photos, current BDT {price} and stock, and order with cash on delivery nationwide."
   },
   "chrome-heart-bracelet": {
-    "title": "Men’s Bracelet Price in Bangladesh | FASHIONISTA",
-    "description": "Shop this men’s bracelet at FASHIONISTA in Bangladesh. Check product photos, current BDT {price} and stock, with cash on delivery nationwide."
+    "title": "Men’s Bracelet Design & Price in Bangladesh | FASHIONISTA",
+    "description": "Explore this men’s bracelet design at FASHIONISTA Bangladesh. Check product photos, current BDT {price} and stock, with cash on delivery nationwide."
   },
   "chrome-heart-rimless-gold": {
-    "title": "Chrome Heart-Style Gold Rimless Glasses Price in BD | FASHIONISTA",
-    "description": "Shop Chrome Heart-style gold rimless glasses in Bangladesh at FASHIONISTA. Compare frame photos, current BDT {price} and stock, with cash on delivery nationwide. Fashion-inspired design, not an official brand product."
+    "title": "Gold Rimless Glasses for Men Price in Bangladesh | FASHIONISTA",
+    "description": "Explore gold rimless glasses for men at FASHIONISTA Bangladesh. Compare frame photos, current BDT {price} and stock, with cash on delivery nationwide. Fashion-inspired design, not an official brand product."
   },
   "chrome-heart-black-silver": {
     "title": "Chrome Heart-Style Black and Silver Glasses Price in BD | FASHIONISTA",
@@ -813,8 +806,8 @@ const PRODUCT_META_OVERRIDES = {
     "description": "Explore this men’s streetwear bracelet at FASHIONISTA. Check product photos, current BDT {price} and stock, with cash on delivery nationwide."
   },
   "chrome-heart-rimless-silver": {
-    "title": "Chrome Heart-Style Silver Rimless Glasses Price in BD | FASHIONISTA",
-    "description": "Shop Chrome Heart-style silver rimless glasses in Bangladesh at FASHIONISTA. Compare frame photos, current BDT {price} and stock, with cash on delivery nationwide. Fashion-inspired design, not an official brand product."
+    "title": "Silver Rimless Glasses for Men Price in Bangladesh | FASHIONISTA",
+    "description": "Explore silver rimless glasses for men at FASHIONISTA Bangladesh. Compare frame photos, current BDT {price} and stock, with cash on delivery nationwide. Fashion-inspired design, not an official brand product."
   },
   "pink-bandana": {
     "title": "Pink Bandana Price in Bangladesh | Y2K Style | FASHIONISTA",
@@ -837,8 +830,8 @@ const PRODUCT_META_OVERRIDES = {
     "description": "View this men’s bracelet design at FASHIONISTA. Check product photos, current BDT {price} and stock, with cash on delivery nationwide."
   },
   "raglan-long-sleeve-t-shirt": {
-    "title": "Raglan Long Sleeve T-Shirt Price in Bangladesh | FASHIONISTA",
-    "description": "Shop a raglan long sleeve T-shirt in Bangladesh at FASHIONISTA. Check sleeve design, available sizes, photos and current BDT {price}, with cash on delivery nationwide."
+    "title": "Raglan T-Shirt Price in Bangladesh | Long Sleeve Style | FASHIONISTA",
+    "description": "Shop this raglan T-shirt in Bangladesh at FASHIONISTA. Check its long sleeve design, product photos, available sizes and current BDT {price}, with cash on delivery nationwide."
   },
   "gothic-fleur-de-lis-cross-pendant": {
     "title": "Gothic Fleur-de-Lis Cross Pendant Price in BD | FASHIONISTA",
